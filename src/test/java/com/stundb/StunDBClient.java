@@ -2,7 +2,7 @@ package com.stundb;
 
 import com.google.protobuf.ByteString;
 import com.stundb.service.GetRequest;
-import com.stundb.service.KVStoreServiceGrpc;
+import com.stundb.service.StoreServiceGrpc;
 import com.stundb.service.SetRequest;
 import io.grpc.ManagedChannelBuilder;
 
@@ -19,7 +19,7 @@ public class StunDBClient {
                 .usePlaintext()
                 .build();
 
-        var stub = KVStoreServiceGrpc.newBlockingStub(channel);
+        var stub = StoreServiceGrpc.newBlockingStub(channel);
         var is = Thread.currentThread().getContextClassLoader().getResourceAsStream("img.jpeg");
 
         stub.set(SetRequest.newBuilder()

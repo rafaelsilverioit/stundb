@@ -23,7 +23,7 @@ public class GrpcServer {
     private final Logger logger = LoggerFactory.getLogger(GrpcServer.class);
 
     @Inject
-    private KVStoreServiceGrpc.KVStoreServiceImplBase storeService;
+    private StoreServiceGrpc.StoreServiceImplBase storeService;
 
     @Inject
     private NodesServiceGrpc.NodesServiceImplBase nodeService;

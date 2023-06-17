@@ -11,7 +11,7 @@ import java.util.Base64;
 
 @Singleton
 public class StoreServiceImpl
-        extends KVStoreServiceGrpc.KVStoreServiceImplBase
+        extends StoreServiceGrpc.StoreServiceImplBase
         implements Service {
 
     @Inject

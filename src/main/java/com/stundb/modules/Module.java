@@ -36,7 +36,7 @@ public class Module extends AbstractModule {
                 .to(NodesServiceImpl.class)
                 .in(Scopes.SINGLETON);
 
-        bind(KVStoreServiceGrpc.KVStoreServiceImplBase.class)
+        bind(StoreServiceGrpc.StoreServiceImplBase.class)
                 .to(StoreServiceImpl.class)
                 .in(Scopes.SINGLETON);
 
