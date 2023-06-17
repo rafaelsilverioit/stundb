@@ -1,0 +1,10 @@
+name: StunDB
+ip: 127.0.0.1
+port: ${application.port}
+capacity:
+  publicCache: 9999
+  internalCache: 256
+digestAlgorithm: SHA-256
+seeds:
+  - 127.0.0.1:8001
+  - 127.0.0.1:8000
