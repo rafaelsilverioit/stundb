@@ -1,4 +1,4 @@
-package com.stundb.modules;
+package com.stundb.modules.providers;
 
 import com.stundb.configuration.ConfigurationLoader;
 import com.stundb.models.ApplicationConfig;
@@ -6,7 +6,7 @@ import com.stundb.models.ApplicationConfig;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-class ApplicationConfigProvider implements Provider<ApplicationConfig> {
+public class ApplicationConfigProvider implements Provider<ApplicationConfig> {
 
     @Inject
     private ConfigurationLoader loader;

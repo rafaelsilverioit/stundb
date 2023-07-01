@@ -1,4 +1,4 @@
-package com.stundb.modules;
+package com.stundb.modules.providers;
 
 import com.stundb.models.ApplicationConfig;
 

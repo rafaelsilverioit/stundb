@@ -1,10 +1,11 @@
 package com.stundb.service;
 
 import com.stundb.cache.Cache;
-import com.stundb.clients.GrpcClient;
+import com.stundb.clients.GrpcRunner;
 import com.stundb.logging.Loggable;
 import com.stundb.models.ApplicationConfig;
 import com.stundb.models.UniqueId;
+import com.stundb.observers.NoOpObserver;
 import io.grpc.StatusRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,10 @@ public class ElectionService extends AsyncService {
     private Cache<Node> internalCache;
 
     @Inject
-    private GrpcClient client;
+    private GrpcRunner<StartElectionRequest, StartElectionResponse> electionRunner;
+
+    @Inject
+    private GrpcRunner<ElectedRequest, ElectedResponse> electedRunner;
 
     @Inject
     private ApplicationConfig config;
@@ -84,7 +88,7 @@ public class ElectionService extends AsyncService {
     private void notifyAboutElectedLeader(Node node, Node n) {
         try {
             logger.info("Telling about election to {}", n.getUniqueId());
-            client.run(n.getIp(), n.getPort(), ElectedRequest.newBuilder().setLeader(node).build());
+            electedRunner.run(n.getIp(), n.getPort(), ElectedRequest.newBuilder().setLeader(node).build(), new NoOpObserver<>());
         } catch(StatusRuntimeException e) {
             logger.error("Error contacting node", e);
         }
@@ -94,7 +98,7 @@ public class ElectionService extends AsyncService {
     private Boolean startElection(Node node) {
         try {
             logger.info("Starting election {}", node.getUniqueId());
-            client.run(node.getIp(), node.getPort(), StartElectionRequest.newBuilder().build());
+            electionRunner.run(node.getIp(), node.getPort(), StartElectionRequest.newBuilder().build(), new NoOpObserver<>());
             return true;
         } catch(StatusRuntimeException e) {
             logger.error("Error contacting node", e);

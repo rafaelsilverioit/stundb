@@ -1,9 +1,10 @@
 package com.stundb.service;
 
 import com.stundb.cache.Cache;
-import com.stundb.clients.GrpcClient;
+import com.stundb.clients.GrpcRunner;
 import com.stundb.logging.Loggable;
 import com.stundb.models.UniqueId;
+import com.stundb.observers.NoOpObserver;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,7 @@ public class NodesServiceImpl
     private final Timer timer = new Timer();
 
     @Inject
-    private GrpcClient client;
+    private GrpcRunner<RegisterRequest, RegisterResponse> runner;
 
     @Inject
     private Cache<Node> internalCache;
@@ -68,7 +69,7 @@ public class NodesServiceImpl
                 .filter(Node::getLeader)
                 .filter(node -> node.getUniqueId() != uniqueId.getNumber())
                 .findFirst()
-                .ifPresent(node -> client.run(node.getIp(), node.getPort(), request));
+                .ifPresent(node -> runner.run(node.getIp(), node.getPort(), request, new NoOpObserver<>()));
 
         var response = RegisterResponse.newBuilder()
                 .setStatus(true)

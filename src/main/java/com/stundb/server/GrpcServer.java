@@ -1,9 +1,10 @@
 package com.stundb.server;
 
 import com.stundb.cache.Cache;
-import com.stundb.clients.GrpcClient;
+import com.stundb.clients.GrpcRunner;
 import com.stundb.models.ApplicationConfig;
 import com.stundb.models.UniqueId;
+import com.stundb.observers.RegisterResponseObserver;
 import com.stundb.service.*;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -14,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 
 @NoArgsConstructor
@@ -32,7 +32,7 @@ public class GrpcServer {
     private ApplicationConfig config;
 
     @Inject
-    private GrpcClient client;
+    private GrpcRunner<RegisterRequest, RegisterResponse> runner;
 
     @Inject
     private Cache<Node> internalCache;
@@ -85,28 +85,19 @@ public class GrpcServer {
             return;
         }
 
-        try {
-            var data = client.run(
-                    s[0],
-                    Integer.parseInt(s[1]),
-                    RegisterRequest.newBuilder()
-                            .setIp(config.getIp())
-                            .setPort(config.getPort())
-                            .setUniqueId(uniqueId.getNumber())
-                            .build())
-                    .map(response -> (RegisterResponse) response);
-            var nodes = data
-                    .map(RegisterResponse::getNodesList)
-                    .stream()
-                    .flatMap(Collection::stream)
-                    .toList();
+        runner.run(
+                s[0],
+                Integer.parseInt(s[1]),
+                getRegisterRequest(),
+                new RegisterResponseObserver(seed, replicationService, internalCache));
+    }
 
-            logger.info("Reply from seed {} - {} nodes", seed, nodes.size());
-            nodes.forEach(node -> internalCache.put(String.valueOf(node.getUniqueId()), node));
-            data.ifPresent(response -> replicationService.synchronize(response.getState()));
-        } catch (Exception e) {
-            logger.error("Failed to contact seed", e);
-        }
+    private RegisterRequest getRegisterRequest() {
+        return RegisterRequest.newBuilder()
+                .setIp(config.getIp())
+                .setPort(config.getPort())
+                .setUniqueId(uniqueId.getNumber())
+                .build();
     }
 
     @SneakyThrows

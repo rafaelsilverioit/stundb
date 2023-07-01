@@ -1,22 +1,14 @@
 package com.stundb.clients.node;
 
-import com.google.protobuf.GeneratedMessageV3;
-import com.stundb.clients.GrpcRunner;
 import com.stundb.service.ElectedRequest;
 import com.stundb.service.ElectedResponse;
 import io.grpc.ManagedChannel;
+import io.grpc.stub.StreamObserver;
 
-public class ElectedRunner
-        extends NodeRunner
-        implements GrpcRunner<ElectedRequest, ElectedResponse> {
-
-    @Override
-    public Boolean isSupported(Object request) {
-        return request instanceof ElectedRequest;
-    }
+public class ElectedRunner extends NodeRunner<ElectedRequest, ElectedResponse> {
 
     @Override
-    public ElectedResponse execute(ManagedChannel channel, GeneratedMessageV3 request) {
-        return getStubFor(channel).elected((ElectedRequest) request);
+    public void execute(ManagedChannel channel, ElectedRequest request, StreamObserver<ElectedResponse> observer) {
+        getStubFor(channel).elected(request, observer);
     }
 }

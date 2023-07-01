@@ -1,4 +1,4 @@
-package com.stundb.modules;
+package com.stundb.modules.providers;
 
 import com.stundb.models.ApplicationConfig;
 import com.stundb.models.UniqueId;
@@ -9,7 +9,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 @Singleton
-class UniqueIdProvider implements Provider<UniqueId> {
+public class UniqueIdProvider implements Provider<UniqueId> {
 
     @Inject
     private ApplicationConfig config;

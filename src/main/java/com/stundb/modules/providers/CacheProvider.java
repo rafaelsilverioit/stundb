@@ -1,4 +1,4 @@
-package com.stundb.modules;
+package com.stundb.modules.providers;
 
 import com.stundb.cache.Cache;
 import com.stundb.cache.FIFOCache;
@@ -9,7 +9,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 @Singleton
-class CacheProvider<T> implements Provider<Cache<T>> {
+public class CacheProvider<T> implements Provider<Cache<T>> {
 
     private Cache<T> cache;
 

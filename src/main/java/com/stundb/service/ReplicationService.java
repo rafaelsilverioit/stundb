@@ -2,11 +2,12 @@ package com.stundb.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stundb.cache.Cache;
-import com.stundb.clients.GrpcClient;
+import com.stundb.clients.GrpcRunner;
 import com.stundb.crdt.Entry;
 import com.stundb.crdt.LastWriterWinsSet;
 import com.stundb.logging.Loggable;
 import com.stundb.models.UniqueId;
+import com.stundb.observers.NoOpObserver;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ public class ReplicationService implements SyncService {
     private final LastWriterWinsSet state = new LastWriterWinsSet();
 
     @Inject
-    private GrpcClient client;
+    private GrpcRunner<CRDTRequest, CRDTResponse> runner;
 
     @Inject
     private Cache<String> cache;
@@ -100,7 +101,7 @@ public class ReplicationService implements SyncService {
         internalCache.getAll()
                 .stream()
                 .filter(node -> node.getUniqueId() != uniqueId.getNumber())
-                .forEach(node -> client.run(node.getIp(), node.getPort(), request));
+                .forEach(node -> runner.run(node.getIp(), node.getPort(), request, new NoOpObserver<>()));
     }
 
     private Entry buildEntry(String key, String value) {

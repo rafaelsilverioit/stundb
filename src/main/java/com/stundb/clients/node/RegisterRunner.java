@@ -1,22 +1,14 @@
 package com.stundb.clients.node;
 
-import com.google.protobuf.GeneratedMessageV3;
-import com.stundb.clients.GrpcRunner;
 import com.stundb.service.RegisterRequest;
 import com.stundb.service.RegisterResponse;
 import io.grpc.ManagedChannel;
+import io.grpc.stub.StreamObserver;
 
-public class RegisterRunner
-        extends NodeRunner
-        implements GrpcRunner<RegisterRequest, RegisterResponse> {
-
-    @Override
-    public Boolean isSupported(Object request) {
-        return request instanceof RegisterRequest;
-    }
+public class RegisterRunner extends NodeRunner<RegisterRequest, RegisterResponse> {
 
     @Override
-    public RegisterResponse execute(ManagedChannel channel, GeneratedMessageV3 request) {
-        return getStubFor(channel).register((RegisterRequest) request);
+    public void execute(ManagedChannel channel, RegisterRequest request, StreamObserver<RegisterResponse> observer) {
+        getStubFor(channel).register(request, observer);
     }
 }
