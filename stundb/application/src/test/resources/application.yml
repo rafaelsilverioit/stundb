@@ -1,0 +1,14 @@
+name: StunDB
+ip: 127.0.0.1
+port: 8000
+capacity:
+  publicCache: 9999
+  internalCache: 256
+timeouts:
+  tcpReadTimeout: 10
+  tcpWriteTimeout: 10
+tcpClient:
+  threads: 10
+digestAlgorithm: "SHA-256"
+seeds:
+  - 127.0.0.1:8000
