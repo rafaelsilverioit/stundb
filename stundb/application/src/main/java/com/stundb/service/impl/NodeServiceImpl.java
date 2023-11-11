@@ -34,7 +34,8 @@ public class NodeServiceImpl implements NodeService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Timer timer = new Timer();
+    @Inject
+    private Timer timer;
 
     @Inject
     private StunDBClient client;
@@ -55,10 +56,10 @@ public class NodeServiceImpl implements NodeService {
     @Inject
     private UniqueId uniqueId;
 
-    private final ConcurrentMap<Long, AtomicInteger> failures = new ConcurrentHashMap<>();
-
     @Inject
     private NodeUtils utils;
+
+    private final ConcurrentMap<Long, AtomicInteger> failures = new ConcurrentHashMap<>();
 
     @Loggable
     @Override

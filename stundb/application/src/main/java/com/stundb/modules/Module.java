@@ -34,6 +34,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.security.MessageDigest;
 import java.util.List;
+import java.util.Timer;
 import java.util.TimerTask;
 
 public class Module extends AbstractModule {
@@ -57,6 +58,7 @@ public class Module extends AbstractModule {
         bind(UniqueId.class).toProvider(UniqueIdProvider.class);
         bind(ApplicationConfigMapper.class).toInstance(ApplicationConfigMapper.INSTANCE);
         bind(Codec.class).toProvider(CodecProvider.class);
+        bind(Timer.class).toInstance(new Timer());
 
         bind(ElectionService.class).to(ElectionServiceImpl.class);
         bind(StoreService.class).to(StoreServiceImpl.class);
