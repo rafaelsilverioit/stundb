@@ -1,11 +1,13 @@
 # StunDB - A stunning distributed key-value database
 
-## Removed
+## Work in progress - Not ready for production yet
+
+### Removed
 - GRPC interface
 - Async stubs for runners
 - ~~Rename SyncService to something else (do we really need it?)~~ - we didn't
 
-## Done
+### Done
 - FIFO cache
 - Locking
 - Contact other nodes through seeds
@@ -14,11 +16,11 @@
 - Use Netty for TCP server
 - Use Java Sockets for TCP client
 
-## Doing
+### Doing
 - Implement node statuses so that when a node becomes unreachable, it is ignored until it becomes available again and state is synchronized (remove leader status too)
 - TESTS (unit & acceptance)!
 
-## TODO
+### TODO
 - Retry contacting seeds until a node is retrieved - or should we just fail to initialize?
 - LBing - Consistent hashing
 - TTL
