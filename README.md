@@ -22,6 +22,8 @@
 - Retry contacting seeds until a node is retrieved - or should we just fail to initialize?
 - LBing - Consistent hashing
 - TTL
+- Payload compression/decompression when talking between nodes
+- Authentication
 - Support multiple cache eviction policies
 - Change how synchronization works today
 
