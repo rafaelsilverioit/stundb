@@ -231,7 +231,7 @@ public class NodeServiceImplTest extends BaseTest {
     }
 
     @Test
-    void register_should_register_new_cluster_memberxxx() {
+    void register_should_mark_seed_node_as_failing_when_communication_fails() {
         var node = buildNode(Status.State.RUNNING, 321L, false);
         var currentLeader = buildNode(Status.State.RUNNING);
         var request = Request.buildRequest(Command.REGISTER, new RegisterRequest(node.ip(), node.port(), node.uniqueId()));
@@ -240,7 +240,7 @@ public class NodeServiceImplTest extends BaseTest {
         when(utils.filterNodesByState(any(), any(), any())).thenReturn(Stream.of(currentLeader));
         when(internalCache.put(any(), any())).thenReturn(true).thenReturn(true);
         when(client.requestAsync(any(), any(), any()))
-                .thenReturn(CompletableFuture.failedFuture(new Exception()));
+                .thenReturn(CompletableFuture.failedFuture(new Exception("dummy exception")));
         when(replicationService.generateCrdtRequest()).thenReturn(new CRDTRequest(List.of(), List.of()));
 
         testee.register(request);
