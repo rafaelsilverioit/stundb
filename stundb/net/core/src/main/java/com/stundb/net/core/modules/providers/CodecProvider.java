@@ -12,7 +12,7 @@ import com.stundb.net.core.models.responses.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Provider;
+import jakarta.inject.Provider;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;

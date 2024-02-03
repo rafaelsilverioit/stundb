@@ -2,8 +2,8 @@ package com.stundb.modules.providers;
 
 import com.stundb.core.models.ApplicationConfig;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 

@@ -4,7 +4,7 @@ import com.stundb.core.mappers.ApplicationConfigMapper;
 import com.stundb.core.models.ApplicationConfig;
 import org.yaml.snakeyaml.Yaml;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class ConfigurationLoader {
 

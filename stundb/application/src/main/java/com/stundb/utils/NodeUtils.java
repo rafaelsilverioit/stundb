@@ -3,7 +3,7 @@ package com.stundb.utils;
 import com.stundb.core.models.Node;
 import com.stundb.core.models.Status;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.security.MessageDigest;
 import java.util.Collection;
 import java.util.List;
