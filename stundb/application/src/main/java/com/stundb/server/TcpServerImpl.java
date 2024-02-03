@@ -7,7 +7,7 @@ import com.stundb.service.NodeService;
 import com.stundb.service.ReplicationService;
 import lombok.NoArgsConstructor;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @NoArgsConstructor
 public class TcpServerImpl extends TcpServer {

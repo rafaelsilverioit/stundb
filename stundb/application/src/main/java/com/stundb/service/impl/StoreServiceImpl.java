@@ -12,8 +12,8 @@ import com.stundb.net.core.models.responses.GetResponse;
 import com.stundb.net.core.models.responses.IsEmptyResponse;
 import com.stundb.service.StoreService;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class StoreServiceImpl implements StoreService {

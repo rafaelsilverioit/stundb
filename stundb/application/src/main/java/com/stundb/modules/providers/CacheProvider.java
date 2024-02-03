@@ -4,9 +4,9 @@ import com.stundb.core.cache.Cache;
 import com.stundb.core.cache.FIFOCache;
 import com.stundb.core.models.ApplicationConfig;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class CacheProvider<T> implements Provider<Cache<T>> {

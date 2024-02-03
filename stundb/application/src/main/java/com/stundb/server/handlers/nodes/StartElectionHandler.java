@@ -9,8 +9,8 @@ import com.stundb.service.NodeService;
 import io.netty.channel.Channel;
 import lombok.NoArgsConstructor;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 @Singleton
 @NoArgsConstructor

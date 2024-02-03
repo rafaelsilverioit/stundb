@@ -2,9 +2,9 @@ package com.stundb.net.client.modules.providers;
 
 import com.stundb.core.models.ApplicationConfig;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 

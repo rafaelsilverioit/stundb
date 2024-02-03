@@ -4,9 +4,9 @@ import com.stundb.core.models.ApplicationConfig;
 import com.stundb.core.models.UniqueId;
 import com.stundb.utils.NodeUtils;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class UniqueIdProvider implements Provider<UniqueId> {

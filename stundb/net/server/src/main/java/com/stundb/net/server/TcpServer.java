@@ -35,7 +35,7 @@ import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.concurrent.*;
