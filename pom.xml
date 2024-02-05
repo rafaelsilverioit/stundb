@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
     <properties>
         <java.version>17</java.version>
-        <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
+        <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <!-- automatically run annotation processors within the incremental compilation -->
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
         <lombok.version>1.18.30</lombok.version>
