@@ -13,6 +13,8 @@
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <!-- automatically run annotation processors within the incremental compilation -->
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
+        <junit.version>5.10.2</junit.version>
+        <surefire.version>3.2.5</surefire.version>
         <lombok.version>1.18.30</lombok.version>
         <jacoco.version>0.8.10</jacoco.version>
         <skipTests>false</skipTests>
@@ -73,7 +75,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.10.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -85,7 +87,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>5.10.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -150,7 +152,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
+                <version>${surefire.version}</version>
                 <configuration>
                     <skipTests>${skipTests}</skipTests>
                 </configuration>
