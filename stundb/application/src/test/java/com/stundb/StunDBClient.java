@@ -1,7 +1,6 @@
 package com.stundb;
 
 import com.google.inject.Guice;
-import com.stundb.modules.Module;
 import com.stundb.net.client.modules.ClientModule;
 import com.stundb.net.core.models.Command;
 import com.stundb.net.core.models.requests.RegisterRequest;
@@ -15,7 +14,7 @@ public class StunDBClient {
 
     @SuppressWarnings("CallToPrintStackTrace")
     public static void main(String[] args) {
-        var guice = Guice.createInjector(new Module(), new ClientModule());
+        var guice = Guice.createInjector(new ClientModule());
         var executor = guice.getInstance(ExecutorService.class);
         var client = guice.getInstance(com.stundb.net.client.StunDBClient.class);
 
