@@ -1,9 +1,13 @@
 package com.stundb.server.handlers.nodes;
 
+import static org.mockito.Mockito.verify;
+
 import com.stundb.net.core.models.Command;
 import com.stundb.net.core.models.requests.DeregisterRequest;
 import com.stundb.net.core.models.requests.Request;
+
 import lombok.Getter;
+
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -12,14 +16,11 @@ import org.mockito.InjectMocks;
 
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.verify;
-
+@Getter
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DeregisterHandlerTest extends NodeHandlerTest<DeregisterHandler> {
 
-    @Getter
-    @InjectMocks
-    private DeregisterHandler testee;
+    @InjectMocks private DeregisterHandler testee;
 
     private Stream<Arguments> test_isSupported() {
         return test_isSupported(Command.DEREGISTER);
@@ -28,9 +29,7 @@ public class DeregisterHandlerTest extends NodeHandlerTest<DeregisterHandler> {
     @Override
     protected Stream<Arguments> test_execute() {
         return Stream.of(
-                Arguments.of(new DeregisterRequest(1L)),
-                Arguments.of((DeregisterRequest) null)
-        );
+                Arguments.of(new DeregisterRequest(1L)), Arguments.of((DeregisterRequest) null));
     }
 
     @Override

@@ -2,11 +2,6 @@
 
 ## Work in progress - Not ready for production yet
 
-### Removed
-- GRPC interface
-- Async stubs for runners
-- ~~Rename SyncService to something else (do we really need it?)~~ - we didn't
-
 ### Done
 - FIFO cache
 - Locking
@@ -15,18 +10,19 @@
 - Leader election
 - Use Netty for TCP server
 - Use Java Sockets for TCP client
+- Implement node statuses so that when a node becomes unreachable, it is ignored until it becomes available again and state is synchronized (remove leader status too)
+- Retry contacting seeds until a node replies, up to a maximum number of attempts
+- Move from Kryo to Apache Fury
 
 ### Doing
-- Implement node statuses so that when a node becomes unreachable, it is ignored until it becomes available again and state is synchronized (remove leader status too)
 - TESTS (unit & acceptance)!
 
 ### TODO
-- Retry contacting seeds until a node is retrieved - or should we just fail to initialize?
-- LBing - Consistent hashing
+- Deal with virtual clocks
 - TTL
 - Payload compression/decompression when talking between nodes
 - Authentication
 - Support multiple cache eviction policies
 - Change how synchronization works today
-
-
+- Create a Spring Boot app to observe nodes and expose data through a REST API
+- Create a node gateway app to receive requests from clients, and load balance requests between nodes

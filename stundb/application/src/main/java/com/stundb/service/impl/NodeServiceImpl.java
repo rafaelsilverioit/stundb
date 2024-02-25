@@ -1,11 +1,14 @@
 package com.stundb.service.impl;
 
-import com.stundb.net.client.StunDBClient;
+import static com.stundb.core.models.Status.State.FAILING;
+import static com.stundb.core.models.Status.State.RUNNING;
+
 import com.stundb.core.cache.Cache;
 import com.stundb.core.logging.Loggable;
 import com.stundb.core.models.Node;
 import com.stundb.core.models.Status;
 import com.stundb.core.models.UniqueId;
+import com.stundb.net.client.StunDBClient;
 import com.stundb.net.core.models.requests.*;
 import com.stundb.net.core.models.responses.ListNodesResponse;
 import com.stundb.net.core.models.responses.RegisterResponse;
@@ -13,12 +16,14 @@ import com.stundb.service.ElectionService;
 import com.stundb.service.NodeService;
 import com.stundb.service.ReplicationService;
 import com.stundb.utils.NodeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -26,40 +31,23 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.stundb.core.models.Status.State.FAILING;
-import static com.stundb.core.models.Status.State.RUNNING;
-
 @Singleton
 public class NodeServiceImpl implements NodeService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final ConcurrentMap<Long, AtomicInteger> failures = new ConcurrentHashMap<>();
 
-    @Inject
-    private Timer timer;
-
-    @Inject
-    private StunDBClient client;
-
-    @Inject
-    private Cache<Node> internalCache;
-
-    @Inject
-    private ReplicationService replicationService;
-
-    @Inject
-    private ElectionService election;
+    @Inject private Timer timer;
+    @Inject private StunDBClient client;
+    @Inject private Cache<Node> internalCache;
+    @Inject private ReplicationService replicationService;
+    @Inject private ElectionService election;
+    @Inject private UniqueId uniqueId;
+    @Inject private NodeUtils utils;
 
     @Inject
     @Named("coordinatorTimerTask")
     private TimerTask coordinatorTimerTask;
-
-    @Inject
-    private UniqueId uniqueId;
-
-    @Inject
-    private NodeUtils utils;
-
-    private final ConcurrentMap<Long, AtomicInteger> failures = new ConcurrentHashMap<>();
 
     @Loggable
     @Override
@@ -69,8 +57,7 @@ public class NodeServiceImpl implements NodeService {
 
     @Loggable
     @Override
-    public void ping(Request request) {
-    }
+    public void ping(Request request) {}
 
     @Loggable
     @Override
@@ -92,22 +79,32 @@ public class NodeServiceImpl implements NodeService {
         var data = (RegisterRequest) request.payload();
         internalCache.put(
                 data.uniqueId().toString(),
-                new com.stundb.core.models.Node(data.ip(), data.port(), data.uniqueId(), false, Status.create(RUNNING)));
+                new com.stundb.core.models.Node(
+                        data.ip(), data.port(), data.uniqueId(), false, Status.create(RUNNING)));
 
-        utils.filterNodesByState(internalCache.getAll(), uniqueId.getNumber(), List.of(RUNNING))
+        utils.filterNodesByState(internalCache.getAll(), uniqueId.number(), List.of(RUNNING))
                 .filter(Node::leader)
                 .findFirst()
-                .ifPresent(node -> client.requestAsync(request, node.ip(), node.port()).handle((response, error) -> {
-                    if (error != null) {
-                        logger.error("Leader failed, starting election", error);
-                        internalCache.put(node.uniqueId().toString(), node.clone(FAILING));
-                        election.run();
-                        return error;
-                    }
-                    return response;
-                }));
+                .ifPresent(
+                        node ->
+                                client.requestAsync(request, node.ip(), node.port())
+                                        .handle(
+                                                (response, error) -> {
+                                                    if (error != null) {
+                                                        logger.error(
+                                                                "Leader failed, starting election",
+                                                                error);
+                                                        internalCache.put(
+                                                                node.uniqueId().toString(),
+                                                                node.clone(FAILING));
+                                                        election.run();
+                                                        return error;
+                                                    }
+                                                    return response;
+                                                }));
 
-        return new RegisterResponse(internalCache.getAll().stream().toList(), replicationService.generateCrdtRequest());
+        return new RegisterResponse(
+                internalCache.getAll().stream().toList(), replicationService.generateCrdtRequest());
     }
 
     @Loggable

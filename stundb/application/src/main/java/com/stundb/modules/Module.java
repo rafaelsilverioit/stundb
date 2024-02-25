@@ -5,7 +5,6 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.name.Names;
 import com.stundb.core.cache.Cache;
-import com.stundb.core.codecs.Codec;
 import com.stundb.core.configuration.ConfigurationLoader;
 import com.stundb.core.logging.Loggable;
 import com.stundb.core.logging.RequestLogger;
@@ -19,17 +18,13 @@ import com.stundb.modules.providers.CommandHandlerProvider;
 import com.stundb.modules.providers.MessageDigestProvider;
 import com.stundb.modules.providers.UniqueIdProvider;
 import com.stundb.net.client.modules.ClientModule;
+import com.stundb.net.core.codecs.Codec;
 import com.stundb.net.core.modules.providers.CodecProvider;
 import com.stundb.net.server.handlers.CommandHandler;
-import com.stundb.service.ElectionService;
-import com.stundb.service.NodeService;
-import com.stundb.service.ReplicationService;
-import com.stundb.service.StoreService;
-import com.stundb.service.impl.ElectionServiceImpl;
-import com.stundb.service.impl.NodeServiceImpl;
-import com.stundb.service.impl.ReplicationServiceImpl;
-import com.stundb.service.impl.StoreServiceImpl;
+import com.stundb.service.*;
+import com.stundb.service.impl.*;
 import com.stundb.timers.CoordinatorTimerTask;
+
 import org.yaml.snakeyaml.Yaml;
 
 import java.security.MessageDigest;
@@ -44,12 +39,12 @@ public class Module extends AbstractModule {
         install(new ClientModule());
 
         bindInterceptor(
-                Matchers.any(),
-                Matchers.annotatedWith(Loggable.class),
-                new RequestLogger());
+                Matchers.any(), Matchers.annotatedWith(Loggable.class), new RequestLogger());
 
-        bind(new TypeLiteral<Cache<Object>>() {}).toProvider(new TypeLiteral<CacheProvider<Object>>() {});
-        bind(new TypeLiteral<Cache<Node>>() {}).toProvider(new TypeLiteral<CacheProvider<Node>>() {});
+        bind(new TypeLiteral<Cache<Object>>() {})
+                .toProvider(new TypeLiteral<CacheProvider<Object>>() {});
+        bind(new TypeLiteral<Cache<Node>>() {})
+                .toProvider(new TypeLiteral<CacheProvider<Node>>() {});
 
         bind(Yaml.class).toInstance(new Yaml());
         bind(ConfigurationLoader.class).toInstance(new ConfigurationLoader());
@@ -64,7 +59,10 @@ public class Module extends AbstractModule {
         bind(StoreService.class).to(StoreServiceImpl.class);
         bind(NodeService.class).to(NodeServiceImpl.class);
         bind(ReplicationService.class).to(ReplicationServiceImpl.class);
-        bind(new TypeLiteral<List<? extends CommandHandler>>() {}).toProvider(CommandHandlerProvider.class);
+        bind(SeedService.class).to(SeedServiceImpl.class);
+
+        bind(new TypeLiteral<List<? extends CommandHandler>>() {})
+                .toProvider(CommandHandlerProvider.class);
 
         bind(TimerTask.class)
                 .annotatedWith(Names.named("coordinatorTimerTask"))

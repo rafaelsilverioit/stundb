@@ -1,24 +1,23 @@
 package com.stundb.server.handlers.store;
 
 import com.stundb.net.core.models.Command;
-import com.stundb.net.core.models.Status;
 import com.stundb.net.core.models.requests.DelRequest;
 import com.stundb.net.core.models.requests.Request;
-import com.stundb.net.core.models.responses.Response;
 import com.stundb.net.server.handlers.CommandHandler;
 import com.stundb.service.StoreService;
+
 import io.netty.channel.Channel;
-import lombok.NoArgsConstructor;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+
+import lombok.NoArgsConstructor;
 
 @Singleton
 @NoArgsConstructor
 public class DelHandler implements CommandHandler {
 
-    @Inject
-    private StoreService store;
+    @Inject private StoreService store;
 
     @Override
     public boolean isSupported(Request request) {

@@ -4,6 +4,7 @@ import com.stundb.core.models.Node;
 import com.stundb.core.models.Status;
 
 import jakarta.inject.Inject;
+
 import java.security.MessageDigest;
 import java.util.Collection;
 import java.util.List;
@@ -12,8 +13,7 @@ import java.util.stream.Stream;
 
 public class NodeUtils {
 
-    @Inject
-    private MessageDigest digester;
+    @Inject private MessageDigest digester;
 
     public long generateUniqueId(String key) {
         digester.reset();
@@ -30,9 +30,12 @@ public class NodeUtils {
         return hash;
     }
 
-    public Stream<Node> filterNodesByState(Collection<Node> nodes, Long uniqueId, List<Status.State> states) {
+    public Stream<Node> filterNodesByState(
+            Collection<Node> nodes, Long uniqueId, List<Status.State> states) {
         return nodes.stream()
-                .filter(node -> !Objects.equals(node.uniqueId(), uniqueId)
-                        && states.contains(node.status().state()));
+                .filter(
+                        node ->
+                                !Objects.equals(node.uniqueId(), uniqueId)
+                                        && states.contains(node.status().state()));
     }
 }

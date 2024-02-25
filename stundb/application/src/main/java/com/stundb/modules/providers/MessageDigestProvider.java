@@ -4,13 +4,13 @@ import com.stundb.core.models.ApplicationConfig;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class MessageDigestProvider implements Provider<MessageDigest> {
 
-    @Inject
-    private ApplicationConfig config;
+    @Inject private ApplicationConfig config;
 
     @Override
     public MessageDigest get() {

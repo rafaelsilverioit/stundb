@@ -4,7 +4,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
+// TODO: make this a record class
 @Data
 @NoArgsConstructor
 public class ApplicationConfig {
@@ -14,7 +16,8 @@ public class ApplicationConfig {
     private Integer port;
     private Capacity capacity;
     private Timeouts timeouts;
-    private TcpClient tcpClient;
+    private Executors executors;
     private String digestAlgorithm;
     private List<String> seeds;
+    private Map<String, Object> backoffSettings;
 }

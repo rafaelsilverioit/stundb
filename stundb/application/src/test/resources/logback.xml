@@ -28,10 +28,10 @@
     </appender>
 
     <logger name="io.netty" level="null" />
-    <logger name="com.stundb" level="INFO" />
-    <logger name="com.stundb.client" level="INFO" />
-    <logger name="com.stundb.core" level="INFO" />
-    <logger name="com.stundb.net" level="INFO" />
+    <logger name="com.stundb" level="DEBUG" />
+    <logger name="com.stundb.client" level="DEBUG" />
+    <logger name="com.stundb.core" level="DEBUG" />
+    <logger name="com.stundb.net" level="DEBUG" />
 
     <root level="INFO">
         <appender-ref ref="ASYNCSTDOUT"/>

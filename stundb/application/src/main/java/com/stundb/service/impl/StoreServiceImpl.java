@@ -18,11 +18,8 @@ import jakarta.inject.Singleton;
 @Singleton
 public class StoreServiceImpl implements StoreService {
 
-    @Inject
-    private Cache<Object> cache;
-
-    @Inject
-    private ReplicationServiceImpl replicationService;
+    @Inject private Cache<Object> cache;
+    @Inject private ReplicationServiceImpl replicationService;
 
     @Loggable
     public void set(SetRequest request) {
