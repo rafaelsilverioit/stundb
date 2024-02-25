@@ -15,6 +15,7 @@ import io.fury.ThreadLocalFury;
 import io.fury.config.Language;
 
 import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+@Singleton
 public class CodecProvider implements Provider<Codec> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
