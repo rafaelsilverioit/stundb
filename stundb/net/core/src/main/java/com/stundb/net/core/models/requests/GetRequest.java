@@ -1,4 +1,3 @@
 package com.stundb.net.core.models.requests;
 
-public record GetRequest(String key) {
-}
+public record GetRequest(String key) {}

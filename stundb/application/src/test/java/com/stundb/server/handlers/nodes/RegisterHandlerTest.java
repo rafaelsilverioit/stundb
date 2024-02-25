@@ -1,9 +1,13 @@
 package com.stundb.server.handlers.nodes;
 
+import static org.mockito.Mockito.verify;
+
 import com.stundb.net.core.models.Command;
 import com.stundb.net.core.models.requests.RegisterRequest;
 import com.stundb.net.core.models.requests.Request;
+
 import lombok.Getter;
+
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -12,14 +16,11 @@ import org.mockito.InjectMocks;
 
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.verify;
-
+@Getter
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RegisterHandlerTest extends NodeHandlerTest<RegisterHandler> {
 
-    @Getter
-    @InjectMocks
-    private RegisterHandler testee;
+    @InjectMocks private RegisterHandler testee;
 
     private Stream<Arguments> test_isSupported() {
         return test_isSupported(Command.REGISTER);
@@ -34,8 +35,7 @@ public class RegisterHandlerTest extends NodeHandlerTest<RegisterHandler> {
     protected Stream<Arguments> test_execute() {
         return Stream.of(
                 Arguments.of(new RegisterRequest("", 8080, 1L)),
-                Arguments.of((RegisterRequest) null)
-        );
+                Arguments.of((RegisterRequest) null));
     }
 
     @ParameterizedTest

@@ -11,18 +11,12 @@ import jakarta.inject.Singleton;
 @Singleton
 public class UniqueIdProvider implements Provider<UniqueId> {
 
-    @Inject
-    private ApplicationConfig config;
-
-    @Inject
-    private NodeUtils utils;
+    @Inject private ApplicationConfig config;
+    @Inject private NodeUtils utils;
 
     @Override
     public UniqueId get() {
         long uniqueId = utils.generateUniqueId(config.getIp() + ":" + config.getPort());
-        return UniqueId.builder()
-                .number(uniqueId)
-                .text(String.valueOf(uniqueId))
-                .build();
+        return new UniqueId(String.valueOf(uniqueId), uniqueId);
     }
 }

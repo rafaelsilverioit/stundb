@@ -11,10 +11,9 @@ import jakarta.inject.Singleton;
 @Singleton
 public class CacheProvider<T> implements Provider<Cache<T>> {
 
-    private Cache<T> cache;
+    @Inject private ApplicationConfig config;
 
-    @Inject
-    private ApplicationConfig config;
+    private Cache<T> cache;
 
     @Override
     public Cache<T> get() {
@@ -23,7 +22,7 @@ public class CacheProvider<T> implements Provider<Cache<T>> {
 
     private Cache<T> getInstance() {
         if (cache == null) {
-            cache = new FIFOCache<>(config.getCapacity().getPublicCache());
+            cache = new FIFOCache<>(config.getCapacity().publicCache());
         }
         return cache;
     }

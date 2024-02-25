@@ -1,10 +1,13 @@
 package com.stundb.server.handlers.store;
 
+import static org.mockito.Mockito.verify;
+
 import com.stundb.net.core.models.Command;
-import com.stundb.net.core.models.requests.DelRequest;
 import com.stundb.net.core.models.requests.GetRequest;
 import com.stundb.net.core.models.requests.Request;
+
 import lombok.Getter;
+
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -13,14 +16,11 @@ import org.mockito.InjectMocks;
 
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.verify;
-
+@Getter
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class GetHandlerTest extends StoreHandlerTest<GetHandler> {
 
-    @Getter
-    @InjectMocks
-    private GetHandler testee;
+    @InjectMocks private GetHandler testee;
 
     private Stream<Arguments> test_isSupported() {
         return test_isSupported(Command.GET);
@@ -28,10 +28,7 @@ public class GetHandlerTest extends StoreHandlerTest<GetHandler> {
 
     @Override
     protected Stream<Arguments> test_execute() {
-        return Stream.of(
-                Arguments.of(new GetRequest("key")),
-                Arguments.of((GetRequest) null)
-        );
+        return Stream.of(Arguments.of(new GetRequest("key")), Arguments.of((GetRequest) null));
     }
 
     @Override

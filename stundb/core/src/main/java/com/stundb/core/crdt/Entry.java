@@ -1,11 +1,8 @@
 package com.stundb.core.crdt;
 
-import lombok.Builder;
-
 import java.time.Instant;
 
-@Builder(toBuilder = true)
-public record Entry (Instant timestamp, String key, Object value) {
+public record Entry(Instant timestamp, String key, Object value) {
 
     @Override
     public boolean equals(Object object) {
@@ -15,6 +12,10 @@ public record Entry (Instant timestamp, String key, Object value) {
             return false;
         }
         var other = (Entry) object;
-        return key.equals(other.key()) && timestamp == other.timestamp();
+        return key.equals(other.key()) && timestamp.equals(other.timestamp());
+    }
+
+    public Entry cloneRemovingValue() {
+        return new Entry(timestamp, key, null);
     }
 }

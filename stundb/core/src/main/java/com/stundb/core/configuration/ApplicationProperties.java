@@ -3,6 +3,7 @@ package com.stundb.core.configuration;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,6 @@ import java.util.regex.Pattern;
 public class ApplicationProperties {
 
     private static final String PROPERTY_PATTERN = "\\$\\{([^}]+)}";
-
     private static final String PLACEHOLDER_PATTERN = "\\$\\{[^}]+}";
 
     private String name;
@@ -23,9 +23,10 @@ public class ApplicationProperties {
     private String port;
     private Map<String, String> capacities;
     private Map<String, String> timeouts;
-    private Map<String, String> tcpClient;
     private String digestAlgorithm;
     private List<String> seeds;
+    @Setter private Map<String, Map<String, Integer>> executors;
+    @Setter private Map<String, Object> backoffSettings;
 
     public void setName(String name) {
         this.name = replaceProperty(name);
@@ -47,11 +48,6 @@ public class ApplicationProperties {
     public void setTimeouts(Map<String, String> timeouts) {
         timeouts.replaceAll((key, value) -> replaceProperty(value));
         this.timeouts = timeouts;
-    }
-
-    public void setTcpClient(Map<String, String> tcpClient) {
-        tcpClient.replaceAll((key, value) -> replaceProperty(value));
-        this.tcpClient = tcpClient;
     }
 
     public void setDigestAlgorithm(String digestAlgorithm) {
@@ -82,4 +78,3 @@ public class ApplicationProperties {
         return string.replaceAll(PLACEHOLDER_PATTERN, "");
     }
 }
-

@@ -5,5 +5,4 @@ import com.stundb.net.core.models.requests.CRDTRequest;
 
 import java.util.List;
 
-public record RegisterResponse(List<Node> nodes, CRDTRequest state) {
-}
+public record RegisterResponse(List<Node> nodes, CRDTRequest state) {}
