@@ -1,7 +1,6 @@
 package com.stundb;
 
 import com.google.inject.Guice;
-import com.stundb.modules.Module;
 import com.stundb.net.client.modules.ClientModule;
 import com.stundb.net.core.models.Command;
 import com.stundb.net.core.models.requests.RegisterRequest;
