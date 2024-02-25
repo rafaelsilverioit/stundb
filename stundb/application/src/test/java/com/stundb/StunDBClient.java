@@ -15,7 +15,7 @@ public class StunDBClient {
 
     @SuppressWarnings("CallToPrintStackTrace")
     public static void main(String[] args) {
-        var guice = Guice.createInjector(new Module(), new ClientModule());
+        var guice = Guice.createInjector(new ClientModule());
         var executor = guice.getInstance(ExecutorService.class);
         var client = guice.getInstance(com.stundb.net.client.StunDBClient.class);
 
