@@ -11,7 +11,10 @@ public class RequestLogger implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        logger.info("[" + invocation.getMethod().getDeclaringClass().getSimpleName() + "::" + invocation.getMethod().getName() + "] Request received");
+        logger.info(
+                "[{}::{}] Request received",
+                invocation.getMethod().getDeclaringClass().getSimpleName(),
+                invocation.getMethod().getName());
         return invocation.proceed();
     }
 }

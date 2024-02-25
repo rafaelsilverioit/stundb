@@ -23,5 +23,10 @@
             <artifactId>netty-all</artifactId>
             <version>4.1.106.Final</version>
         </dependency>
+        <dependency>
+            <groupId>org.furyio</groupId>
+            <artifactId>fury-core</artifactId>
+            <version>0.4.1</version>
+        </dependency>
     </dependencies>
 </project>

@@ -1,7 +1,6 @@
 package com.stundb;
 
 import com.google.inject.Guice;
-import com.stundb.net.client.modules.ClientModule;
 import com.stundb.modules.Module;
 import com.stundb.server.TcpServerImpl;
 

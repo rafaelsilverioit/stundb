@@ -1,5 +1,9 @@
 package com.stundb.service.impl;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 import com.stundb.BaseTest;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.models.Node;
@@ -12,50 +16,33 @@ import com.stundb.net.core.models.responses.Response;
 import com.stundb.service.ElectionService;
 import com.stundb.service.ReplicationService;
 import com.stundb.utils.NodeUtils;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.*;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 @org.junit.jupiter.api.TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class NodeServiceImplTest extends BaseTest {
 
-    @Captor
-    private ArgumentCaptor<Node> captor;
-
-    @Mock
-    private StunDBClient client;
-    @Mock
-    private Cache<Node> internalCache;
-    @Mock
-    private ReplicationService replicationService;
-    @Mock
-    private ElectionService election;
-    @Mock
-    private TimerTask coordinatorTimerTask;
-    @Mock
-    private UniqueId uniqueId;
-    @Mock
-    private NodeUtils utils;
-    @Mock
-    private Timer timer;
-
-    @InjectMocks
-    private NodeServiceImpl testee;
+    @Captor private ArgumentCaptor<Node> captor;
+    @Mock private StunDBClient client;
+    @Mock private Cache<Node> internalCache;
+    @Mock private ReplicationService replicationService;
+    @Mock private ElectionService election;
+    @Mock private TimerTask coordinatorTimerTask;
+    @Mock private UniqueId uniqueId;
+    @Mock private NodeUtils utils;
+    @Mock private Timer timer;
+    @InjectMocks private NodeServiceImpl testee;
 
     private Stream<Arguments> electedArguments() {
         return Stream.of(
@@ -65,9 +52,7 @@ public class NodeServiceImplTest extends BaseTest {
 
     private Stream<Arguments> registerArguments() {
         var node = buildNode(Status.State.RUNNING, 321L, false);
-        return Stream.of(
-                Arguments.of(List.of()),
-                Arguments.of(List.of(node)));
+        return Stream.of(Arguments.of(List.of()), Arguments.of(List.of(node)));
     }
 
     @Test
@@ -187,13 +172,21 @@ public class NodeServiceImplTest extends BaseTest {
     void register_should_register_new_cluster_member() {
         var node = buildNode(Status.State.RUNNING, 321L, false);
         var currentLeader = buildNode(Status.State.RUNNING);
-        var request = Request.buildRequest(Command.REGISTER, new RegisterRequest(node.ip(), node.port(), node.uniqueId()));
+        var request =
+                Request.buildRequest(
+                        Command.REGISTER,
+                        new RegisterRequest(node.ip(), node.port(), node.uniqueId()));
 
         when(internalCache.getAll()).thenReturn(List.of(currentLeader));
         when(utils.filterNodesByState(any(), any(), any())).thenReturn(Stream.of(currentLeader));
         when(internalCache.put(any(), any())).thenReturn(true).thenReturn(true);
-        when(client.requestAsync(any(), any(), any())).thenReturn(CompletableFuture.completedFuture(Response.buildResponse(request, com.stundb.net.core.models.Status.OK, null)));
-        when(replicationService.generateCrdtRequest()).thenReturn(new CRDTRequest(List.of(), List.of()));
+        when(client.requestAsync(any(), any(), any()))
+                .thenReturn(
+                        CompletableFuture.completedFuture(
+                                Response.buildResponse(
+                                        request, com.stundb.net.core.models.Status.OK, null)));
+        when(replicationService.generateCrdtRequest())
+                .thenReturn(new CRDTRequest(List.of(), List.of()));
 
         testee.register(request);
 
@@ -209,14 +202,19 @@ public class NodeServiceImplTest extends BaseTest {
 
     @ParameterizedTest
     @MethodSource("registerArguments")
-    void register_should_register_new_cluster_member_even_when_node_is_alone_in_the_cluster(List<Node> nodes) {
+    void register_should_register_new_cluster_member_even_when_node_is_alone_in_the_cluster(
+            List<Node> nodes) {
         var node = buildNode(Status.State.RUNNING, 321L, false);
-        var request = Request.buildRequest(Command.REGISTER, new RegisterRequest(node.ip(), node.port(), node.uniqueId()));
+        var request =
+                Request.buildRequest(
+                        Command.REGISTER,
+                        new RegisterRequest(node.ip(), node.port(), node.uniqueId()));
 
         when(internalCache.getAll()).thenReturn(nodes);
         when(utils.filterNodesByState(any(), any(), any())).thenReturn(nodes.stream());
         when(internalCache.put(any(), any())).thenReturn(true).thenReturn(true);
-        when(replicationService.generateCrdtRequest()).thenReturn(new CRDTRequest(List.of(), List.of()));
+        when(replicationService.generateCrdtRequest())
+                .thenReturn(new CRDTRequest(List.of(), List.of()));
 
         testee.register(request);
 
@@ -234,14 +232,18 @@ public class NodeServiceImplTest extends BaseTest {
     void register_should_mark_seed_node_as_failing_when_communication_fails() {
         var node = buildNode(Status.State.RUNNING, 321L, false);
         var currentLeader = buildNode(Status.State.RUNNING);
-        var request = Request.buildRequest(Command.REGISTER, new RegisterRequest(node.ip(), node.port(), node.uniqueId()));
+        var request =
+                Request.buildRequest(
+                        Command.REGISTER,
+                        new RegisterRequest(node.ip(), node.port(), node.uniqueId()));
 
         when(internalCache.getAll()).thenReturn(List.of(currentLeader));
         when(utils.filterNodesByState(any(), any(), any())).thenReturn(Stream.of(currentLeader));
         when(internalCache.put(any(), any())).thenReturn(true).thenReturn(true);
         when(client.requestAsync(any(), any(), any()))
                 .thenReturn(CompletableFuture.failedFuture(new Exception("dummy exception")));
-        when(replicationService.generateCrdtRequest()).thenReturn(new CRDTRequest(List.of(), List.of()));
+        when(replicationService.generateCrdtRequest())
+                .thenReturn(new CRDTRequest(List.of(), List.of()));
 
         testee.register(request);
 

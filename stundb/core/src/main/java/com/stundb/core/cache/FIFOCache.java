@@ -1,9 +1,9 @@
 package com.stundb.core.cache;
 
+import static java.util.Optional.ofNullable;
+
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import static java.util.Optional.ofNullable;
 
 public record FIFOCache<T>(Integer capacity, Map<String, T> cache, ReentrantReadWriteLock lock)
         implements Cache<T> {
@@ -14,7 +14,7 @@ public record FIFOCache<T>(Integer capacity, Map<String, T> cache, ReentrantRead
 
     @Override
     public Boolean put(String key, T value) {
-        if(hasReachedCapacityThreshold(key)) {
+        if (hasReachedCapacityThreshold(key)) {
             var entry = cache.entrySet().iterator().next();
             del(entry.getKey());
         }

@@ -1,11 +1,15 @@
 package com.stundb.service.impl;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import com.stundb.BaseTest;
 import com.stundb.core.cache.Cache;
 import com.stundb.net.core.models.requests.DelRequest;
 import com.stundb.net.core.models.requests.ExistsRequest;
 import com.stundb.net.core.models.requests.GetRequest;
 import com.stundb.net.core.models.requests.SetRequest;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,13 +18,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class StoreServiceImplTest extends BaseTest {
@@ -28,18 +27,13 @@ class StoreServiceImplTest extends BaseTest {
     private static final String KEY = "key";
     private static final String VALUE = "value";
 
-    @Mock
-    private Cache<Object> cache;
-    @Mock
-    private ReplicationServiceImpl replicationService;
-    @InjectMocks
-    private StoreServiceImpl testee;
+    @Mock private Cache<Object> cache;
+    @Mock private ReplicationServiceImpl replicationService;
+    @InjectMocks private StoreServiceImpl testee;
 
     private Stream<Arguments> existsArguments() {
         return Stream.of(
-                Arguments.of(Optional.empty(), false),
-                Arguments.of(Optional.of(VALUE), true)
-        );
+                Arguments.of(Optional.empty(), false), Arguments.of(Optional.of(VALUE), true));
     }
 
     @Test
@@ -88,7 +82,9 @@ class StoreServiceImplTest extends BaseTest {
 
     @ParameterizedTest
     @MethodSource("existsArguments")
-    void exists_should_tell_if_a_given_key_is_stored_in_the_cache(@SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Object> value, boolean expected) {
+    void exists_should_tell_if_a_given_key_is_stored_in_the_cache(
+            @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Object> value,
+            boolean expected) {
         when(cache.get(KEY)).thenReturn(value);
 
         var response = testee.exists(new ExistsRequest(KEY));

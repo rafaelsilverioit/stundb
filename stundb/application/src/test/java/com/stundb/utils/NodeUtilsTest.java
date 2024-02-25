@@ -1,8 +1,12 @@
 package com.stundb.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+
 import com.stundb.BaseTest;
 import com.stundb.core.models.Node;
 import com.stundb.core.models.Status;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
@@ -11,24 +15,15 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.verify;
-
 public class NodeUtilsTest extends BaseTest {
 
     private static final long NODE_UNIQUE_ID = 123456L;
-
     private static final long ANOTHER_NODE_UNIQUE_ID = 654321L;
 
-    @Spy
-    private MessageDigest digester = MessageDigest.getInstance("SHA-256");
+    @Spy private MessageDigest digester = MessageDigest.getInstance("SHA-256");
+    @InjectMocks private NodeUtils testee;
 
-    @InjectMocks
-    private NodeUtils testee;
-
-    public NodeUtilsTest() throws NoSuchAlgorithmException {
-    }
+    public NodeUtilsTest() throws NoSuchAlgorithmException {}
 
     @Test
     void test_generateUniqueId() {
@@ -46,7 +41,12 @@ public class NodeUtilsTest extends BaseTest {
     void test_filterNodesByState() {
         var node = aNode(NODE_UNIQUE_ID, Status.State.RUNNING);
         var anotherNode = aNode(ANOTHER_NODE_UNIQUE_ID, Status.State.RUNNING);
-        var filtered = testee.filterNodesByState(List.of(node, anotherNode), NODE_UNIQUE_ID, List.of(Status.State.RUNNING)).toList();
+        var filtered =
+                testee.filterNodesByState(
+                                List.of(node, anotherNode),
+                                NODE_UNIQUE_ID,
+                                List.of(Status.State.RUNNING))
+                        .toList();
 
         assertEquals(filtered.size(), 1);
         assertEquals(filtered.get(0), anotherNode);
@@ -56,7 +56,12 @@ public class NodeUtilsTest extends BaseTest {
     void test_filterNodesByState_when_other_nodes_are_failing() {
         var node = aNode(NODE_UNIQUE_ID, Status.State.RUNNING);
         var anotherNode = aNode(ANOTHER_NODE_UNIQUE_ID, Status.State.FAILING);
-        var filtered = testee.filterNodesByState(List.of(node, anotherNode), NODE_UNIQUE_ID, List.of(Status.State.RUNNING)).toList();
+        var filtered =
+                testee.filterNodesByState(
+                                List.of(node, anotherNode),
+                                NODE_UNIQUE_ID,
+                                List.of(Status.State.RUNNING))
+                        .toList();
 
         assertEquals(filtered.size(), 0);
     }
@@ -64,14 +69,19 @@ public class NodeUtilsTest extends BaseTest {
     @Test
     void test_filterNodesByState_when_no_other_nodes_are_found() {
         var node = aNode(NODE_UNIQUE_ID, Status.State.RUNNING);
-        var filtered = testee.filterNodesByState(List.of(node), NODE_UNIQUE_ID, List.of(Status.State.RUNNING)).toList();
+        var filtered =
+                testee.filterNodesByState(
+                                List.of(node), NODE_UNIQUE_ID, List.of(Status.State.RUNNING))
+                        .toList();
 
         assertEquals(filtered.size(), 0);
     }
 
     @Test
     void test_filterNodesByState_when_nodes_is_empty() {
-        var filtered = testee.filterNodesByState(List.of(), NODE_UNIQUE_ID, List.of(Status.State.RUNNING)).toList();
+        var filtered =
+                testee.filterNodesByState(List.of(), NODE_UNIQUE_ID, List.of(Status.State.RUNNING))
+                        .toList();
 
         assertEquals(filtered.size(), 0);
     }
