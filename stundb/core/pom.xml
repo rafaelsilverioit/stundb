@@ -12,16 +12,4 @@
     <name>stundb - parent - core</name>
     <description>StunDB - Core</description>
     <packaging>jar</packaging>
-    <dependencies>
-        <dependency>
-            <groupId>com.esotericsoftware</groupId>
-            <artifactId>kryo</artifactId>
-            <version>5.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.esotericsoftware</groupId>
-            <artifactId>kryo-shaded</artifactId>
-            <version>4.0.3</version>
-        </dependency>
-    </dependencies>
 </project>

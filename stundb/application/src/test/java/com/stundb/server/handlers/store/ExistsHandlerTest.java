@@ -1,10 +1,13 @@
 package com.stundb.server.handlers.store;
 
+import static org.mockito.Mockito.verify;
+
 import com.stundb.net.core.models.Command;
 import com.stundb.net.core.models.requests.ExistsRequest;
-import com.stundb.net.core.models.requests.GetRequest;
 import com.stundb.net.core.models.requests.Request;
+
 import lombok.Getter;
+
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -13,14 +16,11 @@ import org.mockito.InjectMocks;
 
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.verify;
-
+@Getter
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ExistsHandlerTest extends StoreHandlerTest<ExistsHandler> {
 
-    @Getter
-    @InjectMocks
-    private ExistsHandler testee;
+    @InjectMocks private ExistsHandler testee;
 
     private Stream<Arguments> test_isSupported() {
         return test_isSupported(Command.EXISTS);
@@ -29,9 +29,7 @@ public class ExistsHandlerTest extends StoreHandlerTest<ExistsHandler> {
     @Override
     protected Stream<Arguments> test_execute() {
         return Stream.of(
-                Arguments.of(new ExistsRequest("key")),
-                Arguments.of((ExistsRequest) null)
-        );
+                Arguments.of(new ExistsRequest("key")), Arguments.of((ExistsRequest) null));
     }
 
     @Override

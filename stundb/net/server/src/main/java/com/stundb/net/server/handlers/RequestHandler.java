@@ -2,8 +2,11 @@ package com.stundb.net.server.handlers;
 
 import com.stundb.core.logging.Loggable;
 import com.stundb.net.core.models.requests.Request;
+
 import io.netty.channel.*;
+
 import lombok.AllArgsConstructor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +19,6 @@ public class RequestHandler extends SimpleChannelInboundHandler<Request> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private List<? extends CommandHandler> handlers;
-
     private DefaultCommandHandler defaultCommandHandler;
 
     @Loggable
@@ -44,15 +46,18 @@ public class RequestHandler extends SimpleChannelInboundHandler<Request> {
 
     private void closeChannel(Channel channel) {
         logger.debug("----> [" + channel.id() + "] reply sent!");
-        channel.close().addListener((ChannelFutureListener) future -> {
-            future.awaitUninterruptibly();
-            logger.debug("----> [" + channel.id() + "] disconnected");
-        });
+        channel.close()
+                .addListener(
+                        (ChannelFutureListener)
+                                future -> {
+                                    future.awaitUninterruptibly();
+                                    logger.debug("----> [" + channel.id() + "] disconnected");
+                                });
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
+        logger.warn(cause.getMessage(), cause);
         ctx.close();
     }
 }

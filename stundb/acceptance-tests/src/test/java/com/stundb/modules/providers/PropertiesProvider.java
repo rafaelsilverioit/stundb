@@ -1,9 +1,10 @@
 package com.stundb.modules.providers;
 
-import lombok.SneakyThrows;
-
 import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
+
+import lombok.SneakyThrows;
+
 import java.io.FileInputStream;
 import java.util.Properties;
 

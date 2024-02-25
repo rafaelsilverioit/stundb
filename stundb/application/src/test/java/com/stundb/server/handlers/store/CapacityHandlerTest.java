@@ -1,8 +1,12 @@
 package com.stundb.server.handlers.store;
 
+import static org.mockito.Mockito.verify;
+
 import com.stundb.net.core.models.Command;
 import com.stundb.net.core.models.requests.Request;
+
 import lombok.Getter;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,20 +16,14 @@ import org.mockito.InjectMocks;
 
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.verify;
-
+@Getter
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CapacityHandlerTest extends StoreHandlerTest<CapacityHandler> {
 
-    @Getter
-    @InjectMocks
-    private CapacityHandler testee;
+    @InjectMocks private CapacityHandler testee;
 
     private static Stream<Arguments> test_isSupported() {
-        return Stream.of(
-                Arguments.of(Command.CAPACITY, true),
-                Arguments.of(null, false)
-        );
+        return Stream.of(Arguments.of(Command.CAPACITY, true), Arguments.of(null, false));
     }
 
     @Override

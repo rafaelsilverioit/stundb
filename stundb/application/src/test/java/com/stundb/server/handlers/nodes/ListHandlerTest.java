@@ -1,9 +1,12 @@
 package com.stundb.server.handlers.nodes;
 
+import static org.mockito.Mockito.verify;
+
 import com.stundb.net.core.models.Command;
-import com.stundb.net.core.models.requests.DeregisterRequest;
 import com.stundb.net.core.models.requests.Request;
+
 import lombok.Getter;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,14 +16,11 @@ import org.mockito.InjectMocks;
 
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.verify;
-
+@Getter
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ListHandlerTest extends NodeHandlerTest<ListHandler> {
 
-    @Getter
-    @InjectMocks
-    private ListHandler testee;
+    @InjectMocks private ListHandler testee;
 
     private Stream<Arguments> test_isSupported() {
         return test_isSupported(Command.LIST);

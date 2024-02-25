@@ -1,7 +1,6 @@
 package com.stundb.core.crdt;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
 import java.util.Set;
@@ -10,11 +9,9 @@ import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
-@Builder(toBuilder = true)
 public class LastWriterWinsSet implements CRDT<LastWriterWinsSet> {
 
     private final Set<Entry> add;
-
     private final Set<Entry> remove;
 
     public LastWriterWinsSet() {

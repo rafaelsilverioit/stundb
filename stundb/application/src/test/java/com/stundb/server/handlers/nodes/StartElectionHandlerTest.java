@@ -1,8 +1,12 @@
 package com.stundb.server.handlers.nodes;
 
+import static org.mockito.Mockito.verify;
+
 import com.stundb.net.core.models.Command;
 import com.stundb.net.core.models.requests.Request;
+
 import lombok.Getter;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,14 +16,11 @@ import org.mockito.InjectMocks;
 
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.verify;
-
+@Getter
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class StartElectionHandlerTest extends NodeHandlerTest<StartElectionHandler> {
 
-    @Getter
-    @InjectMocks
-    private StartElectionHandler testee;
+    @InjectMocks private StartElectionHandler testee;
 
     private Stream<Arguments> test_isSupported() {
         return test_isSupported(Command.START_ELECTION);

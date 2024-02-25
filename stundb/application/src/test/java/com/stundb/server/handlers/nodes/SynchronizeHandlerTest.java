@@ -1,10 +1,13 @@
 package com.stundb.server.handlers.nodes;
 
+import static org.mockito.Mockito.verify;
+
 import com.stundb.net.core.models.Command;
 import com.stundb.net.core.models.requests.CRDTRequest;
-import com.stundb.net.core.models.requests.RegisterRequest;
 import com.stundb.net.core.models.requests.Request;
+
 import lombok.Getter;
+
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -14,14 +17,11 @@ import org.mockito.InjectMocks;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.verify;
-
+@Getter
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SynchronizeHandlerTest extends NodeHandlerTest<SynchronizeHandler> {
 
-    @Getter
-    @InjectMocks
-    private SynchronizeHandler testee;
+    @InjectMocks private SynchronizeHandler testee;
 
     private Stream<Arguments> test_isSupported() {
         return test_isSupported(Command.SYNCHRONIZE);
@@ -36,8 +36,7 @@ public class SynchronizeHandlerTest extends NodeHandlerTest<SynchronizeHandler> 
     protected Stream<Arguments> test_execute() {
         return Stream.of(
                 Arguments.of(new CRDTRequest(List.of(), List.of())),
-                Arguments.of((CRDTRequest) null)
-        );
+                Arguments.of((CRDTRequest) null));
     }
 
     @ParameterizedTest
