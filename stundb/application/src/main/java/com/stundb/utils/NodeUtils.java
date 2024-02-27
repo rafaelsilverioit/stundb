@@ -1,7 +1,7 @@
 package com.stundb.utils;
 
-import com.stundb.core.models.Node;
-import com.stundb.core.models.Status;
+import com.stundb.net.core.models.Node;
+import com.stundb.net.core.models.NodeStatus;
 
 import jakarta.inject.Inject;
 
@@ -31,7 +31,7 @@ public class NodeUtils {
     }
 
     public Stream<Node> filterNodesByState(
-            Collection<Node> nodes, Long uniqueId, List<Status.State> states) {
+            Collection<Node> nodes, Long uniqueId, List<NodeStatus.State> states) {
         return nodes.stream()
                 .filter(
                         node ->

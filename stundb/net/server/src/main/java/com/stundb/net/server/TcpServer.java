@@ -1,14 +1,14 @@
 package com.stundb.net.server;
 
-import static com.stundb.core.models.Status.State.RUNNING;
+import static com.stundb.net.core.models.NodeStatus.State.RUNNING;
 
+import com.stundb.api.models.ApplicationConfig;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.logging.Loggable;
-import com.stundb.core.models.ApplicationConfig;
-import com.stundb.core.models.Node;
 import com.stundb.core.models.UniqueId;
 import com.stundb.net.client.StunDBClient;
 import com.stundb.net.core.codecs.Codec;
+import com.stundb.net.core.models.Node;
 import com.stundb.net.core.models.requests.CRDTRequest;
 import com.stundb.net.server.codecs.ObjectDecoder;
 import com.stundb.net.server.codecs.ObjectEncoder;
@@ -119,7 +119,7 @@ public abstract class TcpServer {
                         config.getPort(),
                         uniqueId.number(),
                         false,
-                        com.stundb.core.models.Status.create(RUNNING));
+                        com.stundb.net.core.models.NodeStatus.create(RUNNING));
         internalCache.put(uniqueId.text(), myself);
 
         onStart();

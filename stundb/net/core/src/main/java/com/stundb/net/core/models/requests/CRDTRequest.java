@@ -1,6 +1,6 @@
 package com.stundb.net.core.models.requests;
 
-import com.stundb.core.crdt.Entry;
+import com.stundb.api.crdt.Entry;
 
 import java.util.Collection;
 

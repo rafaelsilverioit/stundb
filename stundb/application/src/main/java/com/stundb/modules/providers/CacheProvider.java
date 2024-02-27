@@ -1,8 +1,8 @@
 package com.stundb.modules.providers;
 
+import com.stundb.api.models.ApplicationConfig;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.cache.FIFOCache;
-import com.stundb.core.models.ApplicationConfig;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;

@@ -1,7 +1,7 @@
-package com.stundb.core.configuration;
+package com.stundb.api.configuration;
 
-import com.stundb.core.mappers.ApplicationConfigMapper;
-import com.stundb.core.models.ApplicationConfig;
+import com.stundb.api.mappers.ApplicationConfigMapper;
+import com.stundb.api.models.ApplicationConfig;
 
 import jakarta.inject.Inject;
 

@@ -15,6 +15,7 @@
 - Move from Kryo to Apache Fury
 
 ### Doing
+- Create a Spring Boot app to observe nodes and expose actions through a REST API
 - TESTS (unit & acceptance)!
 
 ### TODO
@@ -24,5 +25,4 @@
 - Authentication
 - Support multiple cache eviction policies
 - Change how synchronization works today
-- Create a Spring Boot app to observe nodes and expose data through a REST API
 - Create a node gateway app to receive requests from clients, and load balance requests between nodes

@@ -1,6 +1,6 @@
 package com.stundb.service;
 
-import com.stundb.core.models.Node;
+import com.stundb.net.core.models.Node;
 import com.stundb.net.core.models.requests.CRDTRequest;
 import com.stundb.net.core.models.requests.DeregisterRequest;
 import com.stundb.net.core.models.requests.ElectedRequest;

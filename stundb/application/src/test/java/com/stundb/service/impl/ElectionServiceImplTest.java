@@ -5,13 +5,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.stundb.BaseTest;
+import com.stundb.api.models.ApplicationConfig;
 import com.stundb.core.cache.Cache;
-import com.stundb.core.models.ApplicationConfig;
-import com.stundb.core.models.Node;
-import com.stundb.core.models.Status;
 import com.stundb.core.models.UniqueId;
 import com.stundb.net.client.StunDBClient;
 import com.stundb.net.core.models.Command;
+import com.stundb.net.core.models.Node;
+import com.stundb.net.core.models.NodeStatus;
 import com.stundb.net.core.models.requests.ElectedRequest;
 import com.stundb.net.core.models.requests.Request;
 import com.stundb.net.core.models.responses.Response;
@@ -133,7 +133,7 @@ class ElectionServiceImplTest extends BaseTest {
 
         assertTrue(electionStarted.get());
         assertNull(requestCaptor.getValue().payload());
-        assertEquals(nodeCaptor.getValue().status().state(), Status.State.FAILING);
+        assertEquals(nodeCaptor.getValue().status().state(), NodeStatus.State.FAILING);
     }
 
     @Test
@@ -156,7 +156,7 @@ class ElectionServiceImplTest extends BaseTest {
         assertNotNull(payload);
         assertTrue(payload.leader().leader());
         assertEquals(payload.leader().uniqueId(), NODE_UNIQUE_ID);
-        assertEquals(nodeCaptor.getAllValues().get(0).status().state(), Status.State.FAILING);
+        assertEquals(nodeCaptor.getAllValues().get(0).status().state(), NodeStatus.State.FAILING);
         assertTrue(nodeCaptor.getAllValues().get(1).leader());
     }
 
@@ -238,7 +238,7 @@ class ElectionServiceImplTest extends BaseTest {
             throws NoSuchFieldException, IllegalAccessException {
         var electionStarted = (AtomicBoolean) getElectionStartedField().get(testee);
         var node = aNode(NODE_UNIQUE_ID, false);
-        var anotherNode = aNode(ANOTHER_NODE_ID, false, Status.State.FAILING);
+        var anotherNode = aNode(ANOTHER_NODE_ID, false, NodeStatus.State.FAILING);
 
         setUp(List.of(node, anotherNode), aResponse(Command.ELECTED, false));
 
@@ -262,7 +262,7 @@ class ElectionServiceImplTest extends BaseTest {
                     throws NoSuchFieldException, IllegalAccessException {
         var electionStarted = (AtomicBoolean) getElectionStartedField().get(testee);
         var node = aNode(NODE_UNIQUE_ID, false);
-        var anotherNode = aNode(ANOTHER_NODE_ID, false, Status.State.RUNNING);
+        var anotherNode = aNode(ANOTHER_NODE_ID, false, NodeStatus.State.RUNNING);
 
         setUpWithoutMockingInternalCacheGetAll(
                 List.of(node, anotherNode), aResponse(Command.ELECTED, false));
@@ -291,11 +291,11 @@ class ElectionServiceImplTest extends BaseTest {
     }
 
     private Node aNode(Long uniqueId, Boolean leader) {
-        return aNode(uniqueId, leader, Status.State.RUNNING);
+        return aNode(uniqueId, leader, NodeStatus.State.RUNNING);
     }
 
-    private Node aNode(Long uniqueId, Boolean leader, Status.State state) {
-        return new Node(NODE_IP, NODE_PORT, uniqueId, leader, Status.create(state));
+    private Node aNode(Long uniqueId, Boolean leader, NodeStatus.State state) {
+        return new Node(NODE_IP, NODE_PORT, uniqueId, leader, NodeStatus.create(state));
     }
 
     private void setUp(List<Node> internalCacheNodes, CompletableFuture<Response> clientResponse) {

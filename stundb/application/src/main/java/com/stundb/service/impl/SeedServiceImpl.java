@@ -2,13 +2,13 @@ package com.stundb.service.impl;
 
 import static java.lang.String.format;
 
+import com.stundb.api.models.ApplicationConfig;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.logging.Loggable;
-import com.stundb.core.models.ApplicationConfig;
-import com.stundb.core.models.Node;
 import com.stundb.core.models.UniqueId;
 import com.stundb.net.client.StunDBClient;
 import com.stundb.net.core.models.Command;
+import com.stundb.net.core.models.Node;
 import com.stundb.net.core.models.Status;
 import com.stundb.net.core.models.requests.RegisterRequest;
 import com.stundb.net.core.models.requests.Request;
