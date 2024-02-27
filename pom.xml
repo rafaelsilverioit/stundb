@@ -17,6 +17,7 @@
         <surefire.version>3.2.5</surefire.version>
         <lombok.version>1.18.30</lombok.version>
         <jacoco.version>0.8.11</jacoco.version>
+        <maven.compiler.plugin.version>3.12.1</maven.compiler.plugin.version>
         <skipTests>false</skipTests>
     </properties>
     <modules>
@@ -131,7 +132,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.12.1</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <source>17</source> <!-- depending on your project -->
                     <target>17</target> <!-- depending on your project -->
