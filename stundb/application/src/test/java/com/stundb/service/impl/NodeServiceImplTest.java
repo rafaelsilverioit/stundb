@@ -6,11 +6,11 @@ import static org.mockito.Mockito.*;
 
 import com.stundb.BaseTest;
 import com.stundb.core.cache.Cache;
-import com.stundb.core.models.Node;
-import com.stundb.core.models.Status;
 import com.stundb.core.models.UniqueId;
 import com.stundb.net.client.StunDBClient;
 import com.stundb.net.core.models.Command;
+import com.stundb.net.core.models.Node;
+import com.stundb.net.core.models.NodeStatus;
 import com.stundb.net.core.models.requests.*;
 import com.stundb.net.core.models.responses.Response;
 import com.stundb.service.ElectionService;
@@ -47,11 +47,11 @@ public class NodeServiceImplTest extends BaseTest {
     private Stream<Arguments> electedArguments() {
         return Stream.of(
                 Arguments.of(Stream.empty()),
-                Arguments.of(Stream.of(buildNode(Status.State.RUNNING, 321L, false))));
+                Arguments.of(Stream.of(buildNode(NodeStatus.State.RUNNING, 321L, false))));
     }
 
     private Stream<Arguments> registerArguments() {
-        var node = buildNode(Status.State.RUNNING, 321L, false);
+        var node = buildNode(NodeStatus.State.RUNNING, 321L, false);
         return Stream.of(Arguments.of(List.of()), Arguments.of(List.of(node)));
     }
 
@@ -103,21 +103,21 @@ public class NodeServiceImplTest extends BaseTest {
 
     @Test
     void trackNodeFailure_should_do_nothing_when_node_is_disabled() {
-        testee.trackNodeFailure(buildNode(Status.State.DISABLED));
+        testee.trackNodeFailure(buildNode(NodeStatus.State.DISABLED));
 
         verify(internalCache, never()).put(any(), any());
     }
 
     @Test
     void trackNodeFailure_should_do_nothing_when_node_has_not_failed_before() {
-        testee.trackNodeFailure(buildNode(Status.State.RUNNING));
+        testee.trackNodeFailure(buildNode(NodeStatus.State.RUNNING));
 
         verify(internalCache, never()).put(any(), any());
     }
 
     @Test
     void trackNodeFailure_should_update_node_status_when_node_has_failed_before() {
-        var node = buildNode(Status.State.RUNNING);
+        var node = buildNode(NodeStatus.State.RUNNING);
         testee.trackNodeFailure(node);
         testee.trackNodeFailure(node);
         testee.trackNodeFailure(node);
@@ -127,13 +127,13 @@ public class NodeServiceImplTest extends BaseTest {
 
         assertEquals(node.uniqueId(), captor.getValue().uniqueId());
         assertNotEquals(node.status(), captor.getValue().status());
-        assertEquals(Status.State.FAILING, captor.getValue().status().state());
+        assertEquals(NodeStatus.State.FAILING, captor.getValue().status().state());
     }
 
     @Test
     void elected_should_update_cache_to_identify_new_cluster_leader() {
-        var node = buildNode(Status.State.RUNNING);
-        var currentLeader = buildNode(Status.State.RUNNING, 321L, true);
+        var node = buildNode(NodeStatus.State.RUNNING);
+        var currentLeader = buildNode(NodeStatus.State.RUNNING, 321L, true);
 
         when(utils.filterNodesByState(any(), any(), any())).thenReturn(Stream.of(currentLeader));
         when(internalCache.put(any(), any())).thenReturn(true).thenReturn(true);
@@ -153,7 +153,7 @@ public class NodeServiceImplTest extends BaseTest {
     @ParameterizedTest
     @MethodSource("electedArguments")
     void elected_should_update_cache_even_when_no_current_leader_is_found(Stream<Node> nodes) {
-        var node = buildNode(Status.State.RUNNING);
+        var node = buildNode(NodeStatus.State.RUNNING);
 
         when(utils.filterNodesByState(any(), any(), any())).thenReturn(nodes);
         when(internalCache.put(any(), any())).thenReturn(true).thenReturn(true);
@@ -170,8 +170,8 @@ public class NodeServiceImplTest extends BaseTest {
 
     @Test
     void register_should_register_new_cluster_member() {
-        var node = buildNode(Status.State.RUNNING, 321L, false);
-        var currentLeader = buildNode(Status.State.RUNNING);
+        var node = buildNode(NodeStatus.State.RUNNING, 321L, false);
+        var currentLeader = buildNode(NodeStatus.State.RUNNING);
         var request =
                 Request.buildRequest(
                         Command.REGISTER,
@@ -204,7 +204,7 @@ public class NodeServiceImplTest extends BaseTest {
     @MethodSource("registerArguments")
     void register_should_register_new_cluster_member_even_when_node_is_alone_in_the_cluster(
             List<Node> nodes) {
-        var node = buildNode(Status.State.RUNNING, 321L, false);
+        var node = buildNode(NodeStatus.State.RUNNING, 321L, false);
         var request =
                 Request.buildRequest(
                         Command.REGISTER,
@@ -230,8 +230,8 @@ public class NodeServiceImplTest extends BaseTest {
 
     @Test
     void register_should_mark_seed_node_as_failing_when_communication_fails() {
-        var node = buildNode(Status.State.RUNNING, 321L, false);
-        var currentLeader = buildNode(Status.State.RUNNING);
+        var node = buildNode(NodeStatus.State.RUNNING, 321L, false);
+        var currentLeader = buildNode(NodeStatus.State.RUNNING);
         var request =
                 Request.buildRequest(
                         Command.REGISTER,
@@ -256,14 +256,14 @@ public class NodeServiceImplTest extends BaseTest {
 
         assertEquals(node.uniqueId(), captor.getAllValues().get(0).uniqueId());
         assertEquals(currentLeader.uniqueId(), captor.getAllValues().get(1).uniqueId());
-        assertEquals(Status.State.FAILING, captor.getAllValues().get(1).status().state());
+        assertEquals(NodeStatus.State.FAILING, captor.getAllValues().get(1).status().state());
     }
 
-    private Node buildNode(Status.State state) {
+    private Node buildNode(NodeStatus.State state) {
         return buildNode(state, 123L, true);
     }
 
-    private Node buildNode(Status.State state, long uniqueId, boolean leader) {
-        return new Node("", 8080, uniqueId, leader, Status.create(state));
+    private Node buildNode(NodeStatus.State state, long uniqueId, boolean leader) {
+        return new Node("", 8080, uniqueId, leader, NodeStatus.create(state));
     }
 }

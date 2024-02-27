@@ -1,16 +1,16 @@
 package com.stundb.service.impl;
 
-import static com.stundb.core.models.Status.State.FAILING;
-import static com.stundb.core.models.Status.State.RUNNING;
+import static com.stundb.net.core.models.NodeStatus.State.FAILING;
+import static com.stundb.net.core.models.NodeStatus.State.RUNNING;
 
+import com.stundb.api.models.ApplicationConfig;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.logging.Loggable;
-import com.stundb.core.models.ApplicationConfig;
-import com.stundb.core.models.Node;
-import com.stundb.core.models.Status;
 import com.stundb.core.models.UniqueId;
 import com.stundb.net.client.StunDBClient;
 import com.stundb.net.core.models.Command;
+import com.stundb.net.core.models.Node;
+import com.stundb.net.core.models.NodeStatus;
 import com.stundb.net.core.models.requests.ElectedRequest;
 import com.stundb.net.core.models.requests.Request;
 import com.stundb.service.ElectionService;
@@ -92,7 +92,7 @@ public class ElectionServiceImpl implements ElectionService {
                                         config.getPort(),
                                         uniqueId.number(),
                                         true,
-                                        Status.create(RUNNING)));
+                                        NodeStatus.create(RUNNING)));
 
         // notifying other nodes that I became the cluster's leader
         utils.filterNodesByState(nodes, uniqueId.number(), List.of(RUNNING))

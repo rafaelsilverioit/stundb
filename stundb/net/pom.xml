@@ -7,14 +7,14 @@
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>net</artifactId>
+    <artifactId>stundb-net</artifactId>
     <version>1.0.0</version>
-    <name>stundb - parent - net</name>
-    <description>StunDB - Networking package</description>
+    <name>StunDB - Net</name>
+    <description>StunDB - Net</description>
     <packaging>pom</packaging>
     <modules>
         <module>core</module>
-	<module>client</module>
-	<module>server</module>
+        <module>client</module>
+        <module>server</module>
     </modules>
 </project>

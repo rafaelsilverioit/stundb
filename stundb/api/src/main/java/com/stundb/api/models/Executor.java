@@ -1,3 +1,3 @@
-package com.stundb.core.models;
+package com.stundb.api.models;
 
 public record Executor(Integer threads) {}

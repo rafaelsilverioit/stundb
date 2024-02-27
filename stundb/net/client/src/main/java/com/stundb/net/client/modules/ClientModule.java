@@ -1,9 +1,9 @@
 package com.stundb.net.client.modules;
 
 import com.google.inject.AbstractModule;
-import com.stundb.core.mappers.ApplicationConfigMapper;
-import com.stundb.core.models.ApplicationConfig;
-import com.stundb.core.modules.providers.ApplicationConfigProvider;
+import com.stundb.api.mappers.ApplicationConfigMapper;
+import com.stundb.api.models.ApplicationConfig;
+import com.stundb.api.providers.ApplicationConfigProvider;
 import com.stundb.net.client.StunDBClient;
 import com.stundb.net.client.StunDBClientImpl;
 import com.stundb.net.client.modules.providers.ExecutorServiceProvider;

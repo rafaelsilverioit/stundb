@@ -7,25 +7,25 @@
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>application</artifactId>
+    <artifactId>stundb-application</artifactId>
     <version>1.0.0</version>
-    <name>stundb - parent - application</name>
-    <description>StunDB - Main application code</description>
+    <name>StunDB - Application</name>
+    <description>StunDB - Application</description>
     <packaging>jar</packaging>
 	<dependencies>
         <dependency>
             <groupId>com.stundb</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>stundb-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.stundb</groupId>
-            <artifactId>net-client</artifactId>
+            <artifactId>stundb-net-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.stundb</groupId>
-            <artifactId>net-server</artifactId>
+            <artifactId>stundb-net-server</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

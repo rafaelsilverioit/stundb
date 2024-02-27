@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
 import com.stundb.BaseTest;
-import com.stundb.core.models.Node;
-import com.stundb.core.models.Status;
+import com.stundb.net.core.models.Node;
+import com.stundb.net.core.models.NodeStatus;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -39,13 +39,13 @@ public class NodeUtilsTest extends BaseTest {
 
     @Test
     void test_filterNodesByState() {
-        var node = aNode(NODE_UNIQUE_ID, Status.State.RUNNING);
-        var anotherNode = aNode(ANOTHER_NODE_UNIQUE_ID, Status.State.RUNNING);
+        var node = aNode(NODE_UNIQUE_ID, NodeStatus.State.RUNNING);
+        var anotherNode = aNode(ANOTHER_NODE_UNIQUE_ID, NodeStatus.State.RUNNING);
         var filtered =
                 testee.filterNodesByState(
                                 List.of(node, anotherNode),
                                 NODE_UNIQUE_ID,
-                                List.of(Status.State.RUNNING))
+                                List.of(NodeStatus.State.RUNNING))
                         .toList();
 
         assertEquals(filtered.size(), 1);
@@ -54,13 +54,13 @@ public class NodeUtilsTest extends BaseTest {
 
     @Test
     void test_filterNodesByState_when_other_nodes_are_failing() {
-        var node = aNode(NODE_UNIQUE_ID, Status.State.RUNNING);
-        var anotherNode = aNode(ANOTHER_NODE_UNIQUE_ID, Status.State.FAILING);
+        var node = aNode(NODE_UNIQUE_ID, NodeStatus.State.RUNNING);
+        var anotherNode = aNode(ANOTHER_NODE_UNIQUE_ID, NodeStatus.State.FAILING);
         var filtered =
                 testee.filterNodesByState(
                                 List.of(node, anotherNode),
                                 NODE_UNIQUE_ID,
-                                List.of(Status.State.RUNNING))
+                                List.of(NodeStatus.State.RUNNING))
                         .toList();
 
         assertEquals(filtered.size(), 0);
@@ -68,10 +68,10 @@ public class NodeUtilsTest extends BaseTest {
 
     @Test
     void test_filterNodesByState_when_no_other_nodes_are_found() {
-        var node = aNode(NODE_UNIQUE_ID, Status.State.RUNNING);
+        var node = aNode(NODE_UNIQUE_ID, NodeStatus.State.RUNNING);
         var filtered =
                 testee.filterNodesByState(
-                                List.of(node), NODE_UNIQUE_ID, List.of(Status.State.RUNNING))
+                                List.of(node), NODE_UNIQUE_ID, List.of(NodeStatus.State.RUNNING))
                         .toList();
 
         assertEquals(filtered.size(), 0);
@@ -80,13 +80,14 @@ public class NodeUtilsTest extends BaseTest {
     @Test
     void test_filterNodesByState_when_nodes_is_empty() {
         var filtered =
-                testee.filterNodesByState(List.of(), NODE_UNIQUE_ID, List.of(Status.State.RUNNING))
+                testee.filterNodesByState(
+                                List.of(), NODE_UNIQUE_ID, List.of(NodeStatus.State.RUNNING))
                         .toList();
 
         assertEquals(filtered.size(), 0);
     }
 
-    private Node aNode(Long uniqueId, Status.State state) {
-        return new Node("0.0.0.0", 8000, uniqueId, true, Status.create(state));
+    private Node aNode(Long uniqueId, NodeStatus.State state) {
+        return new Node("0.0.0.0", 8000, uniqueId, true, NodeStatus.create(state));
     }
 }

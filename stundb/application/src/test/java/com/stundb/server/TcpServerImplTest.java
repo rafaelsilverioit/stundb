@@ -3,7 +3,7 @@ package com.stundb.server;
 import static org.mockito.Mockito.verify;
 
 import com.stundb.BaseTest;
-import com.stundb.core.models.ApplicationConfig;
+import com.stundb.api.models.ApplicationConfig;
 import com.stundb.net.core.models.requests.CRDTRequest;
 import com.stundb.service.NodeService;
 import com.stundb.service.ReplicationService;

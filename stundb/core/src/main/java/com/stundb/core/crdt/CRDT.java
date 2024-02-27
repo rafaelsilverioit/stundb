@@ -1,5 +1,7 @@
 package com.stundb.core.crdt;
 
+import com.stundb.api.crdt.Entry;
+
 import java.io.Serializable;
 
 public interface CRDT<T extends CRDT<T>> extends Serializable {

@@ -1,7 +1,7 @@
-package com.stundb.core.mappers;
+package com.stundb.api.mappers;
 
-import com.stundb.core.models.Executor;
-import com.stundb.core.models.Executors;
+import com.stundb.api.models.Executor;
+import com.stundb.api.models.Executors;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

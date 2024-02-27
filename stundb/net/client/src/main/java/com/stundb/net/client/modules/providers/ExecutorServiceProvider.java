@@ -1,6 +1,6 @@
 package com.stundb.net.client.modules.providers;
 
-import com.stundb.core.models.ApplicationConfig;
+import com.stundb.api.models.ApplicationConfig;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;

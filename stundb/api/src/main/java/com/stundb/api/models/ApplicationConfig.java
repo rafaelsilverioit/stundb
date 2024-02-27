@@ -1,4 +1,4 @@
-package com.stundb.core.models;
+package com.stundb.api.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
