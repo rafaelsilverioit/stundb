@@ -9,11 +9,12 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>stundb-parent</artifactId>
     <version>1.0.0</version>
-    <name>stundb - parent</name>
-    <description>StunDB - Contains core sub-modules</description>
+    <name>StunDB - Parent</name>
+    <description>StunDB - Parent</description>
     <packaging>pom</packaging>
     <modules>
-        <module>acceptance-tests</module>
+	<module>acceptance-tests</module>
+	<module>api</module>
         <module>application</module>
         <module>core</module>
         <module>net</module>

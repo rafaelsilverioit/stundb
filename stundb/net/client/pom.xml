@@ -3,19 +3,19 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>com.stundb</groupId>
-        <artifactId>net</artifactId>
+        <artifactId>stundb-net</artifactId>
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>net-client</artifactId>
+    <artifactId>stundb-net-client</artifactId>
     <version>1.0.0</version>
-    <name>stundb - parent - net - client</name>
-    <description>StunDB - Client code for communication between nodes</description>
+    <name>StunDB - Net - Client</name>
+    <description>StunDB - Net - Client</description>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
             <groupId>com.stundb</groupId>
-            <artifactId>net-core</artifactId>
+            <artifactId>stundb-net-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -5,7 +5,7 @@
     <groupId>com.stundb</groupId>
     <artifactId>stundb</artifactId>
     <version>1.0.0</version>
-    <name>stundb</name>
+    <name>StunDB</name>
     <description>StunDB - A stunning distributed key-value database</description>
     <packaging>pom</packaging>
     <properties>

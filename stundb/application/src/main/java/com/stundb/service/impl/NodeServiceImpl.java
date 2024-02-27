@@ -1,14 +1,14 @@
 package com.stundb.service.impl;
 
-import static com.stundb.core.models.Status.State.FAILING;
-import static com.stundb.core.models.Status.State.RUNNING;
+import static com.stundb.net.core.models.NodeStatus.State.FAILING;
+import static com.stundb.net.core.models.NodeStatus.State.RUNNING;
 
 import com.stundb.core.cache.Cache;
 import com.stundb.core.logging.Loggable;
-import com.stundb.core.models.Node;
-import com.stundb.core.models.Status;
 import com.stundb.core.models.UniqueId;
 import com.stundb.net.client.StunDBClient;
+import com.stundb.net.core.models.Node;
+import com.stundb.net.core.models.NodeStatus;
 import com.stundb.net.core.models.requests.*;
 import com.stundb.net.core.models.responses.ListNodesResponse;
 import com.stundb.net.core.models.responses.RegisterResponse;
@@ -62,7 +62,7 @@ public class NodeServiceImpl implements NodeService {
     @Loggable
     @Override
     public void trackNodeFailure(Node node) {
-        if (Status.State.DISABLED.equals(node.status().state())) {
+        if (NodeStatus.State.DISABLED.equals(node.status().state())) {
             return;
         }
 
@@ -79,8 +79,12 @@ public class NodeServiceImpl implements NodeService {
         var data = (RegisterRequest) request.payload();
         internalCache.put(
                 data.uniqueId().toString(),
-                new com.stundb.core.models.Node(
-                        data.ip(), data.port(), data.uniqueId(), false, Status.create(RUNNING)));
+                new Node(
+                        data.ip(),
+                        data.port(),
+                        data.uniqueId(),
+                        false,
+                        NodeStatus.create(RUNNING)));
 
         utils.filterNodesByState(internalCache.getAll(), uniqueId.number(), List.of(RUNNING))
                 .filter(Node::leader)

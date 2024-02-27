@@ -1,6 +1,6 @@
 package com.stundb.modules.providers;
 
-import com.stundb.core.models.ApplicationConfig;
+import com.stundb.api.models.ApplicationConfig;
 import com.stundb.core.models.UniqueId;
 import com.stundb.utils.NodeUtils;
 

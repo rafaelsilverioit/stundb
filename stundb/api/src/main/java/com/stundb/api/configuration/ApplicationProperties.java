@@ -1,4 +1,4 @@
-package com.stundb.core.configuration;
+package com.stundb.api.configuration;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,5 +1,7 @@
 package com.stundb.core.crdt;
 
+import com.stundb.api.crdt.Entry;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

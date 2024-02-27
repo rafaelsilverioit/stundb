@@ -1,4 +1,4 @@
-package com.stundb.core.crdt;
+package com.stundb.api.crdt;
 
 import java.time.Instant;
 

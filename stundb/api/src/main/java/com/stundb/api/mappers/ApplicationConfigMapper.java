@@ -1,7 +1,9 @@
-package com.stundb.core.mappers;
+package com.stundb.api.mappers;
 
-import com.stundb.core.configuration.ApplicationProperties;
-import com.stundb.core.models.*;
+import com.stundb.api.configuration.ApplicationProperties;
+import com.stundb.api.models.ApplicationConfig;
+import com.stundb.api.models.Capacity;
+import com.stundb.api.models.Timeouts;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
