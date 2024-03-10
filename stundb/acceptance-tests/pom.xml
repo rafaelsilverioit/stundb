@@ -260,10 +260,6 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <skipTests>false</skipTests>
-                            <!-- TODO: This is used for nothing, but due to ApplicationConfigMapper not accepting
-                                       optional values, it throws an exception and the tests fail... Remember to
-                                       change it tomorrow. -->
-                            <argLine>-Dapplication.port=8000</argLine>
                         </configuration>
                     </plugin>
                 </plugins>

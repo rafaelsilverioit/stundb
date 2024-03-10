@@ -1,5 +1,6 @@
 package com.stundb.modules;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
@@ -9,14 +10,13 @@ import com.stundb.api.configuration.ConfigurationLoader;
 import com.stundb.api.mappers.ApplicationConfigMapper;
 import com.stundb.api.models.ApplicationConfig;
 import com.stundb.api.providers.ApplicationConfigProvider;
+import com.stundb.api.providers.ObjectMapperProvider;
+import com.stundb.api.providers.ValidatorProvider;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.logging.Loggable;
 import com.stundb.core.logging.RequestLogger;
 import com.stundb.core.models.UniqueId;
-import com.stundb.modules.providers.CacheProvider;
-import com.stundb.modules.providers.CommandHandlerProvider;
-import com.stundb.modules.providers.MessageDigestProvider;
-import com.stundb.modules.providers.UniqueIdProvider;
+import com.stundb.modules.providers.*;
 import com.stundb.net.client.modules.ClientModule;
 import com.stundb.net.core.codecs.Codec;
 import com.stundb.net.core.models.Node;
@@ -25,8 +25,7 @@ import com.stundb.net.server.handlers.CommandHandler;
 import com.stundb.service.*;
 import com.stundb.service.impl.*;
 import com.stundb.timers.CoordinatorTimerTask;
-
-import org.yaml.snakeyaml.Yaml;
+import jakarta.validation.Validator;
 
 import java.security.MessageDigest;
 import java.util.List;
@@ -42,15 +41,19 @@ public class Module extends AbstractModule {
         bindInterceptor(
                 Matchers.any(), Matchers.annotatedWith(Loggable.class), new RequestLogger());
 
-        bind(new TypeLiteral<Cache<Object>>() {})
-                .toProvider(new TypeLiteral<CacheProvider<Object>>() {});
-        bind(new TypeLiteral<Cache<Node>>() {})
-                .toProvider(new TypeLiteral<CacheProvider<Node>>() {});
+        bind(new TypeLiteral<Cache<Object>>() {}).toProvider(PublicCacheProvider.class);
+        bind(new TypeLiteral<Cache<Node>>() {}).toProvider(InternalCacheProvider.class);
 
-        bind(Yaml.class).toInstance(new Yaml());
+        // bind(Yaml.class).toInstance(new Yaml());
         bind(ConfigurationLoader.class).toInstance(new ConfigurationLoader());
         bind(ApplicationConfig.class)
                 .toProvider(ApplicationConfigProvider.class)
+                .in(Singleton.class);
+        bind(Validator.class)
+                .toProvider(ValidatorProvider.class)
+                .in(Singleton.class);
+        bind(ObjectMapper.class)
+                .toProvider(ObjectMapperProvider.class)
                 .in(Singleton.class);
         bind(MessageDigest.class).toProvider(MessageDigestProvider.class);
         bind(UniqueId.class).toProvider(UniqueIdProvider.class);
