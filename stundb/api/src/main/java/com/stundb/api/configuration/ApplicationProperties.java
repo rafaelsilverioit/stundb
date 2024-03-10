@@ -1,15 +1,13 @@
 package com.stundb.api.configuration;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
+@ToString
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -67,7 +65,7 @@ public class ApplicationProperties {
         }
 
         var property = matcher.group(1).split(":");
-        var value = System.getenv(property[0]);
+        var value = System.getProperty(property[0]);
 
         if (value != null) {
             return string.replaceAll(PLACEHOLDER_PATTERN, value);

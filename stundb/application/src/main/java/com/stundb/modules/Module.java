@@ -1,6 +1,7 @@
 package com.stundb.modules;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.name.Names;
@@ -48,7 +49,9 @@ public class Module extends AbstractModule {
 
         bind(Yaml.class).toInstance(new Yaml());
         bind(ConfigurationLoader.class).toInstance(new ConfigurationLoader());
-        bind(ApplicationConfig.class).toProvider(ApplicationConfigProvider.class);
+        bind(ApplicationConfig.class)
+                .toProvider(ApplicationConfigProvider.class)
+                .in(Singleton.class);
         bind(MessageDigest.class).toProvider(MessageDigestProvider.class);
         bind(UniqueId.class).toProvider(UniqueIdProvider.class);
         bind(ApplicationConfigMapper.class).toInstance(ApplicationConfigMapper.INSTANCE);

@@ -1,6 +1,7 @@
 package com.stundb.net.client.modules;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
 import com.stundb.api.mappers.ApplicationConfigMapper;
 import com.stundb.api.models.ApplicationConfig;
 import com.stundb.api.providers.ApplicationConfigProvider;
@@ -18,7 +19,9 @@ public class ClientModule extends AbstractModule {
     protected void configure() {
         bind(Codec.class).toProvider(CodecProvider.class);
         bind(ApplicationConfigMapper.class).toInstance(ApplicationConfigMapper.INSTANCE);
-        bind(ApplicationConfig.class).toProvider(ApplicationConfigProvider.class);
+        bind(ApplicationConfig.class)
+                .toProvider(ApplicationConfigProvider.class)
+                .in(Singleton.class);
         bind(ExecutorService.class).toProvider(ExecutorServiceProvider.class).asEagerSingleton();
         bind(StunDBClient.class).to(StunDBClientImpl.class);
     }
