@@ -19,5 +19,5 @@ public class ApplicationConfig {
     private Executors executors;
     private String digestAlgorithm;
     private List<String> seeds;
-    private Map<String, Object> backoffSettings;
+    private Map<String, Integer> backoffSettings;
 }

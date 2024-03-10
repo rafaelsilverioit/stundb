@@ -1,6 +1,6 @@
 name: StunDB
 ip: 127.0.0.1
-port: ${application.port}
+port: ${application.port:8000}
 capacity:
   publicCache: 9999
   internalCache: 256
