@@ -18,7 +18,6 @@ public interface ApplicationConfigMapper {
 
     @Mapping(target = "capacity", expression = "java(mapCapacity(properties.getCapacities()))")
     @Mapping(target = "timeouts", expression = "java(mapTimeouts(properties.getTimeouts()))")
-    @Mapping(target = "backoffSettings", source = "backoffSettings")
     ApplicationConfig map(ApplicationProperties properties);
 
     default Capacity mapCapacity(Map<String, String> capacities) {
