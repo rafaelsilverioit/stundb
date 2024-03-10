@@ -44,7 +44,6 @@ public class Module extends AbstractModule {
         bind(new TypeLiteral<Cache<Object>>() {}).toProvider(PublicCacheProvider.class);
         bind(new TypeLiteral<Cache<Node>>() {}).toProvider(InternalCacheProvider.class);
 
-        // bind(Yaml.class).toInstance(new Yaml());
         bind(ConfigurationLoader.class).toInstance(new ConfigurationLoader());
         bind(ApplicationConfig.class)
                 .toProvider(ApplicationConfigProvider.class)
