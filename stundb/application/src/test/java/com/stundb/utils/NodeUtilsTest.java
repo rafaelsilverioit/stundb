@@ -3,19 +3,21 @@ package com.stundb.utils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
-import com.stundb.BaseTest;
 import com.stundb.net.core.models.Node;
 import com.stundb.net.core.models.NodeStatus;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-public class NodeUtilsTest extends BaseTest {
+@ExtendWith(MockitoExtension.class)
+public class NodeUtilsTest {
 
     private static final long NODE_UNIQUE_ID = 123456L;
     private static final long ANOTHER_NODE_UNIQUE_ID = 654321L;
