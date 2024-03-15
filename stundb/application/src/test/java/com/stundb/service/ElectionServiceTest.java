@@ -2,12 +2,13 @@ package com.stundb.service;
 
 import static org.mockito.Mockito.verify;
 
-import com.stundb.BaseTest;
-
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-public class ElectionServiceTest extends BaseTest {
+@ExtendWith(MockitoExtension.class)
+public class ElectionServiceTest {
 
     @Spy private ElectionService testee;
 

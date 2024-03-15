@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.stundb.BaseTest;
 import com.stundb.api.models.ApplicationConfig;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.models.UniqueId;
@@ -19,6 +18,7 @@ import com.stundb.utils.NodeUtils;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -26,16 +26,19 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
+@ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ElectionServiceImplTest extends BaseTest {
+class ElectionServiceImplTest {
 
     private static final String NODE_UNIQUE_TEXT_ID = "123456";
     private static final Long NODE_UNIQUE_ID = 123456L;
@@ -65,9 +68,11 @@ class ElectionServiceImplTest extends BaseTest {
 
     @ParameterizedTest
     @MethodSource("startElectionArguments")
-    void test_startElection(List<Node> nodes, Boolean force, Boolean expected)
+    void test_startElection(Node node, Boolean force, Boolean expected)
             throws NoSuchFieldException, IllegalAccessException {
-        setUp(nodes, aResponse(null, true));
+        when(internalCache.get(ElectionServiceImplTest.NODE_UNIQUE_TEXT_ID))
+                .thenReturn(Optional.ofNullable(node));
+        when(uniqueId.text()).thenReturn(ElectionServiceImplTest.NODE_UNIQUE_TEXT_ID);
 
         testee.run(force);
 
@@ -83,7 +88,7 @@ class ElectionServiceImplTest extends BaseTest {
         var electionStarted = (AtomicBoolean) getElectionStartedField().get(testee);
         electionStarted.set(true);
         var node = aNode(NODE_UNIQUE_ID, false);
-        test_startElection(List.of(node), false, true);
+        test_startElection(node, false, true);
     }
 
     @Test
@@ -94,7 +99,9 @@ class ElectionServiceImplTest extends BaseTest {
 
         var node = aNode(NODE_UNIQUE_ID, false);
 
-        setUp(List.of(node), aResponse(null, true));
+        when(internalCache.get(ElectionServiceImplTest.NODE_UNIQUE_TEXT_ID))
+                .thenReturn(Optional.of(node));
+        when(uniqueId.text()).thenReturn(ElectionServiceImplTest.NODE_UNIQUE_TEXT_ID);
 
         for (var i = 0; i < 4; i++) {
             testee.run(false);
@@ -112,7 +119,7 @@ class ElectionServiceImplTest extends BaseTest {
         var electionStarted = (AtomicBoolean) getElectionStartedField().get(testee);
         electionStarted.set(true);
         var node = aNode(NODE_UNIQUE_ID, false);
-        test_startElection(List.of(node), false, true);
+        test_startElection(node, false, true);
     }
 
     @Test
@@ -122,7 +129,7 @@ class ElectionServiceImplTest extends BaseTest {
         var node = aNode(NODE_UNIQUE_ID, false);
         var anotherNode = aNode(ANOTHER_NODE_ID, false);
 
-        setUp(List.of(node, anotherNode), aResponse(null, true));
+        mockBasicOperations(List.of(node, anotherNode), aResponse(null, true));
 
         testee.run(true);
 
@@ -144,7 +151,7 @@ class ElectionServiceImplTest extends BaseTest {
         var node = aNode(NODE_UNIQUE_ID, false);
         var anotherNode = aNode(NODE_UNIQUE_ID - 1, false);
 
-        setUp(List.of(node, anotherNode), aResponse(null, true));
+        mockAllOperations(List.of(node, anotherNode), aResponse(null, true));
 
         testee.run(true);
 
@@ -167,7 +174,7 @@ class ElectionServiceImplTest extends BaseTest {
         var node = aNode(NODE_UNIQUE_ID, false);
         var anotherNode = aNode(ANOTHER_NODE_ID, false);
 
-        setUp(List.of(node, anotherNode), aResponse(Command.START_ELECTION, false));
+        mockBasicOperations(List.of(node, anotherNode), aResponse(Command.START_ELECTION, false));
 
         testee.run(true);
 
@@ -187,7 +194,7 @@ class ElectionServiceImplTest extends BaseTest {
         var node = aNode(NODE_UNIQUE_ID, false);
         var anotherNode = aNode(NODE_UNIQUE_ID - 1, false);
 
-        setUp(List.of(node, anotherNode), aResponse(Command.ELECTED, false));
+        mockAllOperations(List.of(node, anotherNode), aResponse(Command.ELECTED, false));
 
         testee.run(true);
 
@@ -211,7 +218,8 @@ class ElectionServiceImplTest extends BaseTest {
         var anotherNode = aNode(NODE_UNIQUE_ID - 1, false);
         var yetAnotherNode = aNode(NODE_UNIQUE_ID - 2, true);
 
-        setUp(List.of(node, anotherNode, yetAnotherNode), aResponse(Command.ELECTED, false));
+        mockAllOperations(
+                List.of(node, anotherNode, yetAnotherNode), aResponse(Command.ELECTED, false));
 
         testee.run(true);
 
@@ -240,7 +248,7 @@ class ElectionServiceImplTest extends BaseTest {
         var node = aNode(NODE_UNIQUE_ID, false);
         var anotherNode = aNode(ANOTHER_NODE_ID, false, NodeStatus.State.FAILING);
 
-        setUp(List.of(node, anotherNode), aResponse(Command.ELECTED, false));
+        mockAllOperations(List.of(node, anotherNode), aResponse(Command.ELECTED, false));
 
         testee.run(true);
 
@@ -264,8 +272,12 @@ class ElectionServiceImplTest extends BaseTest {
         var node = aNode(NODE_UNIQUE_ID, false);
         var anotherNode = aNode(ANOTHER_NODE_ID, false, NodeStatus.State.RUNNING);
 
-        setUpWithoutMockingInternalCacheGetAll(
-                List.of(node, anotherNode), aResponse(Command.ELECTED, false));
+        when(internalCache.get(ElectionServiceImplTest.NODE_UNIQUE_TEXT_ID))
+                .thenReturn(Optional.of(node));
+        when(uniqueId.text()).thenReturn(ElectionServiceImplTest.NODE_UNIQUE_TEXT_ID);
+        when(uniqueId.number())
+                .thenReturn(Long.valueOf(ElectionServiceImplTest.NODE_UNIQUE_TEXT_ID));
+
         when(internalCache.getAll())
                 .thenAnswer(
                         invocation -> {
@@ -283,11 +295,11 @@ class ElectionServiceImplTest extends BaseTest {
 
     private Stream<Arguments> startElectionArguments() {
         return Stream.of(
-                Arguments.of(List.of(), true, false),
-                Arguments.of(List.of(aNode(NODE_UNIQUE_ID, false)), true, false),
-                Arguments.of(List.of(aNode(NODE_UNIQUE_ID, false)), false, false),
-                Arguments.of(List.of(aNode(NODE_UNIQUE_ID, true)), false, false),
-                Arguments.of(List.of(aNode(NODE_UNIQUE_ID, true)), true, false));
+                Arguments.of(null, true, false),
+                Arguments.of(aNode(NODE_UNIQUE_ID, false), true, false),
+                Arguments.of(aNode(NODE_UNIQUE_ID, false), false, false),
+                Arguments.of(aNode(NODE_UNIQUE_ID, true), false, false),
+                Arguments.of(aNode(NODE_UNIQUE_ID, true), true, false));
     }
 
     private Node aNode(Long uniqueId, Boolean leader) {
@@ -298,7 +310,8 @@ class ElectionServiceImplTest extends BaseTest {
         return new Node(NODE_IP, NODE_PORT, uniqueId, leader, NodeStatus.create(state));
     }
 
-    private void setUp(List<Node> internalCacheNodes, CompletableFuture<Response> clientResponse) {
+    private void mockBasicOperations(
+            List<Node> internalCacheNodes, CompletableFuture<Response> clientResponse) {
         when(client.requestAsync(any(Request.class), any(String.class), any(Integer.class)))
                 .thenReturn(clientResponse);
         when(internalCache.getAll()).thenReturn(internalCacheNodes);
@@ -307,37 +320,16 @@ class ElectionServiceImplTest extends BaseTest {
                         internalCacheNodes.stream()
                                 .filter(n -> NODE_UNIQUE_ID.equals(n.uniqueId()))
                                 .findAny());
-        when(config.getIp()).thenReturn(NODE_IP);
-        when(config.getPort()).thenReturn(NODE_PORT);
         when(uniqueId.text()).thenReturn(ElectionServiceImplTest.NODE_UNIQUE_TEXT_ID);
         when(uniqueId.number())
                 .thenReturn(Long.valueOf(ElectionServiceImplTest.NODE_UNIQUE_TEXT_ID));
-        var values =
-                internalCacheNodes.stream()
-                        .filter(
-                                n ->
-                                        !Long.valueOf(ElectionServiceImplTest.NODE_UNIQUE_TEXT_ID)
-                                                .equals(n.uniqueId()))
-                        .toList();
-        when(utils.filterNodesByState(any(), any(), any()))
-                .thenReturn(values.stream())
-                .thenReturn(values.stream());
     }
 
-    private void setUpWithoutMockingInternalCacheGetAll(
+    private void mockAllOperations(
             List<Node> internalCacheNodes, CompletableFuture<Response> clientResponse) {
-        when(client.requestAsync(any(Request.class), any(String.class), any(Integer.class)))
-                .thenReturn(clientResponse);
-        when(internalCache.get(ElectionServiceImplTest.NODE_UNIQUE_TEXT_ID))
-                .thenReturn(
-                        internalCacheNodes.stream()
-                                .filter(n -> NODE_UNIQUE_ID.equals(n.uniqueId()))
-                                .findAny());
+        mockBasicOperations(internalCacheNodes, clientResponse);
         when(config.getIp()).thenReturn(NODE_IP);
         when(config.getPort()).thenReturn(NODE_PORT);
-        when(uniqueId.text()).thenReturn(ElectionServiceImplTest.NODE_UNIQUE_TEXT_ID);
-        when(uniqueId.number())
-                .thenReturn(Long.valueOf(ElectionServiceImplTest.NODE_UNIQUE_TEXT_ID));
         var values =
                 internalCacheNodes.stream()
                         .filter(
