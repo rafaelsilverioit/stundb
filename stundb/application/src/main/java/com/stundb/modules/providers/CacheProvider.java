@@ -1,29 +1,26 @@
 package com.stundb.modules.providers;
 
+import static java.util.Optional.ofNullable;
+
 import com.stundb.api.models.ApplicationConfig;
+import com.stundb.api.models.Capacity;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.cache.FIFOCache;
 
-import jakarta.inject.Inject;
-import jakarta.inject.Provider;
-import jakarta.inject.Singleton;
+import java.util.function.Function;
 
-@Singleton
-public class CacheProvider<T> implements Provider<Cache<T>> {
-
-    @Inject private ApplicationConfig config;
-
-    private Cache<T> cache;
-
-    @Override
-    public Cache<T> get() {
-        return getInstance();
-    }
-
-    private Cache<T> getInstance() {
-        if (cache == null) {
-            cache = new FIFOCache<>(config.getCapacity().publicCache());
-        }
-        return cache;
+interface CacheProvider<T> {
+    default Cache<T> getInstance(
+            Cache<T> cache,
+            ApplicationConfig config,
+            Function<Capacity, Integer> transformer,
+            Integer defaultCapacity) {
+        return ofNullable(cache)
+                .orElseGet(
+                        () ->
+                                new FIFOCache<>(
+                                        ofNullable(config.getCapacity())
+                                                .map(transformer)
+                                                .orElse(defaultCapacity)));
     }
 }

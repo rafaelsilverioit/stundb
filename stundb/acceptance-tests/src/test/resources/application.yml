@@ -1,9 +1,9 @@
 name: StunDB
 ip: 127.0.0.1
-port: 8000
+port: ${application.port:8000}
 capacity:
-  publicCache: 9999
-  internalCache: 256
+  publicCache: 512
+  internalCache: 10
 timeouts:
   tcpReadTimeout: 10
   tcpWriteTimeout: 10
