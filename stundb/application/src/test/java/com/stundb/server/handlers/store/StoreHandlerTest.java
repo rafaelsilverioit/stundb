@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 
-import com.stundb.BaseTest;
 import com.stundb.net.core.models.Command;
 import com.stundb.net.core.models.Status;
 import com.stundb.net.core.models.Type;
@@ -23,7 +22,7 @@ import org.mockito.Mock;
 
 import java.util.stream.Stream;
 
-public abstract class StoreHandlerTest<T extends CommandHandler> extends BaseTest {
+public abstract class StoreHandlerTest<T extends CommandHandler> {
 
     @Mock protected StoreService storeService;
     @Mock private Channel channel;
