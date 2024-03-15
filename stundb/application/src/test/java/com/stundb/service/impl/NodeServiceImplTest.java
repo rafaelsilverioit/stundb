@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import com.stundb.BaseTest;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.models.UniqueId;
 import com.stundb.net.client.StunDBClient;
@@ -19,10 +18,12 @@ import com.stundb.utils.NodeUtils;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Timer;
@@ -30,8 +31,9 @@ import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-@org.junit.jupiter.api.TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class NodeServiceImplTest extends BaseTest {
+@ExtendWith(MockitoExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class NodeServiceImplTest {
 
     @Captor private ArgumentCaptor<Node> captor;
     @Mock private StunDBClient client;
