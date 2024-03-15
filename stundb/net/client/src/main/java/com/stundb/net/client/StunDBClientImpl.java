@@ -1,5 +1,6 @@
 package com.stundb.net.client;
 
+import com.stundb.api.models.ApplicationConfig;
 import com.stundb.net.core.codecs.Codec;
 import com.stundb.net.core.models.requests.Request;
 import com.stundb.net.core.models.responses.Response;
@@ -23,6 +24,8 @@ public class StunDBClientImpl implements StunDBClient {
 
     @Inject private Codec codec;
 
+    @Inject private ApplicationConfig config;
+
     @Override
     public CompletableFuture<Response> requestAsync(Request request, String ip, Integer port) {
         return CompletableFuture.supplyAsync(
@@ -42,7 +45,9 @@ public class StunDBClientImpl implements StunDBClient {
 
     private Response execute(Request request, String ip, Integer port, Socket socket)
             throws IOException {
-        socket.connect(new InetSocketAddress(ip, port));
+        var timeouts = config.getTimeouts();
+        var timeoutInMillis = timeouts.timeoutInMillis(timeouts.tcpReadTimeout());
+        socket.connect(new InetSocketAddress(ip, port), timeoutInMillis);
         var bytes = codec.encode(request);
         socket.getOutputStream().write(bytes);
         socket.getOutputStream().flush();

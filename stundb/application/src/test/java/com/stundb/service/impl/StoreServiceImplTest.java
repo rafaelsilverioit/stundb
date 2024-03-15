@@ -3,7 +3,6 @@ package com.stundb.service.impl;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.stundb.BaseTest;
 import com.stundb.core.cache.Cache;
 import com.stundb.net.core.models.requests.DelRequest;
 import com.stundb.net.core.models.requests.ExistsRequest;
@@ -12,17 +11,20 @@ import com.stundb.net.core.models.requests.SetRequest;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
+@ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class StoreServiceImplTest extends BaseTest {
+class StoreServiceImplTest {
 
     private static final String KEY = "key";
     private static final String VALUE = "value";

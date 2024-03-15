@@ -143,6 +143,6 @@ public class SeedServiceImpl implements SeedService {
     }
 
     private Integer readConfigAsInteger(String key, int defaultValue) {
-        return (Integer) config.getBackoffSettings().getOrDefault(key, defaultValue);
+        return config.getBackoffSettings().getOrDefault(key, defaultValue);
     }
 }

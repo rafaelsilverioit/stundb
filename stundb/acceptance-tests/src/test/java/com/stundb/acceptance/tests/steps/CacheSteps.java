@@ -1,4 +1,4 @@
-package com.stundb.steps;
+package com.stundb.acceptance.tests.steps;
 
 import static com.stundb.net.core.models.Command.*;
 
@@ -26,7 +26,8 @@ public class CacheSteps extends BaseSteps implements En {
         Given(
                 "We are able to retrieve the cache capacity",
                 () -> {
-                    client.requestAsync(Request.buildRequest(CAPACITY, null), host, port)
+                    client.requestAsync(
+                                    Request.buildRequest(CAPACITY, null), mainNodeIp, mainNodePort)
                             .whenComplete(
                                     (response, error) -> {
                                         if (error != null) {
@@ -43,8 +44,8 @@ public class CacheSteps extends BaseSteps implements En {
                 (String key, String value) -> {
                     client.requestAsync(
                                     Request.buildRequest(SET, new SetRequest(key, value, -1)),
-                                    host,
-                                    port)
+                                    mainNodeIp,
+                                    mainNodePort)
                             .whenComplete(
                                     (response, error) -> {
                                         if (error != null) {
@@ -57,7 +58,7 @@ public class CacheSteps extends BaseSteps implements En {
         When(
                 "We clear the cache",
                 () -> {
-                    client.requestAsync(Request.buildRequest(CLEAR, null), host, port)
+                    client.requestAsync(Request.buildRequest(CLEAR, null), mainNodeIp, mainNodePort)
                             .whenComplete(
                                     (response, error) -> {
                                         if (error != null) {
@@ -70,7 +71,10 @@ public class CacheSteps extends BaseSteps implements En {
         Then(
                 "We are able to retrieve the current value for the key {string}",
                 (String key) -> {
-                    client.requestAsync(Request.buildRequest(GET, new GetRequest(key)), host, port)
+                    client.requestAsync(
+                                    Request.buildRequest(GET, new GetRequest(key)),
+                                    mainNodeIp,
+                                    mainNodePort)
                             .whenComplete(
                                     (response, error) -> {
                                         if (error != null) {
@@ -86,7 +90,10 @@ public class CacheSteps extends BaseSteps implements En {
         Then(
                 "We are able to remove an existing record for the key {string}",
                 (String key) -> {
-                    client.requestAsync(Request.buildRequest(DEL, new DelRequest(key)), host, port)
+                    client.requestAsync(
+                                    Request.buildRequest(DEL, new DelRequest(key)),
+                                    mainNodeIp,
+                                    mainNodePort)
                             .whenComplete(
                                     (response, error) -> {
                                         if (error != null) {
@@ -107,8 +114,8 @@ public class CacheSteps extends BaseSteps implements En {
                 (String key) -> {
                     client.requestAsync(
                                     Request.buildRequest(EXISTS, new ExistsRequest(key)),
-                                    host,
-                                    port)
+                                    mainNodeIp,
+                                    mainNodePort)
                             .whenComplete(
                                     (response, error) -> {
                                         if (error != null) {
@@ -126,7 +133,8 @@ public class CacheSteps extends BaseSteps implements En {
         And(
                 "The cache is not empty",
                 () -> {
-                    client.requestAsync(Request.buildRequest(IS_EMPTY, null), host, port)
+                    client.requestAsync(
+                                    Request.buildRequest(IS_EMPTY, null), mainNodeIp, mainNodePort)
                             .whenComplete(
                                     (response, error) -> {
                                         if (error != null) {
@@ -142,7 +150,8 @@ public class CacheSteps extends BaseSteps implements En {
         And(
                 "The cache is empty",
                 () -> {
-                    client.requestAsync(Request.buildRequest(IS_EMPTY, null), host, port)
+                    client.requestAsync(
+                                    Request.buildRequest(IS_EMPTY, null), mainNodeIp, mainNodePort)
                             .whenComplete(
                                     (response, error) -> {
                                         if (error != null) {

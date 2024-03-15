@@ -1,4 +1,4 @@
-package com.stundb.modules.providers;
+package com.stundb.acceptance.tests.modules.providers;
 
 import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
