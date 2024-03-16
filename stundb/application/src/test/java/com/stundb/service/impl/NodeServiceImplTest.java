@@ -91,9 +91,11 @@ public class NodeServiceImplTest {
 
     @Test
     void deregister_should_work_successfully() {
-        testee.deregister(new DeregisterRequest(123L));
+        var response = testee.deregister(new DeregisterRequest(123L));
 
         verify(internalCache, times(1)).del("123");
+        verify(internalCache, times(1)).getAll();
+        assertTrue(response.nodes().isEmpty());
     }
 
     @Test

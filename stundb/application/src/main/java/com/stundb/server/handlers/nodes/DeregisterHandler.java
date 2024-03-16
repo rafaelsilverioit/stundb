@@ -26,7 +26,6 @@ public class DeregisterHandler implements CommandHandler {
 
     @Override
     public void execute(Request request, Channel channel) {
-        nodes.deregister((DeregisterRequest) request.payload());
-        writeAndFlush(request, null, channel);
+        writeAndFlush(request, nodes.deregister((DeregisterRequest) request.payload()), channel);
     }
 }
