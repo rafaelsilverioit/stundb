@@ -10,6 +10,7 @@ import com.stundb.net.client.StunDBClient;
 import com.stundb.net.core.models.Node;
 import com.stundb.net.core.models.NodeStatus;
 import com.stundb.net.core.models.requests.*;
+import com.stundb.net.core.models.responses.DeregisterResponse;
 import com.stundb.net.core.models.responses.ListNodesResponse;
 import com.stundb.net.core.models.responses.RegisterResponse;
 import com.stundb.service.ElectionService;
@@ -113,8 +114,9 @@ public class NodeServiceImpl implements NodeService {
 
     @Loggable
     @Override
-    public void deregister(DeregisterRequest request) {
+    public DeregisterResponse deregister(DeregisterRequest request) {
         internalCache.del(request.uniqueId().toString());
+        return new DeregisterResponse(internalCache.getAll());
     }
 
     @Loggable

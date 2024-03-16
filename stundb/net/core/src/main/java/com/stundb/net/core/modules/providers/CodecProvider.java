@@ -1,10 +1,10 @@
 package com.stundb.net.core.modules.providers;
 
 import com.stundb.api.crdt.Entry;
-import com.stundb.net.core.models.Node;
 import com.stundb.net.core.codecs.Codec;
 import com.stundb.net.core.codecs.fury.FuryCodec;
 import com.stundb.net.core.models.Command;
+import com.stundb.net.core.models.Node;
 import com.stundb.net.core.models.Type;
 import com.stundb.net.core.models.Version;
 import com.stundb.net.core.models.requests.*;
@@ -58,6 +58,7 @@ public class CodecProvider implements Provider<Codec> {
                             fury.register(RegisterRequest.class);
                             fury.register(SetRequest.class);
                             fury.register(CapacityResponse.class);
+                            fury.register(DeregisterResponse.class);
                             fury.register(DumpResponse.class);
                             fury.register(ErrorResponse.class);
                             fury.register(ExistsResponse.class);
