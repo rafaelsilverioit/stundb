@@ -5,6 +5,7 @@ import com.stundb.net.core.models.requests.CRDTRequest;
 import com.stundb.net.core.models.requests.DeregisterRequest;
 import com.stundb.net.core.models.requests.ElectedRequest;
 import com.stundb.net.core.models.requests.Request;
+import com.stundb.net.core.models.responses.DeregisterResponse;
 import com.stundb.net.core.models.responses.ListNodesResponse;
 import com.stundb.net.core.models.responses.RegisterResponse;
 
@@ -18,7 +19,7 @@ public interface NodeService {
 
     RegisterResponse register(Request request);
 
-    void deregister(DeregisterRequest request);
+    DeregisterResponse deregister(DeregisterRequest request);
 
     ListNodesResponse list();
 

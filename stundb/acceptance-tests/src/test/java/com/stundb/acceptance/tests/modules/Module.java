@@ -2,6 +2,7 @@ package com.stundb.acceptance.tests.modules;
 
 import com.google.inject.AbstractModule;
 import com.stundb.acceptance.tests.modules.providers.PropertiesProvider;
+import com.stundb.acceptance.tests.state.NodeState;
 import com.stundb.api.configuration.ConfigurationLoader;
 import com.stundb.net.client.modules.ClientModule;
 
@@ -13,6 +14,7 @@ public class Module extends AbstractModule {
     protected void configure() {
         bind(Properties.class).toProvider(PropertiesProvider.class);
         bind(ConfigurationLoader.class).toInstance(new ConfigurationLoader());
+        bind(NodeState.class).toInstance(new NodeState());
 
         install(new ClientModule());
     }
