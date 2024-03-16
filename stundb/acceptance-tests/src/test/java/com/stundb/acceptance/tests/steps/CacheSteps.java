@@ -14,26 +14,26 @@ import io.cucumber.java8.En;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.BiConsumer;
+
 public class CacheSteps extends BaseSteps implements En {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final BiConsumer<Response, Throwable> capacityResponseHandler =
+            defaultHandler.andThen(
+                    (response, error) -> {
+                        var capacity = ((CapacityResponse) response.payload());
+                        logger.info("Capacity: {}", capacity.capacity());
+                        assertThat(capacity.capacity(), notNullValue());
+                    });
 
     public CacheSteps() {
         super();
 
         Given(
                 "We are able to retrieve the cache capacity",
-                () ->
-                        request(
-                                CAPACITY,
-                                null,
-                                defaultNodeId,
-                                (response, error) -> {
-                                    assertThat(error, nullValue());
-                                    var capacity = ((CapacityResponse) response.payload());
-                                    logger.info("Capacity: {}", capacity.capacity());
-                                    assertThat(capacity.capacity(), notNullValue());
-                                }));
+                () -> request(CAPACITY, null, defaultNodeId, capacityResponseHandler));
 
         Given(
                 "An entry for key {string} and value {string} is recorded",
@@ -49,13 +49,7 @@ public class CacheSteps extends BaseSteps implements En {
                                 GET,
                                 new GetRequest(key),
                                 defaultNodeId,
-                                ((response, error) -> {
-                                    assertThat(error, nullValue());
-                                    var payload = (GetResponse) response.payload();
-                                    logger.info("key={}, value={}", payload.key(), payload.value());
-                                    assertThat(payload.value(), notNullValue());
-                                    assertThat((String) payload.value(), equalTo(value));
-                                })));
+                                getDataResponseHandler(value)));
 
         Then(
                 "We are able to remove an existing record for the key {string}",
@@ -64,14 +58,7 @@ public class CacheSteps extends BaseSteps implements En {
                                 DEL,
                                 new DelRequest(key),
                                 defaultNodeId,
-                                (response, error) -> {
-                                    assertThat(error, nullValue());
-                                    assertThat(
-                                            "Error removing key from cache",
-                                            Status.ERROR.equals(response.status()),
-                                            is(false));
-                                    logger.info("Removed key={}!", key);
-                                }));
+                                deleteResponseHandler(key)));
 
         Then(
                 "No records are found for the key {string}",
@@ -80,18 +67,43 @@ public class CacheSteps extends BaseSteps implements En {
                                 EXISTS,
                                 new ExistsRequest(key),
                                 defaultNodeId,
-                                (response, error) -> {
-                                    assertThat(error, nullValue());
-                                    assertThat(
-                                            "Key still exists in the cache",
-                                            ((ExistsResponse) response.payload()).exists(),
-                                            is(false));
-                                    logger.info("No records exist for key {}", key);
-                                }));
+                                existsResponseHandler(key)));
 
         And("The cache is not empty", () -> assertCacheState("Cache is empty", false));
 
         And("The cache is empty", () -> assertCacheState("Cache is not empty", true));
+    }
+
+    private BiConsumer<Response, Throwable> getDataResponseHandler(String value) {
+        return defaultHandler.andThen(
+                (response, error) -> {
+                    var payload = (GetResponse) response.payload();
+                    logger.info("key={}, value={}", payload.key(), payload.value());
+                    assertThat(payload.value(), notNullValue());
+                    assertThat((String) payload.value(), equalTo(value));
+                });
+    }
+
+    private BiConsumer<Response, Throwable> existsResponseHandler(String key) {
+        return defaultHandler.andThen(
+                (response, error) -> {
+                    assertThat(
+                            "Key still exists in the cache",
+                            ((ExistsResponse) response.payload()).exists(),
+                            is(false));
+                    logger.info("No records exist for key {}", key);
+                });
+    }
+
+    private BiConsumer<Response, Throwable> deleteResponseHandler(String key) {
+        return defaultHandler.andThen(
+                (response, error) -> {
+                    assertThat(
+                            "Error removing key from cache",
+                            Status.ERROR.equals(response.status()),
+                            is(false));
+                    logger.info("Removed key={}!", key);
+                });
     }
 
     private void assertCacheState(String message, boolean value) {
