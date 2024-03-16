@@ -11,12 +11,16 @@ module stundb.api {
     requires transitive org.slf4j;
     requires transitive jakarta.inject;
 
+    exports com.stundb.api.btree;
     exports com.stundb.api.configuration;
     exports com.stundb.api.crdt;
     exports com.stundb.api.mappers;
     exports com.stundb.api.models;
     exports com.stundb.api.providers;
 
+    opens com.stundb.api.btree to
+            com.google.guice,
+            com.fasterxml.jackson.databind;
     opens com.stundb.api.configuration to
             com.google.guice,
             com.fasterxml.jackson.databind,

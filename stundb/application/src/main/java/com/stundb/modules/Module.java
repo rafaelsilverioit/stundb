@@ -6,6 +6,7 @@ import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.name.Names;
+import com.stundb.api.btree.BTree;
 import com.stundb.api.configuration.ConfigurationLoader;
 import com.stundb.api.mappers.ApplicationConfigMapper;
 import com.stundb.api.models.ApplicationConfig;
@@ -25,6 +26,7 @@ import com.stundb.net.server.handlers.CommandHandler;
 import com.stundb.service.*;
 import com.stundb.service.impl.*;
 import com.stundb.timers.CoordinatorTimerTask;
+
 import jakarta.validation.Validator;
 
 import java.security.MessageDigest;
@@ -41,19 +43,25 @@ public class Module extends AbstractModule {
         bindInterceptor(
                 Matchers.any(), Matchers.annotatedWith(Loggable.class), new RequestLogger());
 
-        bind(new TypeLiteral<Cache<Object>>() {}).toProvider(PublicCacheProvider.class);
-        bind(new TypeLiteral<Cache<Node>>() {}).toProvider(InternalCacheProvider.class);
+        bind(new TypeLiteral<BTree<String, Object>>() {})
+                .toProvider(new TypeLiteral<BTreeProvider<Object>>() {})
+                .in(Singleton.class);
+        bind(new TypeLiteral<BTree<String, Node>>() {})
+                .toProvider(new TypeLiteral<BTreeProvider<Node>>() {})
+                .in(Singleton.class);
+        bind(new TypeLiteral<Cache<Object>>() {})
+                .toProvider(new TypeLiteral<CacheProvider<Object>>() {})
+                .in(Singleton.class);
+        bind(new TypeLiteral<Cache<Node>>() {})
+                .toProvider(new TypeLiteral<CacheProvider<Node>>() {})
+                .in(Singleton.class);
 
         bind(ConfigurationLoader.class).toInstance(new ConfigurationLoader());
         bind(ApplicationConfig.class)
                 .toProvider(ApplicationConfigProvider.class)
                 .in(Singleton.class);
-        bind(Validator.class)
-                .toProvider(ValidatorProvider.class)
-                .in(Singleton.class);
-        bind(ObjectMapper.class)
-                .toProvider(ObjectMapperProvider.class)
-                .in(Singleton.class);
+        bind(Validator.class).toProvider(ValidatorProvider.class).in(Singleton.class);
+        bind(ObjectMapper.class).toProvider(ObjectMapperProvider.class).in(Singleton.class);
         bind(MessageDigest.class).toProvider(MessageDigestProvider.class);
         bind(UniqueId.class).toProvider(UniqueIdProvider.class);
         bind(ApplicationConfigMapper.class).toInstance(ApplicationConfigMapper.INSTANCE);
