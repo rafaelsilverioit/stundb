@@ -4,6 +4,8 @@ import com.stundb.net.core.models.requests.CRDTRequest;
 
 public interface ReplicationService {
 
+    void initialize();
+
     void synchronize(CRDTRequest request);
 
     CRDTRequest generateCrdtRequest();

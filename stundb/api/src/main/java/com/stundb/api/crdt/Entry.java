@@ -14,8 +14,4 @@ public record Entry(Instant timestamp, String key, Object value) {
         var other = (Entry) object;
         return key.equals(other.key()) && timestamp.equals(other.timestamp());
     }
-
-    public Entry cloneRemovingValue() {
-        return new Entry(timestamp, key, null);
-    }
 }

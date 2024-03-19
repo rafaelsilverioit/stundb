@@ -1,18 +1,15 @@
 package com.stundb.api.btree;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class BTreeImpl<K extends Comparable<K>, V> implements BTree<K, V> {
 
-    private final AtomicInteger size = new AtomicInteger(0);
     private Node<K, V> root;
 
     @Override
     public void putIfAbsent(K key, V value) {
         if (root == null) {
             root = new Node<>(key, value);
-            size.getAndIncrement();
             return;
         }
 
@@ -27,7 +24,6 @@ public class BTreeImpl<K extends Comparable<K>, V> implements BTree<K, V> {
             if (key.compareTo(target.getKey()) > 0) {
                 if (target.getRight() == null) {
                     target.setRight(new Node<>(key, value));
-                    size.getAndIncrement();
                     return;
                 }
 
@@ -37,7 +33,6 @@ public class BTreeImpl<K extends Comparable<K>, V> implements BTree<K, V> {
 
             if (target.getLeft() == null) {
                 target.setLeft(new Node<>(key, value));
-                size.getAndIncrement();
                 return;
             }
 
@@ -58,18 +53,16 @@ public class BTreeImpl<K extends Comparable<K>, V> implements BTree<K, V> {
     @Override
     public void remove(K key) {
         root = remove(key, root);
-        size.getAndDecrement();
     }
 
     @Override
     public void clear() {
         root = clear(root);
-        size.set(0);
     }
 
     @Override
     public Integer size() {
-        return size.get();
+        return count(root);
     }
 
     private Collection<Node<K, V>> getNodeValue(Node<K, V> node) {
@@ -172,5 +165,12 @@ public class BTreeImpl<K extends Comparable<K>, V> implements BTree<K, V> {
             clear(target.getLeft());
         }
         return null;
+    }
+
+    private Integer count(Node<K, V> target) {
+        if (target != null) {
+            return 1 + count(target.getRight()) + count(target.getLeft());
+        }
+        return 0;
     }
 }

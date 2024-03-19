@@ -1,6 +1,7 @@
 module stundb.net.core {
     requires fury.core;
     requires transitive stundb.api;
+    requires stundb.core;
 
     exports com.stundb.net.core.codecs;
     exports com.stundb.net.core.codecs.fury;

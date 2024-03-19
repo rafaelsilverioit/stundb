@@ -1,45 +1,48 @@
 package com.stundb.core.crdt;
 
+import static java.util.function.Predicate.not;
+
 import com.stundb.api.crdt.Entry;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.Collection;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
-public class LastWriterWinsSet implements CRDT<LastWriterWinsSet> {
+public class LastWriterWinsSet implements CRDT {
 
-    private final Set<Entry> add;
-    private final Set<Entry> remove;
+    private final Set<Entry> added;
+    private final Set<Entry> removed;
 
     public LastWriterWinsSet() {
-        add = new ConcurrentSet<>();
-        remove = new ConcurrentSet<>();
+        added = new ConcurrentSet<>();
+        removed = new ConcurrentSet<>();
     }
 
     @Override
-    public void merge(LastWriterWinsSet anotherLwwSet) {
-        add.addAll(anotherLwwSet.getAdd());
-        remove.addAll(anotherLwwSet.getRemove());
+    public void merge(Collection<Entry> added, Collection<Entry> removed) {
+        this.added.addAll(added);
+        this.removed.addAll(removed);
     }
 
     @Override
     public void add(Entry entry) {
-        add.add(entry);
+        added.add(entry);
     }
 
     @Override
     public void remove(Entry entry) {
-        remove.add(entry);
+        removed.add(entry);
     }
 
     @Override
-    public LastWriterWinsSet diff(LastWriterWinsSet other) {
-        return new LastWriterWinsSet(diff(add, other.getAdd()), diff(remove, other.getRemove()));
+    public CRDT diff(CRDT anotherState) {
+        return new LastWriterWinsSet(
+                diff(added, anotherState.getAdded()), diff(removed, anotherState.getRemoved()));
     }
 
     @Override
@@ -50,19 +53,15 @@ public class LastWriterWinsSet implements CRDT<LastWriterWinsSet> {
             return false;
         }
         var other = (LastWriterWinsSet) object;
-        return add.equals(other.getAdd()) && remove.equals(other.getRemove());
+        return added.equals(other.getAdded()) && removed.equals(other.getRemoved());
     }
 
     @Override
     public int hashCode() {
-        return 31 * add.hashCode() + remove.hashCode();
+        return 31 * added.hashCode() + removed.hashCode();
     }
 
     private Set<Entry> diff(Set<Entry> firstSet, final Set<Entry> secondSet) {
-        return filtered(firstSet, element -> !secondSet.contains(element));
-    }
-
-    private Set<Entry> filtered(Set<Entry> set, Predicate<Entry> predicate) {
-        return set.stream().filter(predicate).collect(Collectors.toSet());
+        return firstSet.stream().filter(not(secondSet::contains)).collect(Collectors.toSet());
     }
 }

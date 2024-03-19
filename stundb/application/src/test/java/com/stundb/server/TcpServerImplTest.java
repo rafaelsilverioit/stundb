@@ -33,7 +33,8 @@ class TcpServerImplTest {
     void test_onStart() {
         testee.onStart();
         verify(nodeService).init();
-        verify(config).getName();
+        verify(config).name();
+        verify(replicationService).initialize();
     }
 
     @Test

@@ -88,8 +88,8 @@ public class ElectionServiceImpl implements ElectionService {
                         .map(n -> n.clone(true))
                         .orElse(
                                 new Node(
-                                        config.getIp(),
-                                        config.getPort(),
+                                        config.ip(),
+                                        config.port(),
                                         uniqueId.number(),
                                         true,
                                         NodeStatus.create(RUNNING)));

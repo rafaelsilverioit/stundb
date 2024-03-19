@@ -57,16 +57,16 @@ public abstract class TcpServer {
     protected abstract void contactSeeds();
 
     public void run() {
-        var executor = Executors.newFixedThreadPool(config.getExecutors().initializer().threads());
-        var mainGroup = new NioEventLoopGroup(config.getExecutors().mainServerLoop().threads());
+        var executor = Executors.newFixedThreadPool(config.executors().initializer().threads());
+        var mainGroup = new NioEventLoopGroup(config.executors().mainServerLoop().threads());
         var secondaryGroup =
-                new NioEventLoopGroup(config.getExecutors().secondaryServerLoop().threads());
+                new NioEventLoopGroup(config.executors().secondaryServerLoop().threads());
         var bootstrap = new ServerBootstrap();
         bootstrap
                 .group(mainGroup, secondaryGroup)
                 .channel(NioServerSocketChannel.class)
                 .childHandler(channelInitializer())
-                .bind(new InetSocketAddress(config.getPort()))
+                .bind(new InetSocketAddress(config.port()))
                 .addListener(onStartListener(executor));
     }
 
@@ -77,7 +77,7 @@ public abstract class TcpServer {
             @Override
             protected void initChannel(Channel channel) {
                 var pipeline = channel.pipeline();
-                var timeouts = config.getTimeouts();
+                var timeouts = config.timeouts();
                 var tcpReadTimeout = timeouts.tcpReadTimeout();
                 var tcpWriteTimeout = timeouts.tcpWriteTimeout();
 
@@ -115,8 +115,8 @@ public abstract class TcpServer {
 
         var myself =
                 new Node(
-                        config.getIp(),
-                        config.getPort(),
+                        config.ip(),
+                        config.port(),
                         uniqueId.number(),
                         false,
                         com.stundb.net.core.models.NodeStatus.create(RUNNING));
@@ -126,10 +126,10 @@ public abstract class TcpServer {
     }
 
     private List<String> seedsExcludingCurrentNode() {
-        return config.getSeeds().stream().filter(seed -> !seed.equals(serverAddress())).toList();
+        return config.seeds().stream().filter(seed -> !seed.equals(serverAddress())).toList();
     }
 
     protected String serverAddress() {
-        return config.getIp() + ":" + config.getPort();
+        return config.ip() + ":" + config.port();
     }
 }
