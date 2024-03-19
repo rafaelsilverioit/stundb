@@ -32,6 +32,13 @@ public class ApplicationProperties {
     @Pattern(regexp = NUMBER_PATTERN, message = "Property 'port' must be provided")
     private String port;
 
+    @Setter
+    @NotNull(message = "Property 'statePersistenceEnabled' must be provided")
+    private boolean statePersistenceEnabled;
+
+    @NotBlank(message = "Property 'stateDir' must be provided")
+    private String stateDir;
+
     @NotNull(message = "Property 'capacities' must be provided, along with its nested properties")
     private Map<
                     @NotBlank(message = "Capacity scope must be provided")
@@ -102,6 +109,10 @@ public class ApplicationProperties {
 
     public void setPort(String port) {
         this.port = replaceProperty(port);
+    }
+
+    public void setStateDir(String stateDir) {
+        this.stateDir = replaceProperty(stateDir);
     }
 
     public void setCapacity(Map<String, String> capacities) {

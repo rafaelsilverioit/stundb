@@ -15,7 +15,7 @@ public class MessageDigestProvider implements Provider<MessageDigest> {
     @Override
     public MessageDigest get() {
         try {
-            return MessageDigest.getInstance(config.getDigestAlgorithm());
+            return MessageDigest.getInstance(config.digestAlgorithm());
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }

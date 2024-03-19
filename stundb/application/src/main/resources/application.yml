@@ -1,6 +1,8 @@
 name: StunDB
 ip: 127.0.0.1
 port: ${application.port:8000}
+statePersistenceEnabled: true
+stateDir: /tmp/stundb
 capacity:
   publicCache: 9999
   internalCache: 256
@@ -17,6 +19,8 @@ executors:
     threads: 10
   secondaryServerLoop:
     threads: 10
+  scheduler:
+    threads: 5
 backoffSettings:
   maximumBackoffInSeconds: 15
   maximumRetries: 5

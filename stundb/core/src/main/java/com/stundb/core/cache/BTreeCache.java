@@ -8,44 +8,57 @@ import jakarta.inject.Inject;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class BTreeCache<V> implements Cache<V> {
 
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     @Inject private BTree<String, V> tree;
-
-    // TODO: handle synchronization
 
     @Override
     public Boolean put(String key, V value) {
-        tree.find(key)
-                .ifPresentOrElse(
-                        __ -> {
-                            tree.remove(key);
-                            tree.putIfAbsent(key, value);
-                        },
-                        () -> tree.putIfAbsent(key, value));
+        get(key).ifPresentOrElse(
+                        __ ->
+                                writeLock(key, value, (k, v) -> {
+                                    tree.remove(key);
+                                    tree.putIfAbsent(key, value);
+                                    return null;
+                                }),
+                        () ->
+                                writeLock(key, value, (k, v) -> {
+                                    tree.putIfAbsent(key, value);
+                                    return null;
+                                }));
         return true;
     }
 
     @Override
     public Optional<V> get(String key) {
-        return tree.find(key).map(Node::getValue);
+        return readLock(key, (__) -> tree.find(key)).map(Node::getValue);
     }
 
     @Override
     public Collection<V> getAll() {
-        return tree.findAll().stream().map(Node::getValue).collect(Collectors.toList());
+        return readLock(null, (__) -> tree.findAll()).stream()
+                .map(Node::getValue)
+                .collect(Collectors.toList());
     }
 
     @Override
     public Map<String, V> dump() {
-        return tree.findAll().stream().collect(Collectors.toMap(Node::getKey, Node::getValue));
+        return readLock(null, (__) -> tree.findAll()).stream()
+                .collect(Collectors.toMap(Node::getKey, Node::getValue));
     }
 
     @Override
     public Boolean del(String key) {
-        tree.remove(key);
+        writeLock(key, null, (k, __) -> {
+            tree.remove(key);
+            return null;
+        });
         return true;
     }
 
@@ -57,16 +70,37 @@ public class BTreeCache<V> implements Cache<V> {
 
     @Override
     public Integer size() {
-        return tree.size();
+        return readLock(null, (__) -> tree.size());
     }
 
     @Override
     public Boolean isEmpty() {
-        return tree.size() == 0;
+        return readLock(null, (__) -> tree.size() == 0);
     }
 
     @Override
     public void clear() {
-        tree.clear();
+        writeLock(null, null, (k, __) -> {
+            tree.clear();
+            return null;
+        });
+    }
+
+    private <T> T readLock(String key, Function<String, T> fn) {
+        this.lock.readLock().lock();
+        try {
+            return fn.apply(key);
+        } finally {
+            this.lock.readLock().unlock();
+        }
+    }
+
+    private void writeLock(String key, V value, BiFunction<String, V, Void> fn) {
+        this.lock.writeLock().lock();
+        try {
+            fn.apply(key, value);
+        } finally {
+            this.lock.writeLock().unlock();
+        }
     }
 }

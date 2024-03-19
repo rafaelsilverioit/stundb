@@ -6,17 +6,14 @@ import static org.hamcrest.Matchers.nullValue;
 import static java.util.Optional.ofNullable;
 
 import com.google.inject.Guice;
-import com.stundb.acceptance.tests.models.Tuple;
 import com.stundb.acceptance.tests.modules.Module;
+import com.stundb.api.models.Tuple;
 import com.stundb.net.client.StunDBClient;
 import com.stundb.net.core.models.Command;
 import com.stundb.net.core.models.Node;
 import com.stundb.net.core.models.NodeStatus;
 import com.stundb.net.core.models.requests.Request;
 import com.stundb.net.core.models.responses.Response;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,7 +26,7 @@ public abstract class BaseSteps {
     protected final Properties properties;
     protected final Map<Long, Tuple<String, Integer>> nodesById = new LinkedHashMap<>();
     protected final Long defaultNodeId = 66508730L;
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     protected BiConsumer<Response, Throwable> defaultHandler =
             (response, error) -> assertThat(error, nullValue());
 

@@ -16,8 +16,9 @@ public class TcpServerImpl extends TcpServer {
 
     @Override
     protected void onStart() {
+        replicationService.initialize();
         nodeService.init();
-        logger.info("Running {} on {}", config.getName(), serverAddress());
+        logger.info("Running {} on {}", config.name(), serverAddress());
     }
 
     @Override

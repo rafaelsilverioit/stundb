@@ -11,4 +11,17 @@ public record Node(String ip, Integer port, Long uniqueId, Boolean leader, NodeS
     public Node clone(State state) {
         return new Node(ip, port, uniqueId, leader, NodeStatus.create(state, status.created()));
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        } else if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        var other = (Node) object;
+        return ip.equals(other.ip())
+                && port.equals(other.port())
+                && uniqueId.equals(other.uniqueId);
+    }
 }

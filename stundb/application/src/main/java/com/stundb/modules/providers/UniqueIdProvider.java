@@ -16,7 +16,7 @@ public class UniqueIdProvider implements Provider<UniqueId> {
 
     @Override
     public UniqueId get() {
-        long uniqueId = utils.generateUniqueId(config.getIp() + ":" + config.getPort());
+        long uniqueId = utils.generateUniqueId(config.ip() + ":" + config.port());
         return new UniqueId(String.valueOf(uniqueId), uniqueId);
     }
 }

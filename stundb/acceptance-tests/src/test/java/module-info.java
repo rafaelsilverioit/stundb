@@ -8,9 +8,9 @@ open module acceptance.tests {
     requires stundb.application;
     requires stundb.net.client;
     requires stundb.net.server;
+    requires stundb.api;
 
     exports com.stundb.acceptance.tests to com.google.guice;
-    exports com.stundb.acceptance.tests.models to com.google.guice;
     exports com.stundb.acceptance.tests.modules to com.google.guice;
     exports com.stundb.acceptance.tests.modules.providers to com.google.guice;
     exports com.stundb.acceptance.tests.steps to com.google.guice;

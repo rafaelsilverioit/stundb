@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -74,6 +75,7 @@ public class CodecProvider implements Provider<Codec> {
                             fury.register(Collection.class);
                             fury.register(Set.class);
                             fury.register(Map.class);
+                            fury.register(HashSet.class);
                             fury.register(Map.Entry.class);
                             fury.register(Entry.class);
                             try {
