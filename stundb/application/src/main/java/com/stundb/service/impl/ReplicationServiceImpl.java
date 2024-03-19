@@ -51,8 +51,6 @@ public class ReplicationServiceImpl implements ReplicationService {
     /* TODO: think about partial replication/replication on demand instead of replicating every action received
      *       e.g: node x is 40 state entries behind node y, so node y sends these 40 state entries for x to sync
      *       e.g: node x suddenly decides its sate is corrupted, clears its state and asks for full synchronization
-     *
-     * TODO: what do we do when state becomes too big to fit in memory? does it need to be in memory all the time?
      */
 
     @Loggable
