@@ -134,8 +134,8 @@ class ElectionServiceImplTest {
         testee.run(true);
 
         verify(client).requestAsync(requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
-        verify(config, never()).getIp();
-        verify(config, never()).getPort();
+        verify(config, never()).ip();
+        verify(config, never()).port();
         verify(internalCache).put(any(), nodeCaptor.capture());
 
         assertTrue(electionStarted.get());
@@ -179,8 +179,8 @@ class ElectionServiceImplTest {
         testee.run(true);
 
         verify(client).requestAsync(requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
-        verify(config, never()).getIp();
-        verify(config, never()).getPort();
+        verify(config, never()).ip();
+        verify(config, never()).port();
         verify(internalCache, never()).put(any(), any());
 
         assertTrue(electionStarted.get());
@@ -328,8 +328,8 @@ class ElectionServiceImplTest {
     private void mockAllOperations(
             List<Node> internalCacheNodes, CompletableFuture<Response> clientResponse) {
         mockBasicOperations(internalCacheNodes, clientResponse);
-        when(config.getIp()).thenReturn(NODE_IP);
-        when(config.getPort()).thenReturn(NODE_PORT);
+        when(config.ip()).thenReturn(NODE_IP);
+        when(config.port()).thenReturn(NODE_PORT);
         var values =
                 internalCacheNodes.stream()
                         .filter(

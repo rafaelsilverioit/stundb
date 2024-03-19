@@ -13,8 +13,6 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
 @AllArgsConstructor
 public class ObjectEncoder extends MessageToByteEncoder<Response> {
 
@@ -23,7 +21,7 @@ public class ObjectEncoder extends MessageToByteEncoder<Response> {
 
     @Loggable
     @Override
-    protected void encode(ChannelHandlerContext ctx, Response msg, ByteBuf out) throws IOException {
+    protected void encode(ChannelHandlerContext ctx, Response msg, ByteBuf out) {
         try {
             byte[] encode = codec.encode(msg);
             out.writeBytes(encode);

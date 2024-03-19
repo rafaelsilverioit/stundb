@@ -16,91 +16,39 @@ import com.stundb.net.core.models.responses.ErrorResponse;
 import com.stundb.net.core.models.responses.RegisterResponse;
 import com.stundb.service.ReplicationService;
 import com.stundb.service.SeedService;
+import com.stundb.timers.BackoffTimerTask;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-import lombok.SneakyThrows;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Random;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @Singleton
 public class SeedServiceImpl implements SeedService {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject protected StunDBClient client;
     @Inject private ApplicationConfig config;
     @Inject private Cache<Node> internalCache;
     @Inject private ReplicationService replicationService;
     @Inject private UniqueId uniqueId;
+    @Inject private BackoffTimerTask backoffTimerTask;
+    @Inject private Timer timer;
 
     @Override
     @Loggable
-    @SneakyThrows
     public void contactSeeds() {
         var otherSeeds =
-                config.getSeeds().stream()
-                        .filter(seed -> !seed.equals(config.getIp() + ":" + config.getPort()))
+                config.seeds().stream()
+                        .filter(seed -> !seed.equals(config.ip() + ":" + config.port()))
                         .toList();
-        var hasAnySeedReplied = new AtomicBoolean(false);
-        var attempt = 0;
 
-        // retrying to ping seeds until at least one node replies back
-        while (!hasAnySeedReplied.get()) {
-            if (attempt >= readConfigAsInteger("maximumRetries", 5)) {
-                logger.warn("No seeds replied back after many attempts, giving up");
-                break;
-            } else if (attempt != 0) {
-                var sleep = calculateBackoffTimeInMillis(attempt);
-                logger.warn(
-                        "All seeds have failed, waiting for {} milliseconds before retrying",
-                        sleep);
-                //noinspection BusyWait
-                Thread.sleep(sleep);
-            }
-
-            otherSeeds.forEach(seed -> contactSeed(seed, hasAnySeedReplied));
-            attempt++;
-        }
-    }
-
-    /**
-     *
-     *
-     * <pre>
-     * Given an attempt number, calculates the backoff time with some random jitter.
-     *
-     * Formula: <b>min(maximumBackoffInSeconds, attempt + random jitter)</b>
-     * Given that <b>random jitter</b> is a random number between <b>1</b> and <b>maximumBackoffInSeconds</b> (exclusive).
-     * </pre>
-     *
-     * @param attempt the number of failed requests
-     * @return backoff in milliseconds
-     */
-    private long calculateBackoffTimeInMillis(int attempt) {
-        var upperbound = readConfigAsInteger("maximumBackoffInSeconds", 60);
-        var backoff = attempt + new Random().nextInt(1, upperbound);
-        var backoffInSeconds = Math.min(upperbound, backoff);
-        return backoffInSeconds * 1000L;
-    }
-
-    private void contactSeed(String seed, AtomicBoolean hasAnySeedReplied) {
-        try {
-            contactSeed(seed);
-            hasAnySeedReplied.set(true);
-        } catch (Exception e) {
-            logger.debug(e.getMessage(), e);
-        }
+        otherSeeds.forEach(seed -> backoffTimerTask.enqueue(seed, this::contactSeed));
+        timer.schedule((TimerTask) backoffTimerTask, 1000L);
     }
 
     @Loggable
-    private void contactSeed(String seed) throws ExecutionException, InterruptedException {
+    private Void contactSeed(String seed) {
         var address = seed.split(":");
         if (address.length != 2) {
             throw new IllegalArgumentException(format("Invalid seed address - %s", seed));
@@ -109,13 +57,15 @@ public class SeedServiceImpl implements SeedService {
         var request =
                 Request.buildRequest(
                         Command.REGISTER,
-                        new RegisterRequest(config.getIp(), config.getPort(), uniqueId.number()));
-        var response = client.requestAsync(request, address[0], Integer.parseInt(address[1])).get();
+                        new RegisterRequest(config.ip(), config.port(), uniqueId.number()));
+        var response =
+                client.requestAsync(request, address[0], Integer.parseInt(address[1])).join();
         if (Status.ERROR.equals(response.status())) {
             var code = ((ErrorResponse) response.payload()).code();
             throw new RuntimeException(format("Reply from seed was - %s", code));
         }
         handleSeedResponse((RegisterResponse) response.payload());
+        return null;
     }
 
     @Loggable
@@ -140,9 +90,5 @@ public class SeedServiceImpl implements SeedService {
          *  at random.
          */
         replicationService.synchronize(response.state());
-    }
-
-    private Integer readConfigAsInteger(String key, int defaultValue) {
-        return config.getBackoffSettings().getOrDefault(key, defaultValue);
     }
 }

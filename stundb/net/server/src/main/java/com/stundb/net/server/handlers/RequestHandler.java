@@ -57,7 +57,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<Request> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        logger.warn(cause.getMessage(), cause);
+        logger.debug(cause.getMessage(), cause);
         ctx.close();
     }
 }

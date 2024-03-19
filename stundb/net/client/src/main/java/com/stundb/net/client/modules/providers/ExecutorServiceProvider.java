@@ -16,7 +16,7 @@ public class ExecutorServiceProvider implements Provider<ExecutorService> {
 
     @Override
     public ExecutorService get() {
-        var executor = Executors.newFixedThreadPool(config.getExecutors().tcpClient().threads());
+        var executor = Executors.newFixedThreadPool(config.executors().tcpClient().threads());
         Runtime.getRuntime().addShutdownHook(new Thread(executor::shutdown));
         return executor;
     }

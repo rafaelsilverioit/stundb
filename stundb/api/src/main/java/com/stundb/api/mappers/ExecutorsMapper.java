@@ -16,6 +16,7 @@ public interface ExecutorsMapper {
     String MAIN_SERVER_LOOP = "mainServerLoop";
     String SECONDARY_SERVER_LOOP = "secondaryServerLoop";
     String INITIALIZER = "initializer";
+    String SCHEDULER = "scheduler";
     ExecutorsMapper INSTANCE = Mappers.getMapper(ExecutorsMapper.class);
 
     @Mapping(
@@ -30,6 +31,9 @@ public interface ExecutorsMapper {
     @Mapping(
             target = INITIALIZER,
             expression = "java(mapExecutor(properties.get(\"" + INITIALIZER + "\")))")
+    @Mapping(
+            target = SCHEDULER,
+            expression = "java(mapExecutor(properties.get(\"" + SCHEDULER + "\")))")
     Executors mapExecutors(Map<String, Map<String, Integer>> properties);
 
     default Executor mapExecutor(Map<String, Integer> data) {

@@ -15,6 +15,7 @@ module stundb.application {
     opens com.stundb.server.handlers.store to com.google.guice;
     opens com.stundb.service.impl to com.google.guice;
     opens com.stundb.timers to com.google.guice;
+    opens com.stundb.timers.impl to com.google.guice;
 
     uses com.stundb.net.server.handlers.CommandHandler;
     uses com.stundb.net.server.handlers.RequestHandler;

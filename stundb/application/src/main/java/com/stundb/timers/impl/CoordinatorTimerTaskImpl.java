@@ -1,4 +1,4 @@
-package com.stundb.timers;
+package com.stundb.timers.impl;
 
 import static com.stundb.net.core.models.NodeStatus.State.*;
 
@@ -28,7 +28,7 @@ import java.util.Objects;
 import java.util.TimerTask;
 
 @Singleton
-public class CoordinatorTimerTask extends TimerTask {
+public class CoordinatorTimerTaskImpl extends TimerTask {
 
     private static final List<NodeStatus.State> VALID_STATES = List.of(RUNNING);
     private static final List<NodeStatus.State> INVALID_STATES = List.of(FAILING, DISABLED);

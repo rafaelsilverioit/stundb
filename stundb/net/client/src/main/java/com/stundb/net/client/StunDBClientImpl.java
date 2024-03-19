@@ -34,10 +34,10 @@ public class StunDBClientImpl implements StunDBClient {
                     try (var socket = new Socket()) {
                         return execute(request, ip, port, socket);
                     } catch (Exception e) {
-                        logger.error("Request failed " + request, e);
+                        logger.debug("Request failed " + request, e);
                         throw new RuntimeException(e);
                     } finally {
-                        logger.debug("Request took " + (System.currentTimeMillis() - start) + "ms");
+                        logger.info("Request took " + (System.currentTimeMillis() - start) + "ms");
                     }
                 },
                 executor);
@@ -45,7 +45,7 @@ public class StunDBClientImpl implements StunDBClient {
 
     private Response execute(Request request, String ip, Integer port, Socket socket)
             throws IOException {
-        var timeouts = config.getTimeouts();
+        var timeouts = config.timeouts();
         var timeoutInMillis = timeouts.timeoutInMillis(timeouts.tcpReadTimeout());
         socket.connect(new InetSocketAddress(ip, port), timeoutInMillis);
         var bytes = codec.encode(request);
