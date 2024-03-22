@@ -66,7 +66,7 @@ public class NodeServiceImplTest {
 
     @Test
     void ping_should_work_successfully() {
-        testee.ping(Request.buildRequest(Command.PING, null));
+        testee.ping();
 
         verify(client, never()).requestAsync(any(), any(), any());
     }

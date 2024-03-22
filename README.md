@@ -13,6 +13,9 @@
 - Implement node statuses so that when a node becomes unreachable, it is ignored until it becomes available again and state is synchronized (remove leader status too)
 - Retry contacting seeds until a node replies, up to a maximum number of attempts
 - Move from Kryo to Apache Fury
+- Use a BTree to store data
+- Allow state persistence
+- Support JPMS
 
 ### Doing
 - Create a Spring Boot app to observe nodes and expose actions through a REST API
