@@ -1,15 +1,16 @@
 package com.stundb.api.btree;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class BTreeImpl<K extends Comparable<K>, V> implements BTree<K, V> {
 
     private Node<K, V> root;
 
     @Override
-    public void putIfAbsent(K key, V value) {
+    public void putIfAbsent(K key, V value, Long ttl) {
         if (root == null) {
-            root = new Node<>(key, value);
+            root = new Node<>(key, value, ttl);
             return;
         }
 
@@ -23,7 +24,7 @@ public class BTreeImpl<K extends Comparable<K>, V> implements BTree<K, V> {
         while (target != null) {
             if (key.compareTo(target.getKey()) > 0) {
                 if (target.getRight() == null) {
-                    target.setRight(new Node<>(key, value));
+                    target.setRight(new Node<>(key, value, ttl));
                     return;
                 }
 
@@ -32,7 +33,7 @@ public class BTreeImpl<K extends Comparable<K>, V> implements BTree<K, V> {
             }
 
             if (target.getLeft() == null) {
-                target.setLeft(new Node<>(key, value));
+                target.setLeft(new Node<>(key, value, ttl));
                 return;
             }
 
@@ -48,6 +49,14 @@ public class BTreeImpl<K extends Comparable<K>, V> implements BTree<K, V> {
     @Override
     public Collection<Node<K, V>> findAll() {
         return getNodeValue(root);
+    }
+
+    @Override
+    public Collection<K> retrieveKeysOfExpiredEntries() {
+        return getNodeValue(root).stream()
+                .filter(Node::isExpired)
+                .map(Node::getKey)
+                .collect(Collectors.toList());
     }
 
     @Override

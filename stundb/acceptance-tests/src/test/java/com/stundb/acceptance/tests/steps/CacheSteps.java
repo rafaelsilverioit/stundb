@@ -38,7 +38,7 @@ public class CacheSteps extends BaseSteps implements En {
         Given(
                 "An entry for key {string} and value {string} is recorded",
                 (String key, String value) ->
-                        request(SET, new SetRequest(key, value, -1), defaultNodeId));
+                        request(SET, new SetRequest(key, value, null), defaultNodeId));
 
         When("We clear the cache", () -> request(CLEAR, null, defaultNodeId));
 

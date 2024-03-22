@@ -8,6 +8,7 @@ import com.stundb.service.NodeService;
 import com.stundb.service.ReplicationService;
 import com.stundb.service.SeedService;
 
+import com.stundb.service.StoreService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,6 +22,8 @@ class TcpServerImplTest {
 
     @Mock private NodeService nodeService;
 
+    @Mock private StoreService storeService;
+
     @Mock private ReplicationService replicationService;
 
     @Mock private SeedService seedService;
@@ -32,9 +35,10 @@ class TcpServerImplTest {
     @Test
     void test_onStart() {
         testee.onStart();
-        verify(nodeService).init();
         verify(config).name();
+        verify(nodeService).init();
         verify(replicationService).initialize();
+        verify(storeService).init();
     }
 
     @Test

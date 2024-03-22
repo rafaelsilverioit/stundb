@@ -5,11 +5,13 @@ import java.util.Optional;
 
 public interface BTree<K extends Comparable<K>, V> {
 
-    void putIfAbsent(K key, V value);
+    void putIfAbsent(K key, V value, Long ttl);
 
     Optional<Node<K, V>> find(K key);
 
     Collection<Node<K, V>> findAll();
+
+    Collection<K> retrieveKeysOfExpiredEntries();
 
     void remove(K key);
 
