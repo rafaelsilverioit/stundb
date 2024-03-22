@@ -29,6 +29,7 @@ import com.stundb.service.*;
 import com.stundb.service.impl.*;
 import com.stundb.timers.BackoffTimerTask;
 import com.stundb.timers.impl.BackoffTimerTaskImpl;
+import com.stundb.timers.impl.CacheEvictorTimerTaskImpl;
 import com.stundb.timers.impl.CoordinatorTimerTaskImpl;
 
 import jakarta.validation.Validator;
@@ -68,6 +69,10 @@ public class Module extends AbstractModule {
         bind(TimerTask.class)
                 .annotatedWith(Names.named("coordinatorTimerTask"))
                 .to(CoordinatorTimerTaskImpl.class);
+
+        bind(TimerTask.class)
+                .annotatedWith(Names.named("cacheEvictorTimerTask"))
+                        .to(CacheEvictorTimerTaskImpl.class);
 
         bind(BackoffTimerTask.class).to(BackoffTimerTaskImpl.class);
 

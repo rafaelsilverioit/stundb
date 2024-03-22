@@ -13,18 +13,32 @@ import com.stundb.net.core.models.responses.IsEmptyResponse;
 import com.stundb.service.StoreService;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.inject.Singleton;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 @Singleton
 public class StoreServiceImpl implements StoreService {
 
     @Inject private Cache<Object> cache;
     @Inject private ReplicationServiceImpl replicationService;
+    @Inject private Timer timer;
+
+    @Named("cacheEvictorTimerTask")
+    @Inject
+    private TimerTask cacheEvictorTimerTask;
+
+    @Override
+    public void init() {
+        timer.scheduleAtFixedRate(cacheEvictorTimerTask, 10, 15 * 1000);
+    }
 
     @Loggable
     public void set(SetRequest request) {
         var encoded = request.value();
-        cache.put(request.key(), encoded);
+        cache.put(request.key(), encoded, request.ttl());
         replicationService.add(request.key(), encoded);
     }
 

@@ -11,6 +11,8 @@ import com.stundb.net.core.models.responses.IsEmptyResponse;
 
 public interface StoreService {
 
+    void init();
+
     void set(SetRequest request);
 
     void del(DelRequest request);

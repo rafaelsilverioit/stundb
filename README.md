@@ -16,16 +16,16 @@
 - Use a BTree to store data
 - Allow state persistence
 - Support JPMS
+- TTL/Cache eviction
+- Create a Spring Boot app to observe nodes and expose actions through a REST API
 
 ### Doing
-- Create a Spring Boot app to observe nodes and expose actions through a REST API
 - TESTS (unit & acceptance)!
 
 ### TODO
 - Deal with virtual clocks
-- TTL
-- Payload compression/decompression when talking between nodes
-- Authentication
 - Support multiple cache eviction policies
 - Change how synchronization works today
 - Create a node gateway app to receive requests from clients, and load balance requests between nodes
+- Authentication
+- Payload compression/decompression when talking between nodes

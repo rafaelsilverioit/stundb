@@ -20,16 +20,21 @@ public class BTreeCache<V> implements Cache<V> {
 
     @Override
     public Boolean put(String key, V value) {
+        return put(key, value, null);
+    }
+
+    @Override
+    public Boolean put(String key, V value, Long ttl) {
         get(key).ifPresentOrElse(
                         __ ->
                                 writeLock(key, value, (k, v) -> {
-                                    tree.remove(key);
-                                    tree.putIfAbsent(key, value);
+                                    tree.remove(k);
+                                    tree.putIfAbsent(k, v, ttl);
                                     return null;
                                 }),
                         () ->
                                 writeLock(key, value, (k, v) -> {
-                                    tree.putIfAbsent(key, value);
+                                    tree.putIfAbsent(k, v, ttl);
                                     return null;
                                 }));
         return true;
@@ -45,6 +50,11 @@ public class BTreeCache<V> implements Cache<V> {
         return readLock(null, (__) -> tree.findAll()).stream()
                 .map(Node::getValue)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<String> retrieveKeysOfExpiredEntries() {
+        return readLock(null, (__) -> tree.retrieveKeysOfExpiredEntries());
     }
 
     @Override
