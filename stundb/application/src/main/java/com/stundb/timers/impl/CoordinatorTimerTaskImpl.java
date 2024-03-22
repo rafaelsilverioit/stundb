@@ -1,6 +1,10 @@
 package com.stundb.timers.impl;
 
-import static com.stundb.net.core.models.NodeStatus.State.*;
+import static com.stundb.net.core.models.NodeStatus.State.DISABLED;
+import static com.stundb.net.core.models.NodeStatus.State.FAILING;
+import static com.stundb.net.core.models.NodeStatus.State.RUNNING;
+
+import static java.util.function.Predicate.not;
 
 import com.stundb.core.cache.Cache;
 import com.stundb.core.models.UniqueId;
@@ -22,16 +26,17 @@ import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.TimerTask;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Singleton
 public class CoordinatorTimerTaskImpl extends TimerTask {
 
     private static final List<NodeStatus.State> VALID_STATES = List.of(RUNNING);
-    private static final List<NodeStatus.State> INVALID_STATES = List.of(FAILING, DISABLED);
+    private static final List<NodeStatus.State> INVALID_STATES =
+            Arrays.stream(NodeStatus.State.values())
+                    .filter(not(RUNNING::equals))
+                    .collect(Collectors.toList());
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

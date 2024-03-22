@@ -58,7 +58,10 @@ public class NodeServiceImpl implements NodeService {
 
     @Loggable
     @Override
-    public void ping(Request request) {}
+    public void ping() {
+        // TODO: we may want to return state metadata so that the other node can compare to its own state
+        //       and decide whether either one of them is out of sync, then trigger a synchronization.
+    }
 
     @Loggable
     @Override

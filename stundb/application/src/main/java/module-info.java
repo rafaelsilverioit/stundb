@@ -34,5 +34,6 @@ module stundb.application {
         com.stundb.server.handlers.nodes.DeregisterHandler,
         com.stundb.server.handlers.nodes.StartElectionHandler,
         com.stundb.server.handlers.nodes.ElectedHandler,
-        com.stundb.server.handlers.nodes.SynchronizeHandler;
+        com.stundb.server.handlers.nodes.SynchronizeHandler,
+        com.stundb.server.handlers.nodes.PingHandler;
 }
