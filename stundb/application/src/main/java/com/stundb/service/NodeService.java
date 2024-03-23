@@ -13,7 +13,7 @@ public interface NodeService {
 
     void init();
 
-    void ping(Request request);
+    void ping();
 
     void trackNodeFailure(Node node);
 

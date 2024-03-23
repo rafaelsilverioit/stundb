@@ -1,13 +1,13 @@
-package com.stundb.server.handlers.store;
+package com.stundb.server.handlers.nodes;
 
 import static org.mockito.Mockito.verify;
 
 import com.stundb.net.core.models.Command;
 import com.stundb.net.core.models.requests.Request;
-import com.stundb.net.core.models.requests.SetRequest;
 
 import lombok.Getter;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,23 +21,22 @@ import java.util.stream.Stream;
 @Getter
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class SetHandlerTest extends StoreHandlerTest<SetHandler> {
+public class PingHandlerTest extends NodeHandlerTest<PingHandler> {
 
-    @InjectMocks private SetHandler testee;
+    @InjectMocks private PingHandler testee;
 
     private Stream<Arguments> test_isSupported() {
-        return test_isSupported(Command.SET);
+        return test_isSupported(Command.PING);
+    }
+
+    @Override
+    protected void verifyNodeServiceCall(Request request) {
+        verify(nodeService).ping();
     }
 
     @Override
     protected Stream<Arguments> test_execute() {
-        return Stream.of(
-                Arguments.of(new SetRequest("key", "value", 0L)), Arguments.of((SetRequest) null));
-    }
-
-    @Override
-    protected void verifyStoreServiceCall(Request request) {
-        verify(storeService).set((SetRequest) request.payload());
+        throw new UnsupportedOperationException();
     }
 
     @ParameterizedTest
@@ -46,10 +45,9 @@ public class SetHandlerTest extends StoreHandlerTest<SetHandler> {
         super.test_isSupported(command, expected);
     }
 
-    @ParameterizedTest
-    @MethodSource("test_execute")
-    void test_execute(Object payload) {
-        var request = Request.buildRequest(Command.SET, payload);
+    @Test
+    void test_execute_ping() {
+        var request = Request.buildRequest(Command.PING, null);
         super.test_execute(request);
     }
 }
