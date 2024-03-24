@@ -1,16 +1,24 @@
 package com.stundb.service;
 
-import com.stundb.net.core.models.requests.CRDTRequest;
+import com.stundb.api.crdt.Entry;
+import com.stundb.api.models.Tuple;
+
+import java.util.Collection;
+import java.util.Map;
 
 public interface ReplicationService {
 
     void initialize();
 
-    void synchronize(CRDTRequest request);
+    void synchronize(Collection<Entry> added, Collection<Entry> removed);
 
-    CRDTRequest generateCrdtRequest();
+    Tuple<Collection<Entry>, Collection<Entry>> generateStateSnapshot();
 
     void add(String key, Object value);
 
     void remove(String key);
+
+    Tuple<Collection<Entry>, Collection<Entry>> verifySynchroneity(Map<String, Long> versionClock);
+
+    Map<String, Long> generateVersionClock();
 }

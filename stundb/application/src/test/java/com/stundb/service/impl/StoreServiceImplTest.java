@@ -20,6 +20,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,11 +33,20 @@ class StoreServiceImplTest {
 
     @Mock private Cache<Object> cache;
     @Mock private ReplicationServiceImpl replicationService;
+    @Mock private TimerTask timerTask;
+    @Mock private Timer timer;
     @InjectMocks private StoreServiceImpl testee;
 
     private Stream<Arguments> existsArguments() {
         return Stream.of(
                 Arguments.of(Optional.empty(), false), Arguments.of(Optional.of(VALUE), true));
+    }
+
+    @Test
+    void init_should_work_successfully() {
+        testee.init();
+
+        verify(timer, times(1)).scheduleAtFixedRate(eq(timerTask), anyLong(), anyLong());
     }
 
     @Test

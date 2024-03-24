@@ -86,7 +86,7 @@ class SeedServiceImplTest {
         verify(config, times(2)).backoffSettings();
         verify(uniqueId, never()).number();
         verify(internalCache, never()).put(any(), any());
-        verify(replicationService, never()).synchronize(any());
+        verify(replicationService, never()).synchronize(any(), any());
         verify(timer, times(1)).schedule(any(TimerTask.class), any(Long.class));
     }
 
@@ -104,7 +104,7 @@ class SeedServiceImplTest {
         verify(config, times(2)).backoffSettings();
         verify(uniqueId, never()).number();
         verify(internalCache, never()).put(any(), any());
-        verify(replicationService, never()).synchronize(any());
+        verify(replicationService, never()).synchronize(any(), any());
         verify(timer, times(1)).schedule(any(TimerTask.class), any(Long.class));
     }
 
@@ -119,7 +119,7 @@ class SeedServiceImplTest {
         verify(config, times(2)).backoffSettings();
         verify(uniqueId, never()).number();
         verify(internalCache, never()).put(any(), any());
-        verify(replicationService, never()).synchronize(any());
+        verify(replicationService, never()).synchronize(any(), any());
     }
 
     @Test
@@ -163,7 +163,7 @@ class SeedServiceImplTest {
         verify(config, times(2)).backoffSettings();
         verify(uniqueId, times(1)).number();
         verify(internalCache, nodes).put(any(), any());
-        verify(replicationService, times).synchronize(any());
+        verify(replicationService, times).synchronize(any(), any());
     }
 
     private void mockContactSeed(String seed) {

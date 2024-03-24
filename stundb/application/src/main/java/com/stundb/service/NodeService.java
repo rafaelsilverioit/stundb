@@ -1,19 +1,17 @@
 package com.stundb.service;
 
 import com.stundb.net.core.models.Node;
-import com.stundb.net.core.models.requests.CRDTRequest;
-import com.stundb.net.core.models.requests.DeregisterRequest;
-import com.stundb.net.core.models.requests.ElectedRequest;
-import com.stundb.net.core.models.requests.Request;
+import com.stundb.net.core.models.requests.*;
 import com.stundb.net.core.models.responses.DeregisterResponse;
 import com.stundb.net.core.models.responses.ListNodesResponse;
+import com.stundb.net.core.models.responses.PingResponse;
 import com.stundb.net.core.models.responses.RegisterResponse;
 
 public interface NodeService {
 
     void init();
 
-    void ping();
+    PingResponse ping(PingRequest request);
 
     void trackNodeFailure(Node node);
 

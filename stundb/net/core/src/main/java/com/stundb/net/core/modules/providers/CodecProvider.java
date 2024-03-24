@@ -54,6 +54,7 @@ public class CodecProvider implements Provider<Codec> {
                             fury.register(DelRequest.class);
                             fury.register(DeregisterRequest.class);
                             fury.register(ElectedRequest.class);
+                            fury.register(PingRequest.class);
                             fury.register(ExistsRequest.class);
                             fury.register(GetRequest.class);
                             fury.register(RegisterRequest.class);
@@ -66,6 +67,7 @@ public class CodecProvider implements Provider<Codec> {
                             fury.register(GetResponse.class);
                             fury.register(IsEmptyResponse.class);
                             fury.register(ListNodesResponse.class);
+                            fury.register(PingResponse.class);
                             fury.register(RegisterResponse.class);
                             fury.register(Node.class);
                             fury.register(com.stundb.net.core.models.NodeStatus.class);

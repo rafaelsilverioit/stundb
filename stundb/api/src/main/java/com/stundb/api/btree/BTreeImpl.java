@@ -154,18 +154,21 @@ public class BTreeImpl<K extends Comparable<K>, V> implements BTree<K, V> {
             return target;
         }
 
-        // in case of both children are present, replace with the minimum key
+        // in case of both children are present, replace with the minimum node data
         var min = min(target.getRight());
-        target.setKey(min);
-        target.setRight(remove(min, target.getRight()));
+        target.setKey(min.getKey());
+        target.setValue(min.getValue());
+        target.setTtl(min.getTtl());
+        target.setCreated(min.getCreated());
+        target.setRight(remove(min.getKey(), target.getRight()));
         return target;
     }
 
-    private K min(Node<K, V> node) {
+    private Node<K, V> min(Node<K, V> node) {
         while (node.getLeft() != null) {
             node = node.getLeft();
         }
-        return node.getKey();
+        return node;
     }
 
     private Node<K, V> clear(Node<K, V> target) {

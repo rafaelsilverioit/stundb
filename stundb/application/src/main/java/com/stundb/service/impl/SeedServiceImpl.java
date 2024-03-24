@@ -89,6 +89,6 @@ public class SeedServiceImpl implements SeedService {
          *  cluster), if the current leader isn't available, we can then fallback to asking any node
          *  at random.
          */
-        replicationService.synchronize(response.state());
+        replicationService.synchronize(response.state().added(), response.state().removed());
     }
 }

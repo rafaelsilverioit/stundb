@@ -52,8 +52,6 @@ public abstract class TcpServer {
 
     protected abstract void onStart();
 
-    protected abstract void synchronize(CRDTRequest data);
-
     protected abstract void contactSeeds();
 
     public void run() {

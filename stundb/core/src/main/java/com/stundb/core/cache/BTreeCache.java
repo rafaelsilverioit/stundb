@@ -42,7 +42,7 @@ public class BTreeCache<V> implements Cache<V> {
 
     @Override
     public Optional<V> get(String key) {
-        return readLock(key, (__) -> tree.find(key)).map(Node::getValue);
+        return readLock(key, (k) -> tree.find(k)).map(Node::getValue);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class BTreeCache<V> implements Cache<V> {
     @Override
     public Boolean del(String key) {
         writeLock(key, null, (k, __) -> {
-            tree.remove(key);
+            tree.remove(k);
             return null;
         });
         return true;

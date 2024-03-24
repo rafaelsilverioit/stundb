@@ -12,6 +12,7 @@ import com.stundb.net.core.models.NodeStatus;
 import com.stundb.net.core.models.requests.*;
 import com.stundb.net.core.models.responses.DeregisterResponse;
 import com.stundb.net.core.models.responses.ListNodesResponse;
+import com.stundb.net.core.models.responses.PingResponse;
 import com.stundb.net.core.models.responses.RegisterResponse;
 import com.stundb.service.ElectionService;
 import com.stundb.service.NodeService;
@@ -56,11 +57,26 @@ public class NodeServiceImpl implements NodeService {
         timer.scheduleAtFixedRate(coordinatorTimerTask, 10, 15 * 1000);
     }
 
+    /**
+     * Receives a ping from another node.
+     *
+     * <p>1- Node A pings Node B passing its version clock;
+     *
+     * <p>2- Node B replies with state delta between its own version clock and Node A's version
+     * clock;
+     *
+     * <p>3- Node A synchronizes its state with Node B's state;
+     *
+     * <p>4- Ping finishes.
+     *
+     * @param request containing originating node's version clock.
+     * @return response containing state data and internal nodes list.
+     */
     @Loggable
     @Override
-    public void ping() {
-        // TODO: we may want to return state metadata so that the other node can compare to its own state
-        //       and decide whether either one of them is out of sync, then trigger a synchronization.
+    public PingResponse ping(PingRequest request) {
+        var data = replicationService.verifySynchroneity(request.versionClock());
+        return new PingResponse(data.left(), data.right(), internalCache.getAll());
     }
 
     @Loggable
@@ -111,8 +127,9 @@ public class NodeServiceImpl implements NodeService {
                                                     return response;
                                                 }));
 
+        var tuple = replicationService.generateStateSnapshot();
         return new RegisterResponse(
-                internalCache.getAll().stream().toList(), replicationService.generateCrdtRequest());
+                internalCache.getAll(), new CRDTRequest(tuple.left(), tuple.right()));
     }
 
     @Loggable
@@ -149,6 +166,6 @@ public class NodeServiceImpl implements NodeService {
     @Loggable
     @Override
     public void synchronize(CRDTRequest request) {
-        replicationService.synchronize(request);
+        replicationService.synchronize(request.added(), request.removed());
     }
 }

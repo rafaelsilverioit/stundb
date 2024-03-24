@@ -1,5 +1,6 @@
 package com.stundb.server.handlers.nodes;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import com.stundb.net.core.models.Command;
@@ -31,7 +32,7 @@ public class PingHandlerTest extends NodeHandlerTest<PingHandler> {
 
     @Override
     protected void verifyNodeServiceCall(Request request) {
-        verify(nodeService).ping();
+        verify(nodeService).ping(any());
     }
 
     @Override
