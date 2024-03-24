@@ -5,6 +5,7 @@ import static com.stundb.net.core.models.NodeStatus.State.RUNNING;
 
 import com.stundb.api.crdt.Entry;
 import com.stundb.api.models.ApplicationConfig;
+import com.stundb.api.models.Tuple;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.crdt.CRDT;
 import com.stundb.core.logging.Loggable;
@@ -36,7 +37,7 @@ import java.util.function.Consumer;
 @Singleton
 public class ReplicationServiceImpl implements ReplicationService {
 
-    public static final String STATE_DIR = "%s/data-%s.bin";
+    private static final String STATE_DIR = "%s/data-%s.bin";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject private CRDT state;
@@ -61,22 +62,19 @@ public class ReplicationServiceImpl implements ReplicationService {
 
     @Loggable
     @Override
-    public void synchronize(CRDTRequest request) {
-        var toAdd = request.added();
-        var toRemove = request.removed();
+    public void synchronize(Collection<Entry> added, Collection<Entry> removed) {
+        state.merge(added, removed);
 
-        state.merge(toAdd, toRemove);
-
-        addToCache(toAdd, state.getRemoved());
-        removeFromCache(toRemove, state.getAdded());
+        addToCache(added, state.getRemoved());
+        removeFromCache(removed, state.getAdded());
 
         writeToDisk();
     }
 
     @Loggable
     @Override
-    public CRDTRequest generateCrdtRequest() {
-        return buildCrdtRequest(Instant.MIN);
+    public Tuple<Collection<Entry>, Collection<Entry>> generateStateSnapshot() {
+        return generateStateFrom(Instant.MIN);
     }
 
     @Override
@@ -93,6 +91,36 @@ public class ReplicationServiceImpl implements ReplicationService {
         state.remove(entry);
         writeToDisk();
         replicate(entry.timestamp());
+    }
+
+    @Override
+    public Tuple<Collection<Entry>, Collection<Entry>> verifySynchroneity(
+            Map<String, Long> theirClock) {
+        var ourClock = state.versionClock();
+
+        if (Objects.equals(ourClock, theirClock)) {
+            return new Tuple<>(List.of(), List.of());
+        }
+
+        var delta = new ArrayList<String>();
+
+        ourClock.forEach(
+                (ourKey, ourValue) -> {
+                    var theirValue = theirClock.get(ourKey);
+                    if (theirValue == null || ourValue > theirValue) {
+                        delta.add(ourKey);
+                    }
+                });
+
+        var add = filterEntries(state.getAdded(), delta);
+        var remove = filterEntries(state.getRemoved(), delta);
+
+        return new Tuple<>(add, remove);
+    }
+
+    @Override
+    public Map<String, Long> generateVersionClock() {
+        return state.versionClock();
     }
 
     @Loggable
@@ -162,13 +190,16 @@ public class ReplicationServiceImpl implements ReplicationService {
     }
 
     private void replicate(Instant from) {
-        var data = buildCrdtRequest(from);
-        var request = Request.buildRequest(Command.SYNCHRONIZE, data);
+        var data = generateStateFrom(from);
+        var request =
+                Request.buildRequest(
+                        Command.SYNCHRONIZE, new CRDTRequest(data.left(), data.right()));
         utils.filterNodesByState(internalCache.getAll(), uniqueId.number(), List.of(RUNNING))
-                .forEach(node -> synchronizeWithNode(node, request));
+                .filter(Node::leader)
+                .forEach(node -> synchronizeWithLeaderNode(node, request));
     }
 
-    private void synchronizeWithNode(Node node, Request request) {
+    private void synchronizeWithLeaderNode(Node node, Request request) {
         client.requestAsync(request, node.ip(), node.port())
                 .handle(
                         (response, error) -> {
@@ -184,14 +215,18 @@ public class ReplicationServiceImpl implements ReplicationService {
         return new Entry(Instant.now(), key, value);
     }
 
-    private CRDTRequest buildCrdtRequest(Instant from) {
+    private Tuple<Collection<Entry>, Collection<Entry>> generateStateFrom(Instant from) {
         var add = filterEntries(state.getAdded(), from);
         var remove = filterEntries(state.getRemoved(), from);
-        return new CRDTRequest(add, remove);
+        return new Tuple<>(add, remove);
     }
 
     private List<Entry> filterEntries(Set<Entry> entries, Instant from) {
         return entries.stream().filter(e -> !e.timestamp().isBefore(from)).toList();
+    }
+
+    private List<Entry> filterEntries(Set<Entry> entries, List<String> keys) {
+        return entries.stream().filter(e -> keys.contains(e.key())).toList();
     }
 
     private void addToCache(Collection<Entry> synchronizedEntries, Set<Entry> stateEntries) {
