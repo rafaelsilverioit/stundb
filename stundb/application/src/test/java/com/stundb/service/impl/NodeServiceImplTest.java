@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.stundb.api.models.Tuple;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.models.UniqueId;
 import com.stundb.net.client.StunDBClient;
@@ -26,6 +27,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
@@ -66,9 +68,14 @@ public class NodeServiceImplTest {
 
     @Test
     void ping_should_work_successfully() {
-        testee.ping();
+        when(replicationService.verifySynchroneity(any()))
+                .thenReturn(new Tuple<>(List.of(), List.of()));
+        when(internalCache.getAll()).thenReturn(List.of());
 
-        verify(client, never()).requestAsync(any(), any(), any());
+        testee.ping(new PingRequest(Map.of("randomKey", 1L)));
+
+        verify(replicationService, times(1)).verifySynchroneity(any());
+        verify(internalCache, times(1)).getAll();
     }
 
     @Test
@@ -102,7 +109,7 @@ public class NodeServiceImplTest {
     void synchronize_should_work_successfully() {
         testee.synchronize(new CRDTRequest(List.of(), List.of()));
 
-        verify(replicationService, times(1)).synchronize(any());
+        verify(replicationService, times(1)).synchronize(any(), any());
     }
 
     @Test
@@ -189,8 +196,8 @@ public class NodeServiceImplTest {
                         CompletableFuture.completedFuture(
                                 Response.buildResponse(
                                         request, com.stundb.net.core.models.Status.OK, null)));
-        when(replicationService.generateCrdtRequest())
-                .thenReturn(new CRDTRequest(List.of(), List.of()));
+        when(replicationService.generateStateSnapshot())
+                .thenReturn(new Tuple<>(List.of(), List.of()));
 
         testee.register(request);
 
@@ -199,7 +206,7 @@ public class NodeServiceImplTest {
         verify(internalCache, times(2)).getAll();
         verify(election, never()).run();
         verify(client, times(1)).requestAsync(any(), any(), any());
-        verify(replicationService, times(1)).generateCrdtRequest();
+        verify(replicationService, times(1)).generateStateSnapshot();
 
         assertEquals(node.uniqueId(), captor.getValue().uniqueId());
     }
@@ -217,8 +224,8 @@ public class NodeServiceImplTest {
         when(internalCache.getAll()).thenReturn(nodes);
         when(utils.filterNodesByState(any(), any(), any())).thenReturn(nodes.stream());
         when(internalCache.put(any(), any())).thenReturn(true).thenReturn(true);
-        when(replicationService.generateCrdtRequest())
-                .thenReturn(new CRDTRequest(List.of(), List.of()));
+        when(replicationService.generateStateSnapshot())
+                .thenReturn(new Tuple<>(List.of(), List.of()));
 
         testee.register(request);
 
@@ -227,7 +234,7 @@ public class NodeServiceImplTest {
         verify(internalCache, times(2)).getAll();
         verify(election, never()).run();
         verify(client, never()).requestAsync(any(), any(), any());
-        verify(replicationService, times(1)).generateCrdtRequest();
+        verify(replicationService, times(1)).generateStateSnapshot();
 
         assertEquals(node.uniqueId(), captor.getValue().uniqueId());
     }
@@ -246,8 +253,8 @@ public class NodeServiceImplTest {
         when(internalCache.put(any(), any())).thenReturn(true).thenReturn(true);
         when(client.requestAsync(any(), any(), any()))
                 .thenReturn(CompletableFuture.failedFuture(new Exception("dummy exception")));
-        when(replicationService.generateCrdtRequest())
-                .thenReturn(new CRDTRequest(List.of(), List.of()));
+        when(replicationService.generateStateSnapshot())
+                .thenReturn(new Tuple<>(List.of(), List.of()));
 
         testee.register(request);
 
@@ -256,7 +263,7 @@ public class NodeServiceImplTest {
         verify(internalCache, times(2)).getAll();
         verify(election, times(1)).run();
         verify(client, times(1)).requestAsync(any(), any(), any());
-        verify(replicationService, times(1)).generateCrdtRequest();
+        verify(replicationService, times(1)).generateStateSnapshot();
 
         assertEquals(node.uniqueId(), captor.getAllValues().get(0).uniqueId());
         assertEquals(currentLeader.uniqueId(), captor.getAllValues().get(1).uniqueId());

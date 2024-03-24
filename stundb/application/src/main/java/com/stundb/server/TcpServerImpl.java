@@ -1,6 +1,5 @@
 package com.stundb.server;
 
-import com.stundb.net.core.models.requests.CRDTRequest;
 import com.stundb.net.server.TcpServer;
 import com.stundb.service.NodeService;
 import com.stundb.service.ReplicationService;
@@ -22,11 +21,6 @@ public class TcpServerImpl extends TcpServer {
         nodeService.init();
         storeService.init();
         logger.info("Running {} on {}", config.name(), serverAddress());
-    }
-
-    @Override
-    protected void synchronize(CRDTRequest data) {
-        replicationService.synchronize(data);
     }
 
     @Override

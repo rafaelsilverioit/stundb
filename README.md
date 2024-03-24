@@ -16,16 +16,16 @@
 - Use a BTree to store data
 - Allow state persistence
 - Support JPMS
-- TTL/Cache eviction
+- TTL/Cache invalidation
 - Create a Spring Boot app to observe nodes and expose actions through a REST API
 
 ### Doing
+- Deal with virtual clocks - Already have implemented an initial version clock, but still need to get rid of timestamps
+- Change how synchronization works today - Initial change: nodes replicate changes to the leader node, then from time to time, nodes synchronize with the leader to sync their state with the entire cluster
 - TESTS (unit & acceptance)!
 
 ### TODO
-- Deal with virtual clocks
 - Support multiple cache eviction policies
-- Change how synchronization works today
 - Create a node gateway app to receive requests from clients, and load balance requests between nodes
 - Authentication
 - Payload compression/decompression when talking between nodes

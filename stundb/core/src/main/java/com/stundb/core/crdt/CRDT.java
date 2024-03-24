@@ -3,6 +3,7 @@ package com.stundb.core.crdt;
 import com.stundb.api.crdt.Entry;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 public interface CRDT {
@@ -18,4 +19,6 @@ public interface CRDT {
     Set<Entry> getRemoved();
 
     CRDT diff(CRDT other);
+
+    Map<String, Long> versionClock();
 }
