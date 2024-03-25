@@ -19,24 +19,16 @@ public class BTreeCache<V> implements Cache<V> {
     @Inject private BTree<String, V> tree;
 
     @Override
-    public Boolean put(String key, V value) {
-        return put(key, value, null);
+    public Boolean upsert(String key, V value) {
+        return upsert(key, value, null);
     }
 
     @Override
-    public Boolean put(String key, V value, Long ttl) {
-        get(key).ifPresentOrElse(
-                        __ ->
-                                writeLock(key, value, (k, v) -> {
-                                    tree.remove(k);
-                                    tree.putIfAbsent(k, v, ttl);
-                                    return null;
-                                }),
-                        () ->
-                                writeLock(key, value, (k, v) -> {
-                                    tree.putIfAbsent(k, v, ttl);
-                                    return null;
-                                }));
+    public Boolean upsert(String key, V value, Long ttl) {
+        writeLock(key, value, (k, v) -> {
+            tree.upsert(k, v, ttl);
+            return null;
+        });
         return true;
     }
 

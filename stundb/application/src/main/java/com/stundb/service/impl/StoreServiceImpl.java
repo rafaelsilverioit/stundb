@@ -38,7 +38,8 @@ public class StoreServiceImpl implements StoreService {
     @Loggable
     public void set(SetRequest request) {
         var encoded = request.value();
-        cache.put(request.key(), encoded, request.ttl());
+        cache.get(request.key()).ifPresent(__ -> replicationService.remove(request.key()));
+        cache.upsert(request.key(), encoded, request.ttl());
         replicationService.add(request.key(), encoded);
     }
 

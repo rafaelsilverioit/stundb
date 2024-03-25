@@ -51,11 +51,11 @@ class StoreServiceImplTest {
 
     @Test
     void set_should_store_data_successfully() {
-        when(cache.put(KEY, VALUE, -1L)).thenReturn(true);
+        when(cache.upsert(KEY, VALUE, -1L)).thenReturn(true);
 
         testee.set(new SetRequest(KEY, VALUE, -1L));
 
-        verify(cache, times(1)).put(KEY, VALUE, -1L);
+        verify(cache, times(1)).upsert(KEY, VALUE, -1L);
         verify(replicationService, times(1)).add(KEY, VALUE);
     }
 

@@ -70,7 +70,7 @@ public class SeedServiceImpl implements SeedService {
 
     @Loggable
     private void handleSeedResponse(RegisterResponse response) {
-        response.nodes().forEach(entry -> internalCache.put(entry.uniqueId().toString(), entry));
+        response.nodes().forEach(entry -> internalCache.upsert(entry.uniqueId().toString(), entry));
         /*
          * TODO: Perhaps we should change how synchronization works - meaning:
          *  1- Should we rely on seeds telling us what data has been processed so far?

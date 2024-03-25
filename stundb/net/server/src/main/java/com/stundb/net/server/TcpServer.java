@@ -9,7 +9,6 @@ import com.stundb.core.models.UniqueId;
 import com.stundb.net.client.StunDBClient;
 import com.stundb.net.core.codecs.Codec;
 import com.stundb.net.core.models.Node;
-import com.stundb.net.core.models.requests.CRDTRequest;
 import com.stundb.net.server.codecs.ObjectDecoder;
 import com.stundb.net.server.codecs.ObjectEncoder;
 import com.stundb.net.server.handlers.CommandHandler;
@@ -118,7 +117,7 @@ public abstract class TcpServer {
                         uniqueId.number(),
                         false,
                         com.stundb.net.core.models.NodeStatus.create(RUNNING));
-        internalCache.put(uniqueId.text(), myself);
+        internalCache.upsert(uniqueId.text(), myself);
 
         onStart();
     }
