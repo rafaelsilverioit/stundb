@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface Cache<T> {
-    Boolean put(String key, T value);
+    Boolean upsert(String key, T value);
 
-    Boolean put(String key, T value, Long ttl);
+    Boolean upsert(String key, T value, Long ttl);
 
     Optional<T> get(String key);
 

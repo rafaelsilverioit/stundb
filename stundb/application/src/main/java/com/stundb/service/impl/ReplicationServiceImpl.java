@@ -205,7 +205,7 @@ public class ReplicationServiceImpl implements ReplicationService {
                         (response, error) -> {
                             if (error != null) {
                                 logger.error("Request failed", error);
-                                internalCache.put(node.uniqueId().toString(), node.clone(FAILING));
+                                internalCache.upsert(node.uniqueId().toString(), node.clone(FAILING));
                             }
                             return response;
                         });
@@ -235,7 +235,7 @@ public class ReplicationServiceImpl implements ReplicationService {
                 synchronizedEntries,
                 stateEntries,
                 this::shouldEntryBeAdded,
-                e -> cache.put(e.key(), e.value()));
+                e -> cache.upsert(e.key(), e.value()));
     }
 
     private void removeFromCache(Collection<Entry> synchronizedEntries, Set<Entry> stateEntries) {

@@ -98,12 +98,12 @@ public class ElectionServiceImpl implements ElectionService {
         utils.filterNodesByState(nodes, uniqueId.number(), List.of(RUNNING))
                 .forEach(n -> notifyAboutElectedLeader(leader, n));
 
-        internalCache.put(leader.uniqueId().toString(), leader);
+        internalCache.upsert(leader.uniqueId().toString(), leader);
 
         // setting leader=false for any other node
         utils.filterNodesByState(nodes, uniqueId.number(), List.of(RUNNING))
                 .filter(Node::leader)
-                .forEach(n -> internalCache.put(n.uniqueId().toString(), n.clone(false)));
+                .forEach(n -> internalCache.upsert(n.uniqueId().toString(), n.clone(false)));
         electionStarted.set(false);
     }
 
@@ -118,7 +118,7 @@ public class ElectionServiceImpl implements ElectionService {
                         (response, error) -> {
                             if (error != null) {
                                 logger.error("Request failed", error);
-                                internalCache.put(n.uniqueId().toString(), n.clone(FAILING));
+                                internalCache.upsert(n.uniqueId().toString(), n.clone(FAILING));
                             }
                             return response;
                         });
@@ -133,7 +133,7 @@ public class ElectionServiceImpl implements ElectionService {
                         (response, error) -> {
                             if (error != null) {
                                 logger.error("Request failed", error);
-                                internalCache.put(node.uniqueId().toString(), node.clone(FAILING));
+                                internalCache.upsert(node.uniqueId().toString(), node.clone(FAILING));
                             }
                             return null;
                         });

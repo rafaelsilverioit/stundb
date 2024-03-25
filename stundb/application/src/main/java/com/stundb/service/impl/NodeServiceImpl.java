@@ -88,7 +88,7 @@ public class NodeServiceImpl implements NodeService {
 
         failures.computeIfAbsent(node.uniqueId(), key -> new AtomicInteger(0));
         if (failures.get(node.uniqueId()).incrementAndGet() > 3) {
-            internalCache.put(node.uniqueId().toString(), node.clone(FAILING));
+            internalCache.upsert(node.uniqueId().toString(), node.clone(FAILING));
             failures.remove(node.uniqueId());
         }
     }
@@ -97,7 +97,7 @@ public class NodeServiceImpl implements NodeService {
     @Override
     public RegisterResponse register(Request request) {
         var data = (RegisterRequest) request.payload();
-        internalCache.put(
+        internalCache.upsert(
                 data.uniqueId().toString(),
                 new Node(
                         data.ip(),
@@ -118,7 +118,7 @@ public class NodeServiceImpl implements NodeService {
                                                         logger.error(
                                                                 "Leader failed, starting election",
                                                                 error);
-                                                        internalCache.put(
+                                                        internalCache.upsert(
                                                                 node.uniqueId().toString(),
                                                                 node.clone(FAILING));
                                                         election.run();
@@ -158,8 +158,8 @@ public class NodeServiceImpl implements NodeService {
         logger.info("{} became the leader", node.uniqueId());
         utils.filterNodesByState(internalCache.getAll(), node.uniqueId(), List.of(RUNNING))
                 .filter(Node::leader)
-                .forEach(n -> internalCache.put(n.uniqueId().toString(), n.clone(false)));
-        internalCache.put(node.uniqueId().toString(), node);
+                .forEach(n -> internalCache.upsert(n.uniqueId().toString(), n.clone(false)));
+        internalCache.upsert(node.uniqueId().toString(), node);
         election.finished();
     }
 

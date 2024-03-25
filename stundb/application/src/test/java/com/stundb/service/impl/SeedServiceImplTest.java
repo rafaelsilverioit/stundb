@@ -85,7 +85,7 @@ class SeedServiceImplTest {
         verify(config, never()).port();
         verify(config, times(2)).backoffSettings();
         verify(uniqueId, never()).number();
-        verify(internalCache, never()).put(any(), any());
+        verify(internalCache, never()).upsert(any(), any());
         verify(replicationService, never()).synchronize(any(), any());
         verify(timer, times(1)).schedule(any(TimerTask.class), any(Long.class));
     }
@@ -103,7 +103,7 @@ class SeedServiceImplTest {
         verify(config, times(1)).port();
         verify(config, times(2)).backoffSettings();
         verify(uniqueId, never()).number();
-        verify(internalCache, never()).put(any(), any());
+        verify(internalCache, never()).upsert(any(), any());
         verify(replicationService, never()).synchronize(any(), any());
         verify(timer, times(1)).schedule(any(TimerTask.class), any(Long.class));
     }
@@ -118,7 +118,7 @@ class SeedServiceImplTest {
         verify(client, never()).requestAsync(any(), any(), any());
         verify(config, times(2)).backoffSettings();
         verify(uniqueId, never()).number();
-        verify(internalCache, never()).put(any(), any());
+        verify(internalCache, never()).upsert(any(), any());
         verify(replicationService, never()).synchronize(any(), any());
     }
 
@@ -162,7 +162,7 @@ class SeedServiceImplTest {
         verify(config, times(1)).port();
         verify(config, times(2)).backoffSettings();
         verify(uniqueId, times(1)).number();
-        verify(internalCache, nodes).put(any(), any());
+        verify(internalCache, nodes).upsert(any(), any());
         verify(replicationService, times).synchronize(any(), any());
     }
 

@@ -1,5 +1,6 @@
 package com.stundb.api.btree;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -8,17 +9,20 @@ public class BTreeImpl<K extends Comparable<K>, V> implements BTree<K, V> {
     private Node<K, V> root;
 
     @Override
-    public void putIfAbsent(K key, V value, Long ttl) {
+    public void upsert(K key, V value, Long ttl) {
         if (root == null) {
             root = new Node<>(key, value, ttl);
             return;
         }
 
-        var node = find(key, root);
-        if (node.isPresent()) {
-            return;
-        }
+        find(key, root).ifPresentOrElse(node -> {
+            node.setValue(value);
+            node.setCreated(Instant.now());
+            node.setTtl(ttl);
+        }, () -> put(key, value, ttl));
+    }
 
+    private void put(K key, V value, Long ttl) {
         var target = root;
 
         while (target != null) {
