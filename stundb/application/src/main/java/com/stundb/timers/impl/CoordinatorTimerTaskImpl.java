@@ -93,7 +93,7 @@ public class CoordinatorTimerTaskImpl extends TimerTask {
     }
 
     private void updateCache(Node n, NodeStatus.State state) {
-        internalCache.put(n.uniqueId().toString(), n.clone(state));
+        internalCache.upsert(n.uniqueId().toString(), n.clone(state));
     }
 
     private void reachFailedNode(Node node) {
@@ -142,7 +142,7 @@ public class CoordinatorTimerTaskImpl extends TimerTask {
                             var data = (PingResponse) response.payload();
                             replicationService.synchronize(data.added(), data.removed());
                             data.nodes()
-                                    .forEach(n -> internalCache.put(n.uniqueId().toString(), n));
+                                    .forEach(n -> internalCache.upsert(n.uniqueId().toString(), n));
                             return response;
                         });
     }

@@ -136,7 +136,7 @@ class ElectionServiceImplTest {
         verify(client).requestAsync(requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
         verify(config, never()).ip();
         verify(config, never()).port();
-        verify(internalCache).put(any(), nodeCaptor.capture());
+        verify(internalCache).upsert(any(), nodeCaptor.capture());
 
         assertTrue(electionStarted.get());
         assertNull(requestCaptor.getValue().payload());
@@ -156,7 +156,7 @@ class ElectionServiceImplTest {
         testee.run(true);
 
         verify(client).requestAsync(requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
-        verify(internalCache, times(2)).put(any(), nodeCaptor.capture());
+        verify(internalCache, times(2)).upsert(any(), nodeCaptor.capture());
 
         assertFalse(electionStarted.get());
         var payload = (ElectedRequest) requestCaptor.getValue().payload();
@@ -181,7 +181,7 @@ class ElectionServiceImplTest {
         verify(client).requestAsync(requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
         verify(config, never()).ip();
         verify(config, never()).port();
-        verify(internalCache, never()).put(any(), any());
+        verify(internalCache, never()).upsert(any(), any());
 
         assertTrue(electionStarted.get());
         assertNull(requestCaptor.getValue().payload());
@@ -199,7 +199,7 @@ class ElectionServiceImplTest {
         testee.run(true);
 
         verify(client).requestAsync(requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
-        verify(internalCache).put(any(), nodeCaptor.capture());
+        verify(internalCache).upsert(any(), nodeCaptor.capture());
 
         assertFalse(electionStarted.get());
         var payload = (ElectedRequest) requestCaptor.getValue().payload();
@@ -224,7 +224,7 @@ class ElectionServiceImplTest {
         testee.run(true);
 
         verify(client, times(2)).requestAsync(requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
-        verify(internalCache, times(2)).put(any(), nodeCaptor.capture());
+        verify(internalCache, times(2)).upsert(any(), nodeCaptor.capture());
 
         assertFalse(electionStarted.get());
         var payload = (ElectedRequest) requestCaptor.getValue().payload();
@@ -253,7 +253,7 @@ class ElectionServiceImplTest {
         testee.run(true);
 
         verify(client).requestAsync(requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
-        verify(internalCache).put(any(), nodeCaptor.capture());
+        verify(internalCache).upsert(any(), nodeCaptor.capture());
 
         assertFalse(electionStarted.get());
         var payload = (ElectedRequest) requestCaptor.getValue().payload();
@@ -288,7 +288,7 @@ class ElectionServiceImplTest {
         testee.run(true);
 
         verify(client, never()).requestAsync(any(), eq(NODE_IP), eq(NODE_PORT));
-        verify(internalCache, never()).put(any(), any());
+        verify(internalCache, never()).upsert(any(), any());
 
         assertFalse(electionStarted.get());
     }

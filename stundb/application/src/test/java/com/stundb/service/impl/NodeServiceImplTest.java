@@ -116,14 +116,14 @@ public class NodeServiceImplTest {
     void trackNodeFailure_should_do_nothing_when_node_is_disabled() {
         testee.trackNodeFailure(buildNode(NodeStatus.State.DISABLED));
 
-        verify(internalCache, never()).put(any(), any());
+        verify(internalCache, never()).upsert(any(), any());
     }
 
     @Test
     void trackNodeFailure_should_do_nothing_when_node_has_not_failed_before() {
         testee.trackNodeFailure(buildNode(NodeStatus.State.RUNNING));
 
-        verify(internalCache, never()).put(any(), any());
+        verify(internalCache, never()).upsert(any(), any());
     }
 
     @Test
@@ -134,7 +134,7 @@ public class NodeServiceImplTest {
         testee.trackNodeFailure(node);
         testee.trackNodeFailure(node);
 
-        verify(internalCache, times(1)).put(any(), captor.capture());
+        verify(internalCache, times(1)).upsert(any(), captor.capture());
 
         assertEquals(node.uniqueId(), captor.getValue().uniqueId());
         assertNotEquals(node.status(), captor.getValue().status());
@@ -147,12 +147,12 @@ public class NodeServiceImplTest {
         var currentLeader = buildNode(NodeStatus.State.RUNNING, 321L, true);
 
         when(utils.filterNodesByState(any(), any(), any())).thenReturn(Stream.of(currentLeader));
-        when(internalCache.put(any(), any())).thenReturn(true).thenReturn(true);
+        when(internalCache.upsert(any(), any())).thenReturn(true).thenReturn(true);
 
         testee.elected(new ElectedRequest(node));
 
         verify(utils, times(1)).filterNodesByState(any(), any(), any());
-        verify(internalCache, times(2)).put(any(), captor.capture());
+        verify(internalCache, times(2)).upsert(any(), captor.capture());
         verify(election, times(1)).finished();
 
         assertEquals(currentLeader.uniqueId(), captor.getAllValues().get(0).uniqueId());
@@ -167,12 +167,12 @@ public class NodeServiceImplTest {
         var node = buildNode(NodeStatus.State.RUNNING);
 
         when(utils.filterNodesByState(any(), any(), any())).thenReturn(nodes);
-        when(internalCache.put(any(), any())).thenReturn(true).thenReturn(true);
+        when(internalCache.upsert(any(), any())).thenReturn(true).thenReturn(true);
 
         testee.elected(new ElectedRequest(node));
 
         verify(utils, times(1)).filterNodesByState(any(), any(), any());
-        verify(internalCache, times(1)).put(any(), captor.capture());
+        verify(internalCache, times(1)).upsert(any(), captor.capture());
         verify(election, times(1)).finished();
 
         assertEquals(node.uniqueId(), captor.getValue().uniqueId());
@@ -190,7 +190,7 @@ public class NodeServiceImplTest {
 
         when(internalCache.getAll()).thenReturn(List.of(currentLeader));
         when(utils.filterNodesByState(any(), any(), any())).thenReturn(Stream.of(currentLeader));
-        when(internalCache.put(any(), any())).thenReturn(true).thenReturn(true);
+        when(internalCache.upsert(any(), any())).thenReturn(true).thenReturn(true);
         when(client.requestAsync(any(), any(), any()))
                 .thenReturn(
                         CompletableFuture.completedFuture(
@@ -202,7 +202,7 @@ public class NodeServiceImplTest {
         testee.register(request);
 
         verify(utils, times(1)).filterNodesByState(any(), any(), any());
-        verify(internalCache, times(1)).put(any(), captor.capture());
+        verify(internalCache, times(1)).upsert(any(), captor.capture());
         verify(internalCache, times(2)).getAll();
         verify(election, never()).run();
         verify(client, times(1)).requestAsync(any(), any(), any());
@@ -223,14 +223,14 @@ public class NodeServiceImplTest {
 
         when(internalCache.getAll()).thenReturn(nodes);
         when(utils.filterNodesByState(any(), any(), any())).thenReturn(nodes.stream());
-        when(internalCache.put(any(), any())).thenReturn(true).thenReturn(true);
+        when(internalCache.upsert(any(), any())).thenReturn(true).thenReturn(true);
         when(replicationService.generateStateSnapshot())
                 .thenReturn(new Tuple<>(List.of(), List.of()));
 
         testee.register(request);
 
         verify(utils, times(1)).filterNodesByState(any(), any(), any());
-        verify(internalCache, times(1)).put(any(), captor.capture());
+        verify(internalCache, times(1)).upsert(any(), captor.capture());
         verify(internalCache, times(2)).getAll();
         verify(election, never()).run();
         verify(client, never()).requestAsync(any(), any(), any());
@@ -250,7 +250,7 @@ public class NodeServiceImplTest {
 
         when(internalCache.getAll()).thenReturn(List.of(currentLeader));
         when(utils.filterNodesByState(any(), any(), any())).thenReturn(Stream.of(currentLeader));
-        when(internalCache.put(any(), any())).thenReturn(true).thenReturn(true);
+        when(internalCache.upsert(any(), any())).thenReturn(true).thenReturn(true);
         when(client.requestAsync(any(), any(), any()))
                 .thenReturn(CompletableFuture.failedFuture(new Exception("dummy exception")));
         when(replicationService.generateStateSnapshot())
@@ -259,7 +259,7 @@ public class NodeServiceImplTest {
         testee.register(request);
 
         verify(utils, times(1)).filterNodesByState(any(), any(), any());
-        verify(internalCache, times(2)).put(any(), captor.capture());
+        verify(internalCache, times(2)).upsert(any(), captor.capture());
         verify(internalCache, times(2)).getAll();
         verify(election, times(1)).run();
         verify(client, times(1)).requestAsync(any(), any(), any());
