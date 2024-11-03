@@ -15,8 +15,8 @@
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
         <junit.version>5.10.2</junit.version>
         <surefire.version>3.2.5</surefire.version>
-        <lombok.version>1.18.30</lombok.version>
-        <jacoco.version>0.8.11</jacoco.version>
+        <lombok.version>1.18.32</lombok.version>
+        <jacoco.version>0.8.12</jacoco.version>
         <logback.version>1.5.3</logback.version>
         <mockito.version>5.11.0</mockito.version>
         <jackson.version>2.17.0</jackson.version>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
-            <version>3.0.0-M1</version>
+            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>jakarta.inject</groupId>
