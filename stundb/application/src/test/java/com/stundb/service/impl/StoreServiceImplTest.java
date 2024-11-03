@@ -46,7 +46,7 @@ class StoreServiceImplTest {
     void init_should_work_successfully() {
         testee.init();
 
-        verify(timer, times(1)).scheduleAtFixedRate(eq(timerTask), anyLong(), anyLong());
+        verify(timer).scheduleAtFixedRate(eq(timerTask), anyLong(), anyLong());
     }
 
     @Test
@@ -55,8 +55,24 @@ class StoreServiceImplTest {
 
         testee.set(new SetRequest(KEY, VALUE, -1L));
 
-        verify(cache, times(1)).upsert(KEY, VALUE, -1L);
-        verify(replicationService, times(1)).add(KEY, VALUE);
+        verify(cache).upsert(KEY, VALUE, -1L);
+        verify(replicationService, never()).remove(KEY);
+        verify(replicationService).add(KEY, VALUE);
+    }
+
+    @Test
+    void set_should_store_data_successfully_and_handle_duplicates() {
+        SetRequest request = new SetRequest(KEY, VALUE, -1L);
+
+        when(cache.upsert(KEY, VALUE, -1L)).thenReturn(true);
+        when(cache.get(KEY)).thenReturn(Optional.empty()).thenReturn(Optional.of(VALUE));
+
+        testee.set(request);
+        testee.set(request);
+
+        verify(cache, times(2)).upsert(KEY, VALUE, -1L);
+        verify(replicationService).remove(KEY);
+        verify(replicationService, times(2)).add(KEY, VALUE);
     }
 
     @Test
@@ -65,8 +81,8 @@ class StoreServiceImplTest {
 
         testee.del(new DelRequest(KEY));
 
-        verify(cache, times(1)).del(KEY);
-        verify(replicationService, times(1)).remove(KEY);
+        verify(cache).del(KEY);
+        verify(replicationService).remove(KEY);
     }
 
     @Test
@@ -75,7 +91,7 @@ class StoreServiceImplTest {
 
         var response = testee.get(new GetRequest(KEY));
 
-        verify(cache, times(1)).get(KEY);
+        verify(cache).get(KEY);
 
         assertEquals(KEY, response.key());
         assertEquals(VALUE, response.value());
@@ -87,7 +103,7 @@ class StoreServiceImplTest {
 
         var response = testee.get(new GetRequest(KEY));
 
-        verify(cache, times(1)).get(KEY);
+        verify(cache).get(KEY);
 
         assertEquals(KEY, response.key());
         assertNull(response.value());
@@ -102,7 +118,7 @@ class StoreServiceImplTest {
 
         var response = testee.exists(new ExistsRequest(KEY));
 
-        verify(cache, times(1)).get(KEY);
+        verify(cache).get(KEY);
 
         assertEquals(expected, response.exists());
     }
@@ -125,6 +141,6 @@ class StoreServiceImplTest {
     void clear_should_empty_the_cache() {
         testee.clear();
 
-        verify(cache, times(1)).clear();
+        verify(cache).clear();
     }
 }
