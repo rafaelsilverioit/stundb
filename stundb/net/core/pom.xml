@@ -26,7 +26,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.107.Final</version>
+            <version>4.1.114.Final</version>
             <exclusions>
                 <exclusion>
                     <groupId>io.netty</groupId>
