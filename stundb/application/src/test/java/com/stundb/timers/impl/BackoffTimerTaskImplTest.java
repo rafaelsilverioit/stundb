@@ -72,8 +72,8 @@ class BackoffTimerTaskImplTest {
         testee.enqueue(JON_DOE, DEFAULT_TASK);
         testee.run();
 
-        verify(timer, times(1)).cancel();
-        verify(timer, times(1)).purge();
+        verify(timer).cancel();
+        verify(timer).purge();
 
         assertEquals(1, attempt.get());
         assertNull(scheduledTask);
@@ -113,8 +113,8 @@ class BackoffTimerTaskImplTest {
 
         ScheduledFuture<?> scheduledTask = getField(SCHEDULED_TASK);
 
-        verify(timer, times(1)).cancel();
-        verify(timer, times(1)).purge();
+        verify(timer).cancel();
+        verify(timer).purge();
 
         assertNotNull(scheduledTask);
         assertTrue(scheduledTask.isCancelled());
