@@ -68,14 +68,12 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <!-- TODO: increase coverage to 1.0 -->
-                                            <minimum>0.60</minimum>
+                                            <minimum>1.0</minimum>
                                         </limit>
                                         <limit>
                                             <counter>BRANCH</counter>
                                             <value>COVEREDRATIO</value>
-                                            <!-- TODO: increase coverage to 1.0 -->
-                                            <minimum>0.47</minimum>
+                                            <minimum>1.0</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

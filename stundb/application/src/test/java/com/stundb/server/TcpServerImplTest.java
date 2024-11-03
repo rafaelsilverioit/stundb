@@ -4,7 +4,6 @@ import static org.mockito.Mockito.verify;
 
 import com.stundb.api.models.ApplicationConfig;
 import com.stundb.service.NodeService;
-import com.stundb.service.ReplicationService;
 import com.stundb.service.SeedService;
 import com.stundb.service.StoreService;
 
@@ -21,8 +20,6 @@ class TcpServerImplTest {
 
     @Mock private StoreService storeService;
 
-    @Mock private ReplicationService replicationService;
-
     @Mock private SeedService seedService;
 
     @Mock private ApplicationConfig config;
@@ -34,7 +31,6 @@ class TcpServerImplTest {
         testee.onStart();
         verify(config).name();
         verify(nodeService).init();
-        verify(replicationService).initialize();
         verify(storeService).init();
     }
 

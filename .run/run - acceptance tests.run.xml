@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="run - acceptance tests" type="JUnit" factoryName="JUnit">
-    <module name="acceptance-tests" />
+    <module name="stundb-acceptance-tests" />
     <useClassPathOnly />
     <extension name="coverage">
       <pattern>

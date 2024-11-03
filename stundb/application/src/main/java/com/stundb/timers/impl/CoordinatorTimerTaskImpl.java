@@ -12,11 +12,9 @@ import com.stundb.net.client.StunDBClient;
 import com.stundb.net.core.models.Command;
 import com.stundb.net.core.models.Node;
 import com.stundb.net.core.models.NodeStatus;
-import com.stundb.net.core.models.Status;
 import com.stundb.net.core.models.requests.DeregisterRequest;
 import com.stundb.net.core.models.requests.PingRequest;
 import com.stundb.net.core.models.requests.Request;
-import com.stundb.net.core.models.responses.ErrorResponse;
 import com.stundb.net.core.models.responses.PingResponse;
 import com.stundb.service.ElectionService;
 import com.stundb.service.ReplicationService;
@@ -98,7 +96,9 @@ public class CoordinatorTimerTaskImpl extends TimerTask {
 
     private void reachFailedNode(Node node) {
         client.requestAsync(
-                        Request.buildRequest(Command.PING, new PingRequest(replicationService.generateVersionClock())),
+                        Request.buildRequest(
+                                Command.PING,
+                                new PingRequest(replicationService.generateVersionClock())),
                         node.ip(),
                         node.port())
                 .handle(
@@ -120,23 +120,24 @@ public class CoordinatorTimerTaskImpl extends TimerTask {
     }
 
     /**
-     * Upon a ping response, synchronizes cache state with the leader's state and updates the internal nodes list.
+     * Upon a ping response, synchronizes cache state with the leader's state and updates the
+     * internal nodes list.
      *
      * @param node the leader node
      */
     private void pingLeader(Node node) {
-        client.requestAsync(Request.buildRequest(Command.PING, new PingRequest(replicationService.generateVersionClock())), node.ip(), node.port())
+        client.requestAsync(
+                        Request.buildRequest(
+                                Command.PING,
+                                new PingRequest(replicationService.generateVersionClock())),
+                        node.ip(),
+                        node.port())
                 .handle(
                         (response, throwable) -> {
                             if (throwable != null) {
                                 logger.error("Error pinging leader", throwable);
                                 updateCache(node, FAILING);
                                 return throwable;
-                            } else if (Status.ERROR.equals(response.status())) {
-                                logger.error(
-                                        "Response was "
-                                                + ((ErrorResponse) response.payload()).code());
-                                return response;
                             }
 
                             var data = (PingResponse) response.payload();
