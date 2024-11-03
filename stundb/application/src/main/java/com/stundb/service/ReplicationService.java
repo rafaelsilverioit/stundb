@@ -8,8 +8,6 @@ import java.util.Map;
 
 public interface ReplicationService {
 
-    void initialize();
-
     void synchronize(Collection<Entry> added, Collection<Entry> removed);
 
     Tuple<Collection<Entry>, Collection<Entry>> generateStateSnapshot();

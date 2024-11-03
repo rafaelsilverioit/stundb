@@ -14,10 +14,11 @@
 - Retry contacting seeds until a node replies, up to a maximum number of attempts
 - Move from Kryo to Apache Fury
 - Use a BTree to store data
-- Allow state persistence
+- ~~Allow state persistence~~
 - Support JPMS
 - TTL/Cache invalidation
 - Create a Spring Boot app to observe nodes and expose actions through a REST API
+- 100% unit testing coverage for the application module
 
 ### Doing
 - Deal with virtual clocks - Already have implemented an initial version clock, but still need to get rid of timestamps

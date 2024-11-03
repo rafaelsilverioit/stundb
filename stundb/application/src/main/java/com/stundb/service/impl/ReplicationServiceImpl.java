@@ -4,14 +4,12 @@ import static com.stundb.net.core.models.NodeStatus.State.FAILING;
 import static com.stundb.net.core.models.NodeStatus.State.RUNNING;
 
 import com.stundb.api.crdt.Entry;
-import com.stundb.api.models.ApplicationConfig;
 import com.stundb.api.models.Tuple;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.crdt.CRDT;
 import com.stundb.core.logging.Loggable;
 import com.stundb.core.models.UniqueId;
 import com.stundb.net.client.StunDBClient;
-import com.stundb.net.core.codecs.Codec;
 import com.stundb.net.core.models.Command;
 import com.stundb.net.core.models.Node;
 import com.stundb.net.core.models.requests.CRDTRequest;
@@ -25,24 +23,17 @@ import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
 @Singleton
 public class ReplicationServiceImpl implements ReplicationService {
 
-    private static final String STATE_DIR = "%s/data-%s.bin";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject private CRDT state;
-    @Inject private ApplicationConfig config;
-    @Inject private Codec codec;
     @Inject private StunDBClient client;
     @Inject private Cache<Object> cache;
     @Inject private Cache<Node> internalCache;
@@ -51,14 +42,8 @@ public class ReplicationServiceImpl implements ReplicationService {
 
     /* TODO: think about partial replication/replication on demand instead of replicating every action received
      *       e.g: node x is 40 state entries behind node y, so node y sends these 40 state entries for x to sync
-     *       e.g: node x suddenly decides its sate is corrupted, clears its state and asks for full synchronization
+     *       e.g: node x suddenly decides its state is corrupted, clears its state and asks for full synchronization
      */
-
-    @Loggable
-    @Override
-    public void initialize() {
-        readFromDisk();
-    }
 
     @Loggable
     @Override
@@ -67,8 +52,6 @@ public class ReplicationServiceImpl implements ReplicationService {
 
         addToCache(added, state.getRemoved());
         removeFromCache(removed, state.getAdded());
-
-        writeToDisk();
     }
 
     @Loggable
@@ -81,7 +64,6 @@ public class ReplicationServiceImpl implements ReplicationService {
     public void add(String key, Object value) {
         var entry = buildEntry(key, value);
         state.add(entry);
-        writeToDisk();
         replicate(entry.timestamp());
     }
 
@@ -89,7 +71,6 @@ public class ReplicationServiceImpl implements ReplicationService {
     public void remove(String key) {
         var entry = buildEntry(key, null);
         state.remove(entry);
-        writeToDisk();
         replicate(entry.timestamp());
     }
 
@@ -123,72 +104,6 @@ public class ReplicationServiceImpl implements ReplicationService {
         return state.versionClock();
     }
 
-    @Loggable
-    private void writeToDisk() {
-        if (!config.statePersistenceEnabled()) {
-            return;
-        }
-        CompletableFuture.runAsync(
-                        () -> {
-                            var added = new HashSet<>(state.getAdded());
-                            var removed = new HashSet<>(state.getRemoved());
-                            var data = codec.encode(Map.of("added", added, "removed", removed));
-                            var path = getStatePath();
-
-                            try {
-                                if (!Files.exists(path.getParent())) {
-                                    Files.createDirectory(path.getParent());
-                                }
-
-                                Files.write(path, data);
-                            } catch (IOException e) {
-                                logger.error(
-                                        "Could not create directory {}",
-                                        path.getParent().toString(),
-                                        e);
-                            }
-                        })
-                .whenComplete(
-                        (__, error) -> {
-                            if (error != null) {
-                                logger.error("Could not write state to disk", error);
-                            }
-                        });
-    }
-
-    @Loggable
-    @SuppressWarnings("unchecked")
-    private void readFromDisk() {
-        if (!config.statePersistenceEnabled()) {
-            return;
-        }
-        CompletableFuture.runAsync(
-                        () -> {
-                            var path = getStatePath();
-                            if (!Files.exists(path)) {
-                                return;
-                            }
-
-                            try {
-                                var data = Files.readAllBytes(path);
-                                var stateFromDisk = (Map<String, Set<Entry>>) codec.decode(data);
-
-                                state.merge(
-                                        stateFromDisk.get("added"), stateFromDisk.get("removed"));
-                                addToCache(stateFromDisk.get("added"), state.getRemoved());
-                                removeFromCache(stateFromDisk.get("removed"), state.getAdded());
-                            } catch (IOException e) {
-                                logger.error("Error reading state from disk", e);
-                            }
-                        })
-                .whenComplete(
-                        (__, error) -> {
-                            if (error != null) {
-                                logger.error("Could not restore state from disk", error);
-                            }
-                        });
-    }
-
     private void replicate(Instant from) {
         var data = generateStateFrom(from);
         var request =
@@ -205,7 +120,8 @@ public class ReplicationServiceImpl implements ReplicationService {
                         (response, error) -> {
                             if (error != null) {
                                 logger.error("Request failed", error);
-                                internalCache.upsert(node.uniqueId().toString(), node.clone(FAILING));
+                                internalCache.upsert(
+                                        node.uniqueId().toString(), node.clone(FAILING));
                             }
                             return response;
                         });
@@ -273,9 +189,5 @@ public class ReplicationServiceImpl implements ReplicationService {
     private boolean hasEntryBeenReAdded(Entry entryToBeRemoved, Entry target) {
         return Objects.equals(target.key(), entryToBeRemoved.key())
                 && !target.timestamp().isBefore(entryToBeRemoved.timestamp());
-    }
-
-    private Path getStatePath() {
-        return Path.of(STATE_DIR.formatted(config.stateDir(), uniqueId.text()));
     }
 }

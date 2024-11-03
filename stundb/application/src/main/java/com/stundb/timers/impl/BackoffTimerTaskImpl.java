@@ -1,5 +1,8 @@
 package com.stundb.timers.impl;
 
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
+
 import com.stundb.api.models.ApplicationConfig;
 import com.stundb.api.models.Tuple;
 import com.stundb.core.logging.Loggable;
@@ -106,9 +109,10 @@ public class BackoffTimerTaskImpl extends TimerTask implements BackoffTimerTask 
                 !reschedule,
                 nextAttempt >= maximumRetries);
 
-        if (scheduledTask != null && !scheduledTask.isCancelled()) {
-            scheduledTask.cancel(true);
-        }
+        ofNullable(scheduledTask)
+                .filter(not(ScheduledFuture::isCancelled))
+                .ifPresent(task -> task.cancel(true));
+
         timer.cancel();
         timer.purge();
     }

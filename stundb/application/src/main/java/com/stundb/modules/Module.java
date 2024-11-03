@@ -72,7 +72,7 @@ public class Module extends AbstractModule {
 
         bind(TimerTask.class)
                 .annotatedWith(Names.named("cacheEvictorTimerTask"))
-                        .to(CacheEvictorTimerTaskImpl.class);
+                .to(CacheEvictorTimerTaskImpl.class);
 
         bind(BackoffTimerTask.class).to(BackoffTimerTaskImpl.class);
 
