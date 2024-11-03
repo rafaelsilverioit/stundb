@@ -63,7 +63,7 @@ public class NodeServiceImplTest {
     void init_should_work_successfully() {
         testee.init();
 
-        verify(timer, times(1)).scheduleAtFixedRate(eq(coordinatorTimerTask), anyLong(), anyLong());
+        verify(timer).scheduleAtFixedRate(eq(coordinatorTimerTask), anyLong(), anyLong());
     }
 
     @Test
@@ -74,8 +74,8 @@ public class NodeServiceImplTest {
 
         testee.ping(new PingRequest(Map.of("randomKey", 1L)));
 
-        verify(replicationService, times(1)).verifySynchroneity(any());
-        verify(internalCache, times(1)).getAll();
+        verify(replicationService).verifySynchroneity(any());
+        verify(internalCache).getAll();
     }
 
     @Test
@@ -84,7 +84,7 @@ public class NodeServiceImplTest {
 
         var response = testee.list();
 
-        verify(internalCache, times(1)).getAll();
+        verify(internalCache).getAll();
 
         assertTrue(response.nodes().isEmpty());
     }
@@ -93,15 +93,15 @@ public class NodeServiceImplTest {
     void startElection_should_work_successfully() {
         testee.startElection(Request.buildRequest(Command.START_ELECTION, null));
 
-        verify(election, times(1)).run(true);
+        verify(election).run(true);
     }
 
     @Test
     void deregister_should_work_successfully() {
         var response = testee.deregister(new DeregisterRequest(123L));
 
-        verify(internalCache, times(1)).del("123");
-        verify(internalCache, times(1)).getAll();
+        verify(internalCache).del("123");
+        verify(internalCache).getAll();
         assertTrue(response.nodes().isEmpty());
     }
 
@@ -109,7 +109,7 @@ public class NodeServiceImplTest {
     void synchronize_should_work_successfully() {
         testee.synchronize(new CRDTRequest(List.of(), List.of()));
 
-        verify(replicationService, times(1)).synchronize(any(), any());
+        verify(replicationService).synchronize(any(), any());
     }
 
     @Test
@@ -134,7 +134,7 @@ public class NodeServiceImplTest {
         testee.trackNodeFailure(node);
         testee.trackNodeFailure(node);
 
-        verify(internalCache, times(1)).upsert(any(), captor.capture());
+        verify(internalCache).upsert(any(), captor.capture());
 
         assertEquals(node.uniqueId(), captor.getValue().uniqueId());
         assertNotEquals(node.status(), captor.getValue().status());
@@ -151,9 +151,9 @@ public class NodeServiceImplTest {
 
         testee.elected(new ElectedRequest(node));
 
-        verify(utils, times(1)).filterNodesByState(any(), any(), any());
+        verify(utils).filterNodesByState(any(), any(), any());
         verify(internalCache, times(2)).upsert(any(), captor.capture());
-        verify(election, times(1)).finished();
+        verify(election).finished();
 
         assertEquals(currentLeader.uniqueId(), captor.getAllValues().get(0).uniqueId());
         assertFalse(captor.getAllValues().get(0).leader());
@@ -171,9 +171,9 @@ public class NodeServiceImplTest {
 
         testee.elected(new ElectedRequest(node));
 
-        verify(utils, times(1)).filterNodesByState(any(), any(), any());
-        verify(internalCache, times(1)).upsert(any(), captor.capture());
-        verify(election, times(1)).finished();
+        verify(utils).filterNodesByState(any(), any(), any());
+        verify(internalCache).upsert(any(), captor.capture());
+        verify(election).finished();
 
         assertEquals(node.uniqueId(), captor.getValue().uniqueId());
         assertTrue(captor.getValue().leader());
@@ -201,12 +201,12 @@ public class NodeServiceImplTest {
 
         testee.register(request);
 
-        verify(utils, times(1)).filterNodesByState(any(), any(), any());
-        verify(internalCache, times(1)).upsert(any(), captor.capture());
+        verify(utils).filterNodesByState(any(), any(), any());
+        verify(internalCache).upsert(any(), captor.capture());
         verify(internalCache, times(2)).getAll();
         verify(election, never()).run();
-        verify(client, times(1)).requestAsync(any(), any(), any());
-        verify(replicationService, times(1)).generateStateSnapshot();
+        verify(client).requestAsync(any(), any(), any());
+        verify(replicationService).generateStateSnapshot();
 
         assertEquals(node.uniqueId(), captor.getValue().uniqueId());
     }
@@ -229,12 +229,12 @@ public class NodeServiceImplTest {
 
         testee.register(request);
 
-        verify(utils, times(1)).filterNodesByState(any(), any(), any());
-        verify(internalCache, times(1)).upsert(any(), captor.capture());
+        verify(utils).filterNodesByState(any(), any(), any());
+        verify(internalCache).upsert(any(), captor.capture());
         verify(internalCache, times(2)).getAll();
         verify(election, never()).run();
         verify(client, never()).requestAsync(any(), any(), any());
-        verify(replicationService, times(1)).generateStateSnapshot();
+        verify(replicationService).generateStateSnapshot();
 
         assertEquals(node.uniqueId(), captor.getValue().uniqueId());
     }
@@ -258,12 +258,12 @@ public class NodeServiceImplTest {
 
         testee.register(request);
 
-        verify(utils, times(1)).filterNodesByState(any(), any(), any());
+        verify(utils).filterNodesByState(any(), any(), any());
         verify(internalCache, times(2)).upsert(any(), captor.capture());
         verify(internalCache, times(2)).getAll();
-        verify(election, times(1)).run();
-        verify(client, times(1)).requestAsync(any(), any(), any());
-        verify(replicationService, times(1)).generateStateSnapshot();
+        verify(election).run();
+        verify(client).requestAsync(any(), any(), any());
+        verify(replicationService).generateStateSnapshot();
 
         assertEquals(node.uniqueId(), captor.getAllValues().get(0).uniqueId());
         assertEquals(currentLeader.uniqueId(), captor.getAllValues().get(1).uniqueId());

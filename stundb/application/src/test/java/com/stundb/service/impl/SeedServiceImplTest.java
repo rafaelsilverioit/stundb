@@ -87,7 +87,7 @@ class SeedServiceImplTest {
         verify(uniqueId, never()).number();
         verify(internalCache, never()).upsert(any(), any());
         verify(replicationService, never()).synchronize(any(), any());
-        verify(timer, times(1)).schedule(any(TimerTask.class), any(Long.class));
+        verify(timer).schedule(any(TimerTask.class), any(Long.class));
     }
 
     @ParameterizedTest
@@ -99,13 +99,13 @@ class SeedServiceImplTest {
 
         testee.contactSeeds();
 
-        verify(config, times(1)).ip();
-        verify(config, times(1)).port();
+        verify(config).ip();
+        verify(config).port();
         verify(config, times(2)).backoffSettings();
         verify(uniqueId, never()).number();
         verify(internalCache, never()).upsert(any(), any());
         verify(replicationService, never()).synchronize(any(), any());
-        verify(timer, times(1)).schedule(any(TimerTask.class), any(Long.class));
+        verify(timer).schedule(any(TimerTask.class), any(Long.class));
     }
 
     @Test
@@ -157,11 +157,11 @@ class SeedServiceImplTest {
     }
 
     private void verifyCalls(VerificationMode nodes, VerificationMode times) {
-        verify(client, times(1)).requestAsync(any(), any(), any());
-        verify(config, times(1)).ip();
-        verify(config, times(1)).port();
+        verify(client).requestAsync(any(), any(), any());
+        verify(config).ip();
+        verify(config).port();
         verify(config, times(2)).backoffSettings();
-        verify(uniqueId, times(1)).number();
+        verify(uniqueId).number();
         verify(internalCache, nodes).upsert(any(), any());
         verify(replicationService, times).synchronize(any(), any());
     }
