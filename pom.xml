@@ -13,7 +13,7 @@
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <!-- automatically run annotation processors within the incremental compilation -->
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
-        <junit.version>5.10.2</junit.version>
+        <junit.version>5.11.3</junit.version>
         <surefire.version>3.2.5</surefire.version>
         <lombok.version>1.18.32</lombok.version>
         <jacoco.version>0.8.12</jacoco.version>
