@@ -702,7 +702,7 @@ along with their respective notices and attributions:
   The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
 ---
 ---
-- Library: fury-core
+- Library: Hamcrest
   License: BSD 3-Clause (https://opensource.org/license/bsd-3-clause)
   Copyright (C) 2024, www.hamcrest.org.
 
