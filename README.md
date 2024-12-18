@@ -19,18 +19,19 @@
 - 100% unit testing coverage for the application module
 - Acceptance tests for critical journeys
 - Use Netty for TCP client
+- Authentication (SCRAM/SASL)
 
 ### Done & later removed
 - Allow state persistence
 - Use Java Sockets for TCP client
 
 ### Doing
-- Authentication (SCRAM/Sasl)
 - Deal with virtual clocks - Already have implemented an initial version clock, but still need to get rid of timestamps
 - Change how synchronization works today - Initial change: nodes replicate changes to the leader node, then from time to time, nodes synchronize with the leader to sync their state with the entire cluster
 - TESTS (unit & acceptance)!
 
 ### TODO
+- TLS Encryption
 - Support multiple cache eviction policies
 - Create a node gateway app to receive requests from clients, and load balance requests between nodes
 - Payload compression/decompression when talking between nodes
