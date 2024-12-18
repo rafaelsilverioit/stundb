@@ -20,8 +20,7 @@ import com.stundb.utils.NodeUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
 import java.util.*;
@@ -29,9 +28,8 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
 @Singleton
+@Slf4j
 public class ReplicationServiceImpl implements ReplicationService {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject private CRDT state;
     @Inject private StunDBClient client;
@@ -119,7 +117,7 @@ public class ReplicationServiceImpl implements ReplicationService {
                 .handle(
                         (response, error) -> {
                             if (error != null) {
-                                logger.error("Request failed", error);
+                                log.error("Request failed", error);
                                 internalCache.upsert(
                                         node.uniqueId().toString(), node.clone(FAILING));
                             }

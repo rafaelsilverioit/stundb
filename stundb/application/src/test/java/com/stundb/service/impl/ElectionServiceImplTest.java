@@ -1,9 +1,13 @@
 package com.stundb.service.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.github.valfirst.slf4jtest.TestLogger;
+import com.github.valfirst.slf4jtest.TestLoggerFactory;
 import com.stundb.api.models.ApplicationConfig;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.models.UniqueId;
@@ -16,6 +20,8 @@ import com.stundb.net.core.models.requests.Request;
 import com.stundb.net.core.models.responses.Response;
 import com.stundb.utils.NodeUtils;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +30,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -46,14 +51,33 @@ class ElectionServiceImplTest {
     private static final int NODE_PORT = 8000;
     private static final long ANOTHER_NODE_ID = 654321L;
 
-    @Captor private ArgumentCaptor<Request> requestCaptor;
+    private final TestLogger logger = TestLoggerFactory.getTestLogger(ElectionServiceImpl.class);
+
+    @Captor private ArgumentCaptor<Object> requestCaptor;
     @Captor private ArgumentCaptor<Node> nodeCaptor;
     @Mock private Cache<Node> internalCache;
     @Mock private StunDBClient client;
     @Mock private ApplicationConfig config;
     @Mock private UniqueId uniqueId;
     @Mock private NodeUtils utils;
-    @InjectMocks private ElectionServiceImpl testee;
+
+    private ElectionServiceImpl testee;
+
+    @BeforeEach
+    void setUp() throws NoSuchFieldException, IllegalAccessException {
+        testee = new ElectionServiceImpl();
+
+        getField("internalCache").set(testee, internalCache);
+        getField("client").set(testee, client);
+        getField("config").set(testee, config);
+        getField("uniqueId").set(testee, uniqueId);
+        getField("utils").set(testee, utils);
+    }
+
+    @AfterEach
+    void tearDown() {
+        logger.clear();
+    }
 
     @Test
     void test_finished() throws NoSuchFieldException, IllegalAccessException {
@@ -76,10 +100,10 @@ class ElectionServiceImplTest {
 
         testee.run(force);
 
-        verify(client, never()).requestAsync(any(Request.class), eq(NODE_IP), eq(NODE_PORT));
+        verify(client, never()).requestAsync(any(Command.class), any(), eq(NODE_IP), eq(NODE_PORT));
 
         var electionStarted = (AtomicBoolean) getElectionStartedField().get(testee);
-        assertEquals(electionStarted.get(), expected);
+        assertEquals(expected, electionStarted.get());
     }
 
     @Test
@@ -92,34 +116,23 @@ class ElectionServiceImplTest {
     }
 
     @Test
-    void test_startElection_when_election_already_started_and_force_is_falsexxxxxxx()
+    void test_startElection_when_threshold_is_reached()
             throws NoSuchFieldException, IllegalAccessException {
         var electionStarted = (AtomicBoolean) getElectionStartedField().get(testee);
         var counter = (AtomicInteger) getField("counter").get(testee);
-
+        counter.set(5);
         var node = aNode(NODE_UNIQUE_ID, false);
 
         when(internalCache.get(ElectionServiceImplTest.NODE_UNIQUE_TEXT_ID))
                 .thenReturn(Optional.of(node));
         when(uniqueId.text()).thenReturn(ElectionServiceImplTest.NODE_UNIQUE_TEXT_ID);
 
-        for (var i = 0; i < 4; i++) {
-            testee.run(false);
-        }
+        testee.run(false);
 
-        verify(client, never()).requestAsync(any(Request.class), eq(NODE_IP), eq(NODE_PORT));
+        verify(client, never()).requestAsync(any(Command.class), any(), eq(NODE_IP), eq(NODE_PORT));
 
         assertFalse(electionStarted.get());
-        assertEquals(counter.get(), 4);
-    }
-
-    @Test
-    void test_startElection_when_internal_cache_contains_only_a_single_node_4()
-            throws NoSuchFieldException, IllegalAccessException {
-        var electionStarted = (AtomicBoolean) getElectionStartedField().get(testee);
-        electionStarted.set(true);
-        var node = aNode(NODE_UNIQUE_ID, false);
-        test_startElection(node, false, true);
+        assertEquals(0, counter.get());
     }
 
     @Test
@@ -133,20 +146,20 @@ class ElectionServiceImplTest {
 
         testee.run(true);
 
-        verify(client).requestAsync(requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
+        verify(client).requestAsync(any(), requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
         verify(config, never()).ip();
         verify(config, never()).port();
         verify(internalCache).upsert(any(), nodeCaptor.capture());
 
+        assertThat(logger.getLoggingEvents(), hasSize(2));
         assertTrue(electionStarted.get());
-        assertNull(requestCaptor.getValue().payload());
-        assertEquals(nodeCaptor.getValue().status().state(), NodeStatus.State.FAILING);
+        assertNull(requestCaptor.getValue());
+        assertEquals(NodeStatus.State.FAILING, nodeCaptor.getValue().status().state());
     }
 
     @Test
-    void
-            test_startElection_when_the_only_other_node_to_be_notified_about_election_result_is_unavailable()
-                    throws NoSuchFieldException, IllegalAccessException {
+    void test_startElection_should_become_leader_when_candidates_are_unavailable()
+            throws NoSuchFieldException, IllegalAccessException {
         var electionStarted = (AtomicBoolean) getElectionStartedField().get(testee);
         var node = aNode(NODE_UNIQUE_ID, false);
         var anotherNode = aNode(NODE_UNIQUE_ID - 1, false);
@@ -155,15 +168,16 @@ class ElectionServiceImplTest {
 
         testee.run(true);
 
-        verify(client).requestAsync(requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
+        verify(client).requestAsync(any(), requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
         verify(internalCache, times(2)).upsert(any(), nodeCaptor.capture());
 
+        assertThat(logger.getLoggingEvents(), hasSize(2));
         assertFalse(electionStarted.get());
-        var payload = (ElectedRequest) requestCaptor.getValue().payload();
+        var payload = (ElectedRequest) requestCaptor.getValue();
         assertNotNull(payload);
         assertTrue(payload.leader().leader());
-        assertEquals(payload.leader().uniqueId(), NODE_UNIQUE_ID);
-        assertEquals(nodeCaptor.getAllValues().get(0).status().state(), NodeStatus.State.FAILING);
+        assertEquals(NODE_UNIQUE_ID, payload.leader().uniqueId());
+        assertEquals(NodeStatus.State.FAILING, nodeCaptor.getAllValues().get(0).status().state());
         assertTrue(nodeCaptor.getAllValues().get(1).leader());
     }
 
@@ -178,17 +192,17 @@ class ElectionServiceImplTest {
 
         testee.run(true);
 
-        verify(client).requestAsync(requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
+        verify(client).requestAsync(any(), requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
         verify(config, never()).ip();
         verify(config, never()).port();
         verify(internalCache, never()).upsert(any(), any());
 
         assertTrue(electionStarted.get());
-        assertNull(requestCaptor.getValue().payload());
+        assertNull(requestCaptor.getValue());
     }
 
     @Test
-    void test_startElection_when_no_other_node_with_greater_unique_id_is_available()
+    void test_run_should_become_leader_when_uniqueId_is_greater_than_all_other_nodes()
             throws NoSuchFieldException, IllegalAccessException {
         var electionStarted = (AtomicBoolean) getElectionStartedField().get(testee);
         var node = aNode(NODE_UNIQUE_ID, false);
@@ -198,15 +212,15 @@ class ElectionServiceImplTest {
 
         testee.run(true);
 
-        verify(client).requestAsync(requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
+        verify(client).requestAsync(any(), requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
         verify(internalCache).upsert(any(), nodeCaptor.capture());
 
         assertFalse(electionStarted.get());
-        var payload = (ElectedRequest) requestCaptor.getValue().payload();
+        var payload = (ElectedRequest) requestCaptor.getValue();
         assertNotNull(payload);
         assertTrue(payload.leader().leader());
-        assertEquals(payload.leader().uniqueId(), NODE_UNIQUE_ID);
-        assertEquals(nodeCaptor.getValue().uniqueId(), NODE_UNIQUE_ID);
+        assertEquals(NODE_UNIQUE_ID, payload.leader().uniqueId());
+        assertEquals(NODE_UNIQUE_ID, nodeCaptor.getValue().uniqueId());
         assertTrue(nodeCaptor.getValue().leader());
     }
 
@@ -223,26 +237,27 @@ class ElectionServiceImplTest {
 
         testee.run(true);
 
-        verify(client, times(2)).requestAsync(requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
+        verify(client, times(2))
+                .requestAsync(any(), requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
         verify(internalCache, times(2)).upsert(any(), nodeCaptor.capture());
 
         assertFalse(electionStarted.get());
-        var payload = (ElectedRequest) requestCaptor.getValue().payload();
+        var payload = (ElectedRequest) requestCaptor.getValue();
         assertNotNull(payload);
         assertTrue(payload.leader().leader());
-        assertEquals(payload.leader().uniqueId(), NODE_UNIQUE_ID);
+        assertEquals(NODE_UNIQUE_ID, payload.leader().uniqueId());
 
-        var leader = nodeCaptor.getAllValues().get(0);
-        assertEquals(leader.uniqueId(), NODE_UNIQUE_ID);
+        var leader = nodeCaptor.getAllValues().getFirst();
+        assertEquals(NODE_UNIQUE_ID, leader.uniqueId());
         assertTrue(leader.leader());
 
         var oldLeader = nodeCaptor.getAllValues().get(1);
-        assertEquals(oldLeader.uniqueId(), NODE_UNIQUE_ID - 2);
+        assertEquals(NODE_UNIQUE_ID - 2, oldLeader.uniqueId());
         assertFalse(oldLeader.leader());
     }
 
     @Test
-    void test_startElection_when_other_nodes_are_failing()
+    void test_startElection_should_become_leader_when_no_candidates()
             throws NoSuchFieldException, IllegalAccessException {
         var electionStarted = (AtomicBoolean) getElectionStartedField().get(testee);
         var node = aNode(NODE_UNIQUE_ID, false);
@@ -252,21 +267,21 @@ class ElectionServiceImplTest {
 
         testee.run(true);
 
-        verify(client).requestAsync(requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
+        verify(client).requestAsync(any(), requestCaptor.capture(), eq(NODE_IP), eq(NODE_PORT));
         verify(internalCache).upsert(any(), nodeCaptor.capture());
 
         assertFalse(electionStarted.get());
-        var payload = (ElectedRequest) requestCaptor.getValue().payload();
+        var payload = (ElectedRequest) requestCaptor.getValue();
         assertNotNull(payload);
         assertTrue(payload.leader().leader());
-        assertEquals(payload.leader().uniqueId(), NODE_UNIQUE_ID);
-        assertEquals(nodeCaptor.getValue().uniqueId(), NODE_UNIQUE_ID);
+        assertEquals(NODE_UNIQUE_ID, payload.leader().uniqueId());
+        assertEquals(NODE_UNIQUE_ID, nodeCaptor.getValue().uniqueId());
         assertTrue(nodeCaptor.getValue().leader());
     }
 
     @Test
     void
-            test_startElection_when_other_nodes_are_failing_and_election_was_finished_by_another_thread()
+            test_startElection_should_do_nothing_when_force_is_true_but_another_thread_finishes_the_election()
                     throws NoSuchFieldException, IllegalAccessException {
         var electionStarted = (AtomicBoolean) getElectionStartedField().get(testee);
         var node = aNode(NODE_UNIQUE_ID, false);
@@ -312,7 +327,7 @@ class ElectionServiceImplTest {
 
     private void mockBasicOperations(
             List<Node> internalCacheNodes, CompletableFuture<Response> clientResponse) {
-        when(client.requestAsync(any(Request.class), any(String.class), any(Integer.class)))
+        when(client.requestAsync(any(Command.class), any(), any(String.class), any(Integer.class)))
                 .thenReturn(clientResponse);
         when(internalCache.getAll()).thenReturn(internalCacheNodes);
         when(internalCache.get(ElectionServiceImplTest.NODE_UNIQUE_TEXT_ID))

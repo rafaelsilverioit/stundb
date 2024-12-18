@@ -4,7 +4,6 @@ import com.google.inject.Guice;
 import com.stundb.net.client.modules.ClientModule;
 import com.stundb.net.core.models.Command;
 import com.stundb.net.core.models.requests.RegisterRequest;
-import com.stundb.net.core.models.requests.Request;
 import com.stundb.net.core.models.responses.RegisterResponse;
 
 import java.util.UUID;
@@ -23,8 +22,8 @@ public class StunDBClient {
             var port = 8000 + i;
 
             client.requestAsync(
-                            Request.buildRequest(
-                                    Command.REGISTER, new RegisterRequest(uuid, 9999, 9999L)),
+                            Command.REGISTER,
+                            new RegisterRequest(uuid, 9999, 9999L),
                             "127.0.0.1",
                             port)
                     .handle(

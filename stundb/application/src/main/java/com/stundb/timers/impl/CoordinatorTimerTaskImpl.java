@@ -14,7 +14,6 @@ import com.stundb.net.core.models.Node;
 import com.stundb.net.core.models.NodeStatus;
 import com.stundb.net.core.models.requests.DeregisterRequest;
 import com.stundb.net.core.models.requests.PingRequest;
-import com.stundb.net.core.models.requests.Request;
 import com.stundb.net.core.models.responses.PingResponse;
 import com.stundb.service.ElectionService;
 import com.stundb.service.ReplicationService;
@@ -23,12 +22,12 @@ import com.stundb.utils.NodeUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Singleton
 public class CoordinatorTimerTaskImpl extends TimerTask {
 
@@ -37,8 +36,6 @@ public class CoordinatorTimerTaskImpl extends TimerTask {
             Arrays.stream(NodeStatus.State.values())
                     .filter(not(RUNNING::equals))
                     .collect(Collectors.toList());
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject private Cache<Node> internalCache;
     @Inject private ElectionService election;
@@ -73,13 +70,15 @@ public class CoordinatorTimerTaskImpl extends TimerTask {
     }
 
     private void notifyAboutLeavingMember(Node node, Collection<Node> nodes) {
-        var request =
-                Request.buildRequest(Command.DEREGISTER, new DeregisterRequest(node.uniqueId()));
         utils.filterNodesByState(nodes, uniqueId.number(), VALID_STATES)
                 .filter(n -> !Objects.equals(n.uniqueId(), node.uniqueId()))
                 .forEach(
                         n ->
-                                client.requestAsync(request, n.ip(), n.port())
+                                client.requestAsync(
+                                                Command.DEREGISTER,
+                                                new DeregisterRequest(node.uniqueId()),
+                                                n.ip(),
+                                                n.port())
                                         .handle(
                                                 (response, error) -> {
                                                     if (error != null) {
@@ -96,9 +95,8 @@ public class CoordinatorTimerTaskImpl extends TimerTask {
 
     private void reachFailedNode(Node node) {
         client.requestAsync(
-                        Request.buildRequest(
-                                Command.PING,
-                                new PingRequest(replicationService.generateVersionClock())),
+                        Command.PING,
+                        new PingRequest(replicationService.generateVersionClock()),
                         node.ip(),
                         node.port())
                 .handle(
@@ -127,15 +125,14 @@ public class CoordinatorTimerTaskImpl extends TimerTask {
      */
     private void pingLeader(Node node) {
         client.requestAsync(
-                        Request.buildRequest(
-                                Command.PING,
-                                new PingRequest(replicationService.generateVersionClock())),
+                        Command.PING,
+                        new PingRequest(replicationService.generateVersionClock()),
                         node.ip(),
                         node.port())
                 .handle(
                         (response, throwable) -> {
                             if (throwable != null) {
-                                logger.error("Error pinging leader", throwable);
+                                log.error("Error pinging leader", throwable);
                                 updateCache(node, FAILING);
                                 return throwable;
                             }

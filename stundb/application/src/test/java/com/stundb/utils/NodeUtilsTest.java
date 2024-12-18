@@ -36,7 +36,7 @@ public class NodeUtilsTest {
         verify(digester).update(key.getBytes());
         verify(digester).digest();
 
-        assertEquals(uniqueId, 2390907759L);
+        assertEquals(2390907759L, uniqueId);
     }
 
     @Test
@@ -50,8 +50,8 @@ public class NodeUtilsTest {
                                 List.of(NodeStatus.State.RUNNING))
                         .toList();
 
-        assertEquals(filtered.size(), 1);
-        assertEquals(filtered.get(0), anotherNode);
+        assertEquals(1, filtered.size());
+        assertEquals(filtered.getFirst(), anotherNode);
     }
 
     @Test
@@ -65,7 +65,7 @@ public class NodeUtilsTest {
                                 List.of(NodeStatus.State.RUNNING))
                         .toList();
 
-        assertEquals(filtered.size(), 0);
+        assertEquals(0, filtered.size());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class NodeUtilsTest {
                                 List.of(node), NODE_UNIQUE_ID, List.of(NodeStatus.State.RUNNING))
                         .toList();
 
-        assertEquals(filtered.size(), 0);
+        assertEquals(0, filtered.size());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class NodeUtilsTest {
                                 List.of(), NODE_UNIQUE_ID, List.of(NodeStatus.State.RUNNING))
                         .toList();
 
-        assertEquals(filtered.size(), 0);
+        assertEquals(0, filtered.size());
     }
 
     private Node aNode(Long uniqueId, NodeStatus.State state) {

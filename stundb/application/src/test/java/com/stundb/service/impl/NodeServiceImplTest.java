@@ -1,9 +1,13 @@
 package com.stundb.service.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.github.valfirst.slf4jtest.TestLogger;
+import com.github.valfirst.slf4jtest.TestLoggerFactory;
 import com.stundb.api.models.Tuple;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.models.UniqueId;
@@ -17,6 +21,8 @@ import com.stundb.service.ElectionService;
 import com.stundb.service.ReplicationService;
 import com.stundb.utils.NodeUtils;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +32,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -37,6 +44,8 @@ import java.util.stream.Stream;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class NodeServiceImplTest {
 
+    private final TestLogger logger = TestLoggerFactory.getTestLogger(NodeServiceImpl.class);
+
     @Captor private ArgumentCaptor<Node> captor;
     @Mock private StunDBClient client;
     @Mock private Cache<Node> internalCache;
@@ -46,7 +55,26 @@ public class NodeServiceImplTest {
     @Mock private UniqueId uniqueId;
     @Mock private NodeUtils utils;
     @Mock private Timer timer;
-    @InjectMocks private NodeServiceImpl testee;
+    private NodeServiceImpl testee;
+
+    @BeforeEach
+    void setup() throws NoSuchFieldException, IllegalAccessException {
+        testee = new NodeServiceImpl();
+
+        getField("client").set(testee, client);
+        getField("internalCache").set(testee, internalCache);
+        getField("replicationService").set(testee, replicationService);
+        getField("election").set(testee, election);
+        getField("coordinatorTimerTask").set(testee, coordinatorTimerTask);
+        getField("uniqueId").set(testee, uniqueId);
+        getField("utils").set(testee, utils);
+        getField("timer").set(testee, timer);
+    }
+
+    @AfterEach
+    void tearDown() {
+        logger.clear();
+    }
 
     private Stream<Arguments> electedArguments() {
         return Stream.of(
@@ -265,6 +293,7 @@ public class NodeServiceImplTest {
         verify(client).requestAsync(any(), any(), any());
         verify(replicationService).generateStateSnapshot();
 
+        assertThat(logger.getLoggingEvents(), hasSize(1));
         assertEquals(node.uniqueId(), captor.getAllValues().get(0).uniqueId());
         assertEquals(currentLeader.uniqueId(), captor.getAllValues().get(1).uniqueId());
         assertEquals(NodeStatus.State.FAILING, captor.getAllValues().get(1).status().state());
@@ -276,5 +305,11 @@ public class NodeServiceImplTest {
 
     private Node buildNode(NodeStatus.State state, long uniqueId, boolean leader) {
         return new Node("", 8080, uniqueId, leader, NodeStatus.create(state));
+    }
+
+    private Field getField(String fieldName) throws NoSuchFieldException {
+        var field = NodeServiceImpl.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field;
     }
 }

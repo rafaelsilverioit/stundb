@@ -3,22 +3,19 @@ package com.stundb.net.core.modules.providers;
 import com.stundb.api.crdt.Entry;
 import com.stundb.net.core.codecs.Codec;
 import com.stundb.net.core.codecs.fury.FuryCodec;
-import com.stundb.net.core.models.Command;
-import com.stundb.net.core.models.Node;
-import com.stundb.net.core.models.Type;
-import com.stundb.net.core.models.Version;
+import com.stundb.net.core.models.*;
 import com.stundb.net.core.models.requests.*;
 import com.stundb.net.core.models.responses.*;
-
-import io.fury.Fury;
-import io.fury.ThreadLocalFury;
-import io.fury.config.Language;
 
 import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+
+import org.apache.fury.Fury;
+import org.apache.fury.ThreadLocalFury;
+import org.apache.fury.config.Language;
+import org.apache.fury.logging.LoggerFactory;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -26,16 +23,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@Slf4j
 @Singleton
 public class CodecProvider implements Provider<Codec> {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public Codec get() {
         var threadSafeFury =
                 new ThreadLocalFury(
                         classLoader -> {
+                            LoggerFactory.useSlf4jLogging(true);
                             Fury fury =
                                     Fury.builder()
                                             .withLanguage(Language.JAVA)
@@ -86,7 +83,7 @@ public class CodecProvider implements Provider<Codec> {
                                 fury.register(
                                         Class.forName("java.util.ImmutableCollections$List12"));
                             } catch (ClassNotFoundException e) {
-                                logger.error("Class not found", e);
+                                log.error("Class not found", e);
                             }
                             return fury;
                         });

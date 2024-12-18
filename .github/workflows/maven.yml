@@ -21,12 +21,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up JDK 17
+    - name: Set up JDK 21
       uses: actions/setup-java@v3
       with:
-        java-version: '17'
+        java-version: '21'
         distribution: 'temurin'
         cache: maven
+    - name: Set-up config files
+      run: |
+        mkdir -p $HOME/.config/stundb
+        touch $HOME/.config/stundb/users
+        echo "username,31673332653763777567776a35693970726f65696a3034323169,c67968ebf70fac826fe67158a8149622fc521e8b08e679b48982a75df1624d09,f1a7ce879ec2cedae3311bc5f692e3c36f7fbad14015c1108666a894ff101934,4096" > $HOME/.config/stundb/users
     - name: Build with Maven
       run: mvn -B package -PrunAcceptanceTests --file pom.xml
 

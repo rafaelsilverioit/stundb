@@ -12,25 +12,23 @@ import com.stundb.net.core.models.Command;
 import com.stundb.net.core.models.Node;
 import com.stundb.net.core.models.NodeStatus;
 import com.stundb.net.core.models.requests.ElectedRequest;
-import com.stundb.net.core.models.requests.Request;
 import com.stundb.service.ElectionService;
 import com.stundb.utils.NodeUtils;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j
 @Singleton
 public class ElectionServiceImpl implements ElectionService {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final AtomicInteger counter = new AtomicInteger();
     private final AtomicBoolean electionStarted = new AtomicBoolean(false);
 
@@ -44,11 +42,13 @@ public class ElectionServiceImpl implements ElectionService {
     @Override
     public void run(Boolean force) {
         var currentLeader = internalCache.get(uniqueId.text()).map(Node::leader).orElse(false);
-        if ((!currentLeader && !electionStarted.get() && counter.getAndIncrement() > 3) || force) {
-            electionStarted.set(true);
-            counter.set(0);
-            runElection();
+        if (!force && (currentLeader || electionStarted.get() || counter.getAndIncrement() < 3)) {
+            return;
         }
+
+        electionStarted.set(true);
+        counter.set(0);
+        runElection();
     }
 
     @Loggable
@@ -71,13 +71,9 @@ public class ElectionServiceImpl implements ElectionService {
         // TODO: rethink how we will handle elections
         if (!candidates.isEmpty() && electionStarted.get()) {
             candidates.forEach(this::startElection);
-            return;
         } else if (electionStarted.get()) {
             becomeLeader(nodes);
-            return;
         }
-
-        logger.info("No-op");
     }
 
     @Loggable
@@ -109,15 +105,12 @@ public class ElectionServiceImpl implements ElectionService {
 
     @Loggable
     private void notifyAboutElectedLeader(Node leader, Node n) {
-        logger.info("Telling about election to {}", n.uniqueId());
-        client.requestAsync(
-                        Request.buildRequest(Command.ELECTED, new ElectedRequest(leader)),
-                        n.ip(),
-                        n.port())
+        log.info("Telling about election to {}", n.uniqueId());
+        client.requestAsync(Command.ELECTED, new ElectedRequest(leader), n.ip(), n.port())
                 .handle(
                         (response, error) -> {
                             if (error != null) {
-                                logger.error("Request failed", error);
+                                log.error("Request failed", error);
                                 internalCache.upsert(n.uniqueId().toString(), n.clone(FAILING));
                             }
                             return response;
@@ -126,16 +119,16 @@ public class ElectionServiceImpl implements ElectionService {
 
     @Loggable
     private void startElection(Node node) {
-        logger.info("Starting election {}", node.uniqueId());
-        client.requestAsync(
-                        Request.buildRequest(Command.START_ELECTION, null), node.ip(), node.port())
+        log.info("Starting election {}", node.uniqueId());
+        client.requestAsync(Command.START_ELECTION, null, node.ip(), node.port())
                 .handle(
                         (response, error) -> {
                             if (error != null) {
-                                logger.error("Request failed", error);
-                                internalCache.upsert(node.uniqueId().toString(), node.clone(FAILING));
+                                log.error("Request failed", error);
+                                internalCache.upsert(
+                                        node.uniqueId().toString(), node.clone(FAILING));
                             }
-                            return null;
+                            return response;
                         });
     }
 }

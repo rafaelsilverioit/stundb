@@ -2,9 +2,13 @@ package com.stundb.service.impl;
 
 import static com.stundb.net.core.models.NodeStatus.State.RUNNING;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.github.valfirst.slf4jtest.TestLogger;
+import com.github.valfirst.slf4jtest.TestLoggerFactory;
 import com.stundb.api.crdt.Entry;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.crdt.CRDT;
@@ -15,15 +19,17 @@ import com.stundb.net.core.models.NodeStatus;
 import com.stundb.net.core.models.responses.Response;
 import com.stundb.utils.NodeUtils;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -35,10 +41,9 @@ class ReplicationServiceImplTest {
     private static final String KEY = "key";
     private static final String ANOTHER_KEY = "key2";
     private static final String VALUE = "value";
-
     private static final Node NODE =
             new Node("127.0.0.1", 9000, 1L, true, NodeStatus.create(RUNNING));
-
+    private final TestLogger logger = TestLoggerFactory.getTestLogger(ReplicationServiceImpl.class);
     @Mock private CRDT state;
     @Mock private StunDBClient client;
     @Mock private Cache<Object> cache;
@@ -46,7 +51,7 @@ class ReplicationServiceImplTest {
     @Mock private UniqueId uniqueId;
     @Mock private NodeUtils utils;
 
-    @InjectMocks private ReplicationServiceImpl testee;
+    private ReplicationServiceImpl testee;
 
     private static Stream<Arguments>
             verifySynchroneity_should_return_nothing_when_provided_clock_has_a_greater_value_or_value_is_null_arguments() {
@@ -58,8 +63,10 @@ class ReplicationServiceImplTest {
                 Arguments.of(
                         CompletableFuture.completedFuture(
                                 new Response(null, null, null, null, null)),
+                        0,
                         0),
-                Arguments.of(CompletableFuture.failedFuture(new RuntimeException()), 1));
+                Arguments.of(CompletableFuture.failedFuture(new RuntimeException()), 1, 1),
+                Arguments.of(CompletableFuture.failedFuture(new RuntimeException()), 1, 1));
     }
 
     private static Stream<Arguments> synchronize_arguments() {
@@ -67,6 +74,23 @@ class ReplicationServiceImplTest {
                 Arguments.of(Instant.MAX, Instant.MIN, ANOTHER_KEY, 1, 1),
                 Arguments.of(Instant.MAX, Instant.MAX, KEY, 1, 0),
                 Arguments.of(Instant.MIN, Instant.MAX, KEY, 0, 1));
+    }
+
+    @BeforeEach
+    void setup() throws NoSuchFieldException, IllegalAccessException {
+        testee = new ReplicationServiceImpl();
+
+        getField("state").set(testee, state);
+        getField("client").set(testee, client);
+        getField("cache").set(testee, cache);
+        getField("internalCache").set(testee, internalCache);
+        getField("uniqueId").set(testee, uniqueId);
+        getField("utils").set(testee, utils);
+    }
+
+    @AfterEach
+    void tearDown() {
+        logger.clear();
     }
 
     @Test
@@ -128,7 +152,7 @@ class ReplicationServiceImplTest {
         verify(state).getAdded();
         verify(state).getRemoved();
 
-        var addedEntry = ((List<Entry>) data.left()).get(0);
+        var addedEntry = ((List<Entry>) data.left()).getFirst();
         assertEquals(KEY, addedEntry.key());
         assertEquals(VALUE, addedEntry.value());
         assertEquals(Instant.MAX, addedEntry.timestamp());
@@ -198,7 +222,10 @@ class ReplicationServiceImplTest {
 
     @ParameterizedTest
     @MethodSource("add_or_remove_arguments")
-    void add(CompletableFuture<Response> future, Integer expectedUpsertCalls) {
+    void add(
+            CompletableFuture<Response> future,
+            Integer expectedUpsertCalls,
+            Integer expectedLogEntries) {
         var removedEntry = new Entry(Instant.MIN, ANOTHER_KEY, VALUE);
 
         when(state.getAdded()).thenReturn(Set.of());
@@ -215,11 +242,16 @@ class ReplicationServiceImplTest {
         verify(uniqueId).number();
         verify(client).requestAsync(any(), anyString(), anyInt());
         verify(internalCache, times(expectedUpsertCalls)).upsert(anyString(), any());
+
+        assertThat(logger.getLoggingEvents(), hasSize(expectedLogEntries));
     }
 
     @ParameterizedTest
     @MethodSource("add_or_remove_arguments")
-    void remove(CompletableFuture<Response> future, Integer expectedUpsertCalls) {
+    void remove(
+            CompletableFuture<Response> future,
+            Integer expectedUpsertCalls,
+            Integer expectedLogEntries) {
         var removedEntry = new Entry(Instant.MAX, KEY, VALUE);
 
         when(state.getAdded()).thenReturn(Set.of());
@@ -236,5 +268,13 @@ class ReplicationServiceImplTest {
         verify(uniqueId).number();
         verify(client).requestAsync(any(), anyString(), anyInt());
         verify(internalCache, times(expectedUpsertCalls)).upsert(anyString(), any());
+
+        assertThat(logger.getLoggingEvents(), hasSize(expectedLogEntries));
+    }
+
+    private Field getField(String fieldName) throws NoSuchFieldException {
+        var field = ReplicationServiceImpl.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field;
     }
 }

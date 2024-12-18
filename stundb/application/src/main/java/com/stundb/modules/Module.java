@@ -1,18 +1,13 @@
 package com.stundb.modules;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.google.inject.matcher.Matchers;
-import com.google.inject.name.Names;
+import com.stundb.annotations.CacheEvictor;
+import com.stundb.annotations.Coordinator;
 import com.stundb.api.btree.BTree;
 import com.stundb.api.configuration.ConfigurationLoader;
-import com.stundb.api.mappers.ApplicationConfigMapper;
-import com.stundb.api.models.ApplicationConfig;
-import com.stundb.api.providers.ApplicationConfigProvider;
-import com.stundb.api.providers.ObjectMapperProvider;
-import com.stundb.api.providers.ValidatorProvider;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.crdt.CRDT;
 import com.stundb.core.crdt.LastWriterWinsSet;
@@ -24,15 +19,15 @@ import com.stundb.net.client.modules.ClientModule;
 import com.stundb.net.core.codecs.Codec;
 import com.stundb.net.core.models.Node;
 import com.stundb.net.core.modules.providers.CodecProvider;
+import com.stundb.net.server.TcpServer;
 import com.stundb.net.server.handlers.CommandHandler;
+import com.stundb.server.TcpServerImpl;
 import com.stundb.service.*;
 import com.stundb.service.impl.*;
 import com.stundb.timers.BackoffTimerTask;
 import com.stundb.timers.impl.BackoffTimerTaskImpl;
 import com.stundb.timers.impl.CacheEvictorTimerTaskImpl;
 import com.stundb.timers.impl.CoordinatorTimerTaskImpl;
-
-import jakarta.validation.Validator;
 
 import java.security.MessageDigest;
 import java.util.List;
@@ -49,14 +44,8 @@ public class Module extends AbstractModule {
                 Matchers.any(), Matchers.annotatedWith(Loggable.class), new RequestLogger());
 
         bind(ConfigurationLoader.class).toInstance(new ConfigurationLoader());
-        bind(ApplicationConfig.class)
-                .toProvider(ApplicationConfigProvider.class)
-                .in(Singleton.class);
-        bind(Validator.class).toProvider(ValidatorProvider.class).in(Singleton.class);
-        bind(ObjectMapper.class).toProvider(ObjectMapperProvider.class).in(Singleton.class);
         bind(MessageDigest.class).toProvider(MessageDigestProvider.class);
         bind(UniqueId.class).toProvider(UniqueIdProvider.class);
-        bind(ApplicationConfigMapper.class).toInstance(ApplicationConfigMapper.INSTANCE);
         bind(Codec.class).toProvider(CodecProvider.class);
         bind(Timer.class).toProvider(TimerProvider.class);
         bind(CRDT.class).to(LastWriterWinsSet.class).in(Singleton.class);
@@ -65,13 +54,13 @@ public class Module extends AbstractModule {
         bind(NodeService.class).to(NodeServiceImpl.class);
         bind(ReplicationService.class).to(ReplicationServiceImpl.class);
         bind(SeedService.class).to(SeedServiceImpl.class);
+        bind(TcpServer.class).to(TcpServerImpl.class);
 
         bind(TimerTask.class)
-                .annotatedWith(Names.named("coordinatorTimerTask"))
+                .annotatedWith(Coordinator.class)
                 .to(CoordinatorTimerTaskImpl.class);
-
         bind(TimerTask.class)
-                .annotatedWith(Names.named("cacheEvictorTimerTask"))
+                .annotatedWith(CacheEvictor.class)
                 .to(CacheEvictorTimerTaskImpl.class);
 
         bind(BackoffTimerTask.class).to(BackoffTimerTaskImpl.class);

@@ -1,8 +1,6 @@
 name: StunDB
 ip: 127.0.0.1
 port: 8000
-statePersistenceEnabled: false
-stateDir: /tmp/stundb
 capacity:
   publicCache: 9999
   internalCache: 256

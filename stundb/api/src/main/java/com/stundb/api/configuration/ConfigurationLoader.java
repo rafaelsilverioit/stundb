@@ -9,7 +9,6 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
 import java.io.IOException;
-import java.util.Optional;
 
 public class ConfigurationLoader {
 
@@ -25,7 +24,8 @@ public class ConfigurationLoader {
                         .getResourceAsStream(configurationFile);
 
         if (resource == null) {
-            throw new IllegalArgumentException("Configuration file not found: %s".formatted(configurationFile));
+            throw new IllegalArgumentException(
+                    "Configuration file not found: %s".formatted(configurationFile));
         }
 
         var properties = yamlMapper.readValue(resource, ApplicationProperties.class);

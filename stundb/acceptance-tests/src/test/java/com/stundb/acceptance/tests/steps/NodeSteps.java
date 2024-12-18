@@ -16,14 +16,12 @@ import com.stundb.net.core.models.requests.GetRequest;
 import com.stundb.net.core.models.requests.RegisterRequest;
 import com.stundb.net.core.models.responses.*;
 
-import io.cucumber.java8.En;
-
 import jakarta.inject.Inject;
 
 import java.util.Collection;
 import java.util.function.BiConsumer;
 
-public class NodeSteps extends BaseSteps implements En {
+public class NodeSteps extends BaseSteps {
 
     @Inject private NodeState nodeState;
 

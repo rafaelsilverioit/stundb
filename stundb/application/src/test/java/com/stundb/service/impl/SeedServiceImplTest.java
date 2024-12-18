@@ -72,7 +72,7 @@ class SeedServiceImplTest {
         var field = getField();
         when(config.executors()).thenReturn(new Executors(null, null, null, null, new Executor(1)));
         when(config.backoffSettings()).thenReturn(Map.of());
-        field.set(testee, new BackoffTimerTaskImpl(timer, config));
+        field.set(testee, new BackoffTimerTaskImpl(config));
     }
 
     @Test
@@ -115,7 +115,7 @@ class SeedServiceImplTest {
         var exception = assertThrows(InvocationTargetException.class, () -> testee.contactSeeds());
         assertEquals("Invalid seed address - 127.0.0.1-8080", exception.getCause().getMessage());
 
-        verify(client, never()).requestAsync(any(), any(), any());
+        verify(client, never()).requestAsync(any(Command.class), any(), any(), any());
         verify(config, times(2)).backoffSettings();
         verify(uniqueId, never()).number();
         verify(internalCache, never()).upsert(any(), any());
@@ -152,12 +152,12 @@ class SeedServiceImplTest {
         when(config.ip()).thenReturn(LOCALHOST);
         when(config.port()).thenReturn(9090);
         when(uniqueId.number()).thenReturn(1010L);
-        when(client.requestAsync(any(), any(), any()))
+        when(client.requestAsync(any(Command.class), any(), any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(response));
     }
 
     private void verifyCalls(VerificationMode nodes, VerificationMode times) {
-        verify(client).requestAsync(any(), any(), any());
+        verify(client).requestAsync(any(Command.class), any(), any(), any());
         verify(config).ip();
         verify(config).port();
         verify(config, times(2)).backoffSettings();
