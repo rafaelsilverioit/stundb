@@ -9,6 +9,7 @@ open module acceptance.tests {
     requires stundb.net.client;
     requires stundb.net.server;
     requires stundb.api;
+    requires io.cucumber.java;
 
     exports com.stundb.acceptance.tests to com.google.guice;
     exports com.stundb.acceptance.tests.modules to com.google.guice;

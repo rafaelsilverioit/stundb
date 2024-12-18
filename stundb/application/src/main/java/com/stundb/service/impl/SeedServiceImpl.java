@@ -11,7 +11,6 @@ import com.stundb.net.core.models.Command;
 import com.stundb.net.core.models.Node;
 import com.stundb.net.core.models.Status;
 import com.stundb.net.core.models.requests.RegisterRequest;
-import com.stundb.net.core.models.requests.Request;
 import com.stundb.net.core.models.responses.ErrorResponse;
 import com.stundb.net.core.models.responses.RegisterResponse;
 import com.stundb.service.ReplicationService;
@@ -54,12 +53,11 @@ public class SeedServiceImpl implements SeedService {
             throw new IllegalArgumentException(format("Invalid seed address - %s", seed));
         }
 
-        var request =
-                Request.buildRequest(
-                        Command.REGISTER,
-                        new RegisterRequest(config.ip(), config.port(), uniqueId.number()));
+        var payload = new RegisterRequest(config.ip(), config.port(), uniqueId.number());
         var response =
-                client.requestAsync(request, address[0], Integer.parseInt(address[1])).join();
+                client.requestAsync(
+                                Command.REGISTER, payload, address[0], Integer.parseInt(address[1]))
+                        .join();
         if (Status.ERROR.equals(response.status())) {
             var code = ((ErrorResponse) response.payload()).code();
             throw new RuntimeException(format("Reply from seed was - %s", code));
@@ -77,8 +75,8 @@ public class SeedServiceImpl implements SeedService {
          *  2- Or should we ask the cluster leader for it?
          *  3- Or even, ask any node at random?
          *  I guess options #2 and #3 have the advantage of we being able to ask for synchronization
-         *  at any time, however, option #2 may be overflow the leader with too many requests and
-         *  network traffic... option #3 may not be a good options because we may end up choosing
+         *  at any time, however, option #2 may overflow the leader with too many requests and
+         *  network traffic... option #3 may not be a good option because we may end up choosing
          *  a node that just became part of the cluster not having been synchronized yet... Option #1
          *  is good, however, means we can't ask for a synchronization at our will... moreover,
          *  what if all seeds go down?

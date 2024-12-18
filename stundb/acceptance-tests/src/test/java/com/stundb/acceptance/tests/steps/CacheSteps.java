@@ -11,20 +11,18 @@ import com.stundb.net.core.models.responses.*;
 
 import io.cucumber.java8.En;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.function.BiConsumer;
 
+@Slf4j
 public class CacheSteps extends BaseSteps implements En {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final BiConsumer<Response, Throwable> capacityResponseHandler =
             defaultHandler.andThen(
                     (response, error) -> {
                         var capacity = ((CapacityResponse) response.payload());
-                        logger.info("Capacity: {}", capacity.capacity());
+                        log.info("Capacity: {}", capacity.capacity());
                         assertThat(capacity.capacity(), notNullValue());
                     });
 
@@ -78,7 +76,7 @@ public class CacheSteps extends BaseSteps implements En {
         return defaultHandler.andThen(
                 (response, error) -> {
                     var payload = (GetResponse) response.payload();
-                    logger.info("key={}, value={}", payload.key(), payload.value());
+                    log.info("key={}, value={}", payload.key(), payload.value());
                     assertThat(payload.value(), notNullValue());
                     assertThat((String) payload.value(), equalTo(value));
                 });
@@ -91,7 +89,7 @@ public class CacheSteps extends BaseSteps implements En {
                             "Key still exists in the cache",
                             ((ExistsResponse) response.payload()).exists(),
                             is(false));
-                    logger.info("No records exist for key {}", key);
+                    log.info("No records exist for key {}", key);
                 });
     }
 
@@ -102,7 +100,7 @@ public class CacheSteps extends BaseSteps implements En {
                             "Error removing key from cache",
                             Status.ERROR.equals(response.status()),
                             is(false));
-                    logger.info("Removed key={}!", key);
+                    log.info("Removed key={}!", key);
                 });
     }
 

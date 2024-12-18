@@ -3,6 +3,7 @@ package com.stundb.service.impl;
 import static com.stundb.net.core.models.NodeStatus.State.FAILING;
 import static com.stundb.net.core.models.NodeStatus.State.RUNNING;
 
+import com.stundb.annotations.Coordinator;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.logging.Loggable;
 import com.stundb.core.models.UniqueId;
@@ -20,11 +21,9 @@ import com.stundb.service.ReplicationService;
 import com.stundb.utils.NodeUtils;
 
 import jakarta.inject.Inject;
-import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Timer;
@@ -33,10 +32,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j
 @Singleton
 public class NodeServiceImpl implements NodeService {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ConcurrentMap<Long, AtomicInteger> failures = new ConcurrentHashMap<>();
 
     @Inject private Timer timer;
@@ -47,9 +46,7 @@ public class NodeServiceImpl implements NodeService {
     @Inject private UniqueId uniqueId;
     @Inject private NodeUtils utils;
 
-    @Inject
-    @Named("coordinatorTimerTask")
-    private TimerTask coordinatorTimerTask;
+    @Inject @Coordinator private TimerTask coordinatorTimerTask;
 
     @Loggable
     @Override
@@ -114,17 +111,17 @@ public class NodeServiceImpl implements NodeService {
                                 client.requestAsync(request, node.ip(), node.port())
                                         .handle(
                                                 (response, error) -> {
-                                                    if (error != null) {
-                                                        logger.error(
-                                                                "Leader failed, starting election",
-                                                                error);
-                                                        internalCache.upsert(
-                                                                node.uniqueId().toString(),
-                                                                node.clone(FAILING));
-                                                        election.run();
-                                                        return error;
+                                                    if (error == null) {
+                                                        return response;
                                                     }
-                                                    return response;
+                                                    log.error(
+                                                            "Leader failed, starting election",
+                                                            error);
+                                                    internalCache.upsert(
+                                                            node.uniqueId().toString(),
+                                                            node.clone(FAILING));
+                                                    election.run();
+                                                    return error;
                                                 }));
 
         var tuple = replicationService.generateStateSnapshot();
@@ -155,7 +152,7 @@ public class NodeServiceImpl implements NodeService {
     @Override
     public void elected(ElectedRequest request) {
         var node = request.leader();
-        logger.info("{} became the leader", node.uniqueId());
+        log.info("{} became the leader", node.uniqueId());
         utils.filterNodesByState(internalCache.getAll(), node.uniqueId(), List.of(RUNNING))
                 .filter(Node::leader)
                 .forEach(n -> internalCache.upsert(n.uniqueId().toString(), n.clone(false)));

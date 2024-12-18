@@ -7,15 +7,13 @@ import com.stundb.service.StoreService;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
+@Slf4j
 @Singleton
 public class CacheEvictorTimerTaskImpl extends TimerTask {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject private Cache<Object> cache;
     @Inject private StoreService storeService;
@@ -25,7 +23,7 @@ public class CacheEvictorTimerTaskImpl extends TimerTask {
         cache.retrieveKeysOfExpiredEntries()
                 .forEach(
                         key -> {
-                            logger.info("Removing expired key: {}", key);
+                            log.info("Removing expired key: {}", key);
                             storeService.del(new DelRequest(key));
                         });
     }

@@ -6,15 +6,14 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 public class ObjectDecoder extends ByteToMessageDecoder {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Codec codec;
 
     public ObjectDecoder(Codec codec) {
@@ -39,7 +38,7 @@ public class ObjectDecoder extends ByteToMessageDecoder {
                 out.add(obj);
             }
         } catch (RuntimeException e) {
-            logger.error("Error decoding request", e);
+            log.error("Error decoding request", e);
         }
     }
 }

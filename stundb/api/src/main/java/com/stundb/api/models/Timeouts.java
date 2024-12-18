@@ -9,8 +9,4 @@ public record Timeouts(Integer tcpReadTimeout, Integer tcpWriteTimeout) {
                 Integer.parseInt(map.getOrDefault("tcpReadTimeout", "10")),
                 Integer.parseInt(map.getOrDefault("tcpWriteTimeout", "10")));
     }
-
-    public Integer timeoutInMillis(Integer timeout) {
-        return timeout * 1000;
-    }
 }

@@ -7,7 +7,7 @@ module stundb.api {
     requires transitive com.fasterxml.jackson.dataformat.yaml;
     requires org.hibernate.validator;
     requires transitive jakarta.validation;
-    requires transitive lombok;
+    requires static transitive lombok;
     requires transitive org.slf4j;
     requires transitive jakarta.inject;
 

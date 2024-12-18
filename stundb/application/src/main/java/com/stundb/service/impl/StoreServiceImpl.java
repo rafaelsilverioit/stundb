@@ -1,5 +1,6 @@
 package com.stundb.service.impl;
 
+import com.stundb.annotations.CacheEvictor;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.logging.Loggable;
 import com.stundb.net.core.models.requests.DelRequest;
@@ -13,7 +14,6 @@ import com.stundb.net.core.models.responses.IsEmptyResponse;
 import com.stundb.service.StoreService;
 
 import jakarta.inject.Inject;
-import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
 import java.util.Timer;
@@ -26,9 +26,7 @@ public class StoreServiceImpl implements StoreService {
     @Inject private ReplicationServiceImpl replicationService;
     @Inject private Timer timer;
 
-    @Named("cacheEvictorTimerTask")
-    @Inject
-    private TimerTask cacheEvictorTimerTask;
+    @Inject @CacheEvictor private TimerTask cacheEvictorTimerTask;
 
     @Override
     public void init() {
