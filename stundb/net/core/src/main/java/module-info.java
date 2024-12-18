@@ -1,5 +1,5 @@
 module stundb.net.core {
-    requires fury.core;
+    requires org.apache.fury.core;
     requires transitive stundb.api;
     requires stundb.core;
     requires jdk.security.auth;

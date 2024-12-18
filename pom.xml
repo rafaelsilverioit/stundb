@@ -13,13 +13,13 @@
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <!-- automatically run annotation processors within the incremental compilation -->
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
-        <junit.version>5.10.2</junit.version>
+        <junit.version>5.11.3</junit.version>
         <surefire.version>3.2.5</surefire.version>
         <lombok.version>1.18.34</lombok.version>
         <jacoco.version>0.8.12</jacoco.version>
-        <logback.version>1.5.3</logback.version>
+        <logback.version>1.5.12</logback.version>
         <mockito.version>5.11.0</mockito.version>
-        <jackson.version>2.17.0</jackson.version>
+        <jackson.version>2.18.1</jackson.version>
         <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
         <skipTests>false</skipTests>
     </properties>
@@ -166,11 +166,6 @@
                 <version>${surefire.version}</version>
                 <configuration>
                     <skipTests>${skipTests}</skipTests>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
                     <classpathDependencyExcludes>
                         <classpathDependencyExcludes>ch.qos.logback:logback-classic</classpathDependencyExcludes>
                     </classpathDependencyExcludes>

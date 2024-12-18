@@ -27,11 +27,9 @@
         <appender-ref ref="STDOUT"/>
     </appender>
 
-    <logger name="io.netty" level="null" />
-    <logger name="com.stundb" level="DEBUG" />
-    <logger name="com.stundb.client" level="DEBUG" />
-    <logger name="com.stundb.core" level="DEBUG" />
-    <logger name="com.stundb.net" level="DEBUG" />
+    <logger name="io.netty" level="NULL" />
+    <logger name="org.apache.fury" level="NULL" />
+    <logger name="com.stundb" level="INFO" />
 
     <root level="INFO">
         <appender-ref ref="ASYNCSTDOUT"/>

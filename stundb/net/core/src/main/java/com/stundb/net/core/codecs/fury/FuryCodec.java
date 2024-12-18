@@ -2,9 +2,9 @@ package com.stundb.net.core.codecs.fury;
 
 import com.stundb.net.core.codecs.Codec;
 
-import io.fury.ThreadSafeFury;
-
 import lombok.AllArgsConstructor;
+
+import org.apache.fury.ThreadSafeFury;
 
 import java.io.IOException;
 import java.io.InputStream;

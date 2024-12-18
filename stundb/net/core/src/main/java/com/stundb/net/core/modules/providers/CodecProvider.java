@@ -7,14 +7,15 @@ import com.stundb.net.core.models.*;
 import com.stundb.net.core.models.requests.*;
 import com.stundb.net.core.models.responses.*;
 
-import io.fury.Fury;
-import io.fury.ThreadLocalFury;
-import io.fury.config.Language;
-
 import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
 
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.fury.Fury;
+import org.apache.fury.ThreadLocalFury;
+import org.apache.fury.config.Language;
+import org.apache.fury.logging.LoggerFactory;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -31,6 +32,7 @@ public class CodecProvider implements Provider<Codec> {
         var threadSafeFury =
                 new ThreadLocalFury(
                         classLoader -> {
+                            LoggerFactory.useSlf4jLogging(true);
                             Fury fury =
                                     Fury.builder()
                                             .withLanguage(Language.JAVA)
