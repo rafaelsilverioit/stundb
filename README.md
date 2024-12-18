@@ -1,7 +1,34 @@
 # StunDB - A stunning distributed key-value database
 
-## Work in progress - Not ready for production yet
+----------------------------
 
+## Disclaimer
+
+This application is work in progress, so it is not ready for production yet.
+
+----------------------------
+
+## Running
+
+### Jar
+
+1. Download the runnable jar from the latest [release](https://github.com/rafaelsilverioit/stundb/releases)
+2. In the same folder where the jar is placed, create a file named `application.yml` with contents similar to [this](https://github.com/rafaelsilverioit/stundb/blob/1.0.0/stundb/application/src/main/resources/application.yml)
+3. Run the application with the following command: 
+```bash
+  java -jar stundb-application-1.0.0-shaded.jar -Dapplication.port=8000
+```
+
+### Maven
+
+To run with Maven, you just need to run the following command:
+```bash
+  mvn exec:java -f stundb/application/pom.xml
+```
+
+----------------------------
+
+## Backlog
 ### Done
 - FIFO cache
 - Locking
