@@ -1,0 +1,913 @@
+Project Name: StunDB
+Copyright (c) 2024 - present, Rafael Silvério Amaral.
+
+=======================================================================================================================
+
+Content may contain encryption software. The country in which you are currently may have restrictions on the import,
+possession, and use, and/or re-export to another country, of encryption software. BEFORE using any encryption software,
+please check the country's laws, regulations and policies concerning the import, possession, or use, and re-export
+of encryption software, to see if this is permitted.
+
+=======================================================================================================================
+
+This project contains the following classes copied from Apache Kafka (they may be modified for the needs of this project):
+stundb/net/core/src/main/java/com/stundb/net/core/security/auth/callback/handlers/ScramServerCallbackHandler.java
+stundb/net/core/src/main/java/com/stundb/net/core/security/auth/callback/handlers/SaslClientCallbackHandler.java
+stundb/net/core/src/main/java/com/stundb/net/core/security/auth/callback/handlers/AuthenticateCallbackHandler.java
+stundb/net/core/src/main/java/com/stundb/net/core/security/auth/callback/ScramExtensionsCallback.java
+stundb/net/core/src/main/java/com/stundb/net/core/security/auth/callback/SCramCredentialCallback.java
+stundb/net/core/src/main/java/com/stundb/net/core/security/auth/callback/SaslExtensionsCallback.java
+stundb/net/core/src/main/java/com/stundb/net/core/security/auth/ScramSaslServerProvider.java
+stundb/net/core/src/main/java/com/stundb/net/core/security/auth/ScramSaslClientProvider.java
+stundb/net/core/src/main/java/com/stundb/net/core/security/auth/ScramSaslServer.java
+stundb/net/core/src/main/java/com/stundb/net/core/security/auth/ScramSaslClient.java
+stundb/net/core/src/main/java/com/stundb/net/core/security/auth/ScramMessages.java
+stundb/net/core/src/main/java/com/stundb/net/core/security/auth/ScramMechanism.java
+stundb/net/core/src/main/java/com/stundb/net/core/security/auth/ScramLoginModule.java
+stundb/net/core/src/main/java/com/stundb/net/core/security/auth/ScramFormatter.java
+stundb/net/core/src/main/java/com/stundb/net/core/security/auth/ScramExtensions.java
+stundb/net/core/src/main/java/com/stundb/net/core/security/auth/ScramCredential.java
+
+All these files are licensed under the Apache Software License 2.0.
+
+=======================================================================================================================
+
+This project includes third-party libraries and components under various licenses. Below is a list of included software,
+along with their respective notices and attributions:
+
+---
+- Library: Logback Classic Module
+  License: Eclipse Public License v1.0 (https://www.eclipse.org/legal/epl/epl-v10.html)
+  Copyright (C) 1999-2024, QOS.ch.
+
+  The EPL 1.0 license text is included in the LICENSES/EPL-1.0.txt file in this project.
+---
+---
+- Library: Logback Core Module
+  License: Eclipse Public License v1.0 (https://www.eclipse.org/legal/epl/epl-v10.html)
+  Copyright (C) 1999-2024, QOS.ch.
+
+  The EPL 1.0 license text is included in the LICENSES/EPL-1.0.txt file in this project.
+---
+---
+- Library: ClassMate
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, ClassMate - FasterXML.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Jackson-annotations
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, Jackson-annotations - FasterXML.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Jackson-core
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, Jackson-core - FasterXML.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: jackson-databind
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, jackson-databind - FasterXML.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Jackson-dataformat-CSV
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, Jackson-dataformat-CSV - FasterXML.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Jackson-dataformat-YAML
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, Jackson-dataformat-YAML - FasterXML.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Jackson datatype: JSR310
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, Jackson datatype: JSR310 - FasterXML.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: SLF4J Test
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (c) 2009-2015 Robert Elliot
+  Copyright (c) 2017-2024 Valery Yatsynovich
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: FindBugs-jsr305
+  License: LGPL v2.1 (https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html)
+  Copyright (C) 2024, FindBugs-jsr305 - University of Maryland.
+
+  This library is distributed under the terms of the GNU Lesser General Public License v2.1. You may obtain a copy of the library's source code, as well as the LGPL license, from the library's official repository at https://github.com/findbugsproject/findbugs
+
+  The LGPL v2.1 license text is included in the LICENSES/LGPL-2.1.txt file in this project.
+---
+---
+- Library: error-prone annotations
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, Google Inc.
+  Copyright (C) 2024, Two Sigma Open Source.
+  Copyright (C) 2024, Picnic Technologies.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Guava InternalFutureFailureAccess and InternalFutures
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, Google Inc.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Guava: Google Core Libraries for Java
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, Google Inc.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Guava ListenableFuture only
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, Google Inc.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Google Guice - Core Library
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, Google Inc.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: J2ObjC Annotations
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, Google Inc.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Apache Commons IO
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2002-2024 The Apache Software Foundation.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Cucumber CiEnvironment
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Cucumber-JVM: Core
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Cucumber Expressions
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Cucumber-JVM: Gherkin
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Cucumber-JVM: Gherkin Messages
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Cucumber-JVM: Guice
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Cucumber-JVM: Java
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Cucumber-JVM: Java 8
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Cucumber-JVM: JUnit 4
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Cucumber-JVM: JUnit 5 - JUnit Platform Engine
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Cucumber-JVM: Plugin
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Cucumber-JVM: DataTable
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Cucumber-JVM: Docstring
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Gherkin
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Cucumber HTML Formatter
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: JUnit XML Formatter
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Cucumber Messages
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Cucumber Query
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Cucumber Tag Expressions
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: TestNG XML Formatter
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, Cucumber Ltd and contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Netty/All-in-One
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Buffer
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Codec
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Codec/DNS
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Codec/HAProxy
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Codec/HTTP
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Codec/HTTP2
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Codec/Memcache
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Codec/MQTT
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Codec/Redis
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Codec/SMTP
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Codec/Socks
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Codec/Stomp
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Common
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Handler
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Handler/Proxy
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Resolver
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Resolver/DNS
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Resolver/DNS/Classes/MacOS
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Resolver/DNS/Native/MacOS
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Transport
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Transport/Classes/Epoll
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Transport/Classes/KQueue
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Transport/Native/Unix/Common
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Transport/RXTX
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Transport/SCTP
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Netty/Transport/UDT
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Netty Project.
+
+  Please visit the Netty web site for more information:
+
+    * https://netty.io/
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Jakarta Annotations API
+  License: EPL 2.0 (https://www.eclipse.org/legal/epl-2.0/)
+  Copyright (C) 2024, Jakarta Annotations project / Eclipse Foundation.
+
+  The EPL 2.0 license text is included in the LICENSES/EPL-2.0.md file in this project.
+---
+---
+- Library: Jakarta Dependency Injection
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Eclipse Jakarta Dependency Injection project.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Jakarta Bean Validation API
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Eclipse Jakarta Validation project.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: JUnit
+  License: EPL 1.0 (https://www.eclipse.org/org/documents/epl-v10.php)
+  Copyright (C) 2024, JUnit.
+
+  The EPL 1.0 license text is included in the LICENSES/EPL-1.0.txt file in this project.
+---
+---
+- Library: Byte Buddy (without dependencies)
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, Rafael Winterhalter.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Byte Buddy agent
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, Rafael Winterhalter.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: TypeTools
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, Jonathan Halterman.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Doxia :: Sink API
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Apache Software Foundation.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Maven Reporting API
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Apache Software Foundation.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Apache Maven File Management API
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Apache Software Foundation.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: org.apiguardian:apiguardian-api
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, JUnit.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: Checker Qual
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, The Checker Framework developers.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Plexus Common Utilities
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, Codehaus Plexus.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: fury-core
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The Apache Software Foundation.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: fury-core
+  License: BSD 3-Clause (https://opensource.org/license/bsd-3-clause)
+  Copyright (C) 2024, www.hamcrest.org.
+
+  The BSD 3-Clause license text is included in the LICENSES/BSD-3-Clause.txt file in this project.
+---
+---
+- Library: Hibernate Validator Engine
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, hibernate.org.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: JaCoCo :: Maven Plugin
+  License: EPL 2.0 (https://www.eclipse.org/legal/epl-2.0/)
+  Copyright (C) 2024, Mountainminds GmbH & Co. KG and Contributors.
+
+  The EPL 2.0 license text is included in the LICENSES/EPL-2.0.md file in this project.
+---
+---
+- Library: JaCoCo :: Agent
+  License: EPL 2.0 (https://www.eclipse.org/legal/epl-2.0/)
+  Copyright (C) 2024, Mountainminds GmbH & Co. KG and Contributors.
+
+  The EPL 2.0 license text is included in the LICENSES/EPL-2.0.md file in this project.
+---
+---
+- Library: JaCoCo :: Core
+  License: EPL 2.0 (https://www.eclipse.org/legal/epl-2.0/)
+  Copyright (C) 2024, Mountainminds GmbH & Co. KG and Contributors.
+
+  The EPL 2.0 license text is included in the LICENSES/EPL-2.0.md file in this project.
+---
+---
+- Library: JaCoCo :: Report
+  License: EPL 2.0 (https://www.eclipse.org/legal/epl-2.0/)
+  Copyright (C) 2024, Mountainminds GmbH & Co. KG and Contributors.
+
+  The EPL 2.0 license text is included in the LICENSES/EPL-2.0.md file in this project.
+---
+---
+- Library: JBoss Logging 3
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, www.jboss.org.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: IntelliJ IDEA Annotations
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, JetBrains s.r.o.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: JUnit Jupiter (Aggregator)
+  License: EPL 2.0 (https://www.eclipse.org/legal/epl-2.0/)
+  Copyright (C) 2024, JUnit.
+
+  The EPL 2.0 license text is included in the LICENSES/EPL-2.0.md file in this project.
+---
+---
+- Library: JUnit Jupiter API
+  License: EPL 2.0 (https://www.eclipse.org/legal/epl-2.0/)
+  Copyright (C) 2024, JUnit.
+
+  The EPL 2.0 license text is included in the LICENSES/EPL-2.0.md file in this project.
+---
+---
+- Library: JUnit Jupiter Engine
+  License: EPL 2.0 (https://www.eclipse.org/legal/epl-2.0/)
+  Copyright (C) 2024, JUnit.
+
+  The EPL 2.0 license text is included in the LICENSES/EPL-2.0.md file in this project.
+---
+---
+- Library: JUnit Jupiter Params
+  License: EPL 2.0 (https://www.eclipse.org/legal/epl-2.0/)
+  Copyright (C) 2024, JUnit.
+
+  The EPL 2.0 license text is included in the LICENSES/EPL-2.0.md file in this project.
+---
+---
+- Library: JUnit Platform Commons
+  License: EPL 2.0 (https://www.eclipse.org/legal/epl-2.0/)
+  Copyright (C) 2024, JUnit.
+
+  The EPL 2.0 license text is included in the LICENSES/EPL-2.0.md file in this project.
+---
+---
+- Library: JUnit Platform Engine API
+  License: EPL 2.0 (https://www.eclipse.org/legal/epl-2.0/)
+  Copyright (C) 2024, JUnit.
+
+  The EPL 2.0 license text is included in the LICENSES/EPL-2.0.md file in this project.
+---
+---
+- Library: JUnit Platform Launcher
+  License: EPL 2.0 (https://www.eclipse.org/legal/epl-2.0/)
+  Copyright (C) 2024, JUnit.
+
+  The EPL 2.0 license text is included in the LICENSES/EPL-2.0.md file in this project.
+---
+---
+- Library: JUnit Platform Suite
+  License: EPL 2.0 (https://www.eclipse.org/legal/epl-2.0/)
+  Copyright (C) 2024, JUnit.
+
+  The EPL 2.0 license text is included in the LICENSES/EPL-2.0.md file in this project.
+---
+---
+- Library: JUnit Platform Suite API
+  License: EPL 2.0 (https://www.eclipse.org/legal/epl-2.0/)
+  Copyright (C) 2024, JUnit.
+
+  The EPL 2.0 license text is included in the LICENSES/EPL-2.0.md file in this project.
+---
+---
+- Library: JUnit Platform Suite Commons
+  License: EPL 2.0 (https://www.eclipse.org/legal/epl-2.0/)
+  Copyright (C) 2024, JUnit.
+
+  The EPL 2.0 license text is included in the LICENSES/EPL-2.0.md file in this project.
+---
+---
+- Library: JUnit Platform Suite Engine
+  License: EPL 2.0 (https://www.eclipse.org/legal/epl-2.0/)
+  Copyright (C) 2024, JUnit.
+
+  The EPL 2.0 license text is included in the LICENSES/EPL-2.0.md file in this project.
+---
+---
+- Library: MapStruct Core
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The MapStruct Authors.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: mockito-core
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, The Mockito contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: mockito-junit-jupiter
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, The Mockito contributors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: Objenesis
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, objenesis.org.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: org.opentest4j:opentest4j
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, JUnit.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---
+---
+- Library: asm
+  License: BSD 3-Clause (https://opensource.org/license/bsd-3-clause)
+  Copyright (C) 2024, INRIA, France Telecom.
+
+  The BSD 3-Clause license text is included in the LICENSES/BSD-3-Clause.txt file in this project.
+---
+---
+- Library: asm-commons
+  License: BSD 3-Clause (https://opensource.org/license/bsd-3-clause)
+  Copyright (C) 2024, INRIA, France Telecom.
+
+  The BSD 3-Clause license text is included in the LICENSES/BSD-3-Clause.txt file in this project.
+---
+---
+- Library: asm-tree
+  License: BSD 3-Clause (https://opensource.org/license/bsd-3-clause)
+  Copyright (C) 2024, INRIA, France Telecom.
+
+  The BSD 3-Clause license text is included in the LICENSES/BSD-3-Clause.txt file in this project.
+---
+---
+- Library: Project Lombok
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, The Project Lombok Authors.
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: SLF4J API Module
+  License: MIT License (https://opensource.org/license/mit)
+  Copyright (C) 2024, QOS.ch Sarl (Switzerland).
+
+  The MIT license text is included in the LICENSES/MIT.txt file in this project.
+---
+---
+- Library: SnakeYAML
+  License: Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  Copyright (C) 2024, The SnakeYAML Authors.
+
+  The Apache Software license text is included in the LICENSES/ASL-2.0.txt file in this project.
+---

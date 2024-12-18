@@ -1,5 +1,7 @@
 package com.stundb.core.crdt;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 import java.util.AbstractSet;
 import java.util.Iterator;
@@ -36,7 +38,7 @@ public final class ConcurrentSet<E> extends AbstractSet<E> implements Serializab
         map.clear();
     }
 
-    @SuppressWarnings("NullableProblems")
+    @NotNull
     @Override
     public Iterator<E> iterator() {
         return map.keySet().iterator();

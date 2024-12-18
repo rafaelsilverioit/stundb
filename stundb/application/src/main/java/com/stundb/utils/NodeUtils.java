@@ -17,9 +17,9 @@ public class NodeUtils {
         digester.reset();
         digester.update(key.getBytes());
 
-        byte[] digest = digester.digest();
+        var digest = digester.digest();
 
-        long hash = 0;
+        var hash = 0L;
         for (int i = 0; i < 4; i++) {
             hash <<= 8;
             hash |= ((int) digest[i]) & 0xFF;

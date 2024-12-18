@@ -7,6 +7,9 @@ import com.stundb.service.StoreService;
 
 import jakarta.inject.Inject;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class TcpServerImpl extends TcpServer {
 
     @Inject private NodeService nodeService;
@@ -17,7 +20,7 @@ public class TcpServerImpl extends TcpServer {
     protected void onStart() {
         nodeService.init();
         storeService.init();
-        logger.info("Running {} on {}", config.name(), serverAddress());
+        log.info("Running {} on {}", config.name(), serverAddress());
     }
 
     @Override

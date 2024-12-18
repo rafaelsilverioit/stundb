@@ -8,12 +8,16 @@ import com.stundb.core.logging.Loggable;
 import com.stundb.core.models.UniqueId;
 import com.stundb.net.client.StunDBClient;
 import com.stundb.net.core.codecs.Codec;
+import com.stundb.net.core.codecs.ObjectDecoder;
+import com.stundb.net.core.codecs.ObjectEncoder;
+import com.stundb.net.core.managers.RequestManager;
+import com.stundb.net.core.managers.SessionManager;
 import com.stundb.net.core.models.Node;
-import com.stundb.net.server.codecs.ObjectDecoder;
-import com.stundb.net.server.codecs.ObjectEncoder;
+import com.stundb.net.core.security.auth.credentials.CredentialManager;
 import com.stundb.net.server.handlers.CommandHandler;
 import com.stundb.net.server.handlers.DefaultCommandHandler;
 import com.stundb.net.server.handlers.RequestHandler;
+import com.stundb.net.server.handlers.SaslServerHandler;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -30,16 +34,14 @@ import io.netty.handler.timeout.WriteTimeoutHandler;
 
 import jakarta.inject.Inject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.concurrent.*;
 
+@Slf4j
 public abstract class TcpServer {
-
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject protected StunDBClient client;
     @Inject protected ApplicationConfig config;
@@ -48,6 +50,9 @@ public abstract class TcpServer {
     @Inject private List<? extends CommandHandler> runners;
     @Inject private DefaultCommandHandler defaultCommandHandler;
     @Inject private UniqueId uniqueId;
+    @Inject private CredentialManager credentialManager;
+    @Inject private SessionManager sessionManager;
+    @Inject private RequestManager requestManager;
 
     protected abstract void onStart();
 
@@ -58,17 +63,19 @@ public abstract class TcpServer {
         var mainGroup = new NioEventLoopGroup(config.executors().mainServerLoop().threads());
         var secondaryGroup =
                 new NioEventLoopGroup(config.executors().secondaryServerLoop().threads());
+        var handler =
+                new RequestHandler(runners, defaultCommandHandler, sessionManager, requestManager);
         var bootstrap = new ServerBootstrap();
         bootstrap
                 .group(mainGroup, secondaryGroup)
                 .channel(NioServerSocketChannel.class)
-                .childHandler(channelInitializer())
+                .childHandler(channelInitializer(handler))
                 .bind(new InetSocketAddress(config.port()))
                 .addListener(onStartListener(executor));
     }
 
     @Loggable
-    private ChannelInitializer<Channel> channelInitializer() {
+    private ChannelInitializer<Channel> channelInitializer(RequestHandler handler) {
         return new ChannelInitializer<>() {
             @Loggable
             @Override
@@ -87,8 +94,9 @@ public abstract class TcpServer {
                                 tcpReadTimeout, tcpWriteTimeout, tcpReadTimeout, TimeUnit.SECONDS));
                 pipeline.addLast("decoder", new ObjectDecoder(codec));
                 pipeline.addLast("encoder", new ObjectEncoder(codec));
-                pipeline.addLast("handler", new RequestHandler(runners, defaultCommandHandler));
-                logger.debug("----> [" + channel.id() + "] connected!");
+                pipeline.addLast("sasl", new SaslServerHandler(credentialManager, sessionManager));
+                pipeline.addLast("handler", handler);
+                log.debug("----> [{}] connected!", channel.id());
             }
         };
     }
@@ -106,7 +114,7 @@ public abstract class TcpServer {
 
     private void startServer(ChannelFuture channelFuture) {
         if (!channelFuture.isSuccess()) {
-            logger.error("Server failed to start", channelFuture.cause());
+            log.error("Server failed to start", channelFuture.cause());
             System.exit(1);
         }
 

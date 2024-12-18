@@ -196,6 +196,7 @@
                                     <directory>${basedir}/src/test/resources</directory>
                                     <includes>
                                         <include>*.yml</include>
+                                        <include>*.config</include>
                                     </includes>
                                 </resource>
                             </resources>

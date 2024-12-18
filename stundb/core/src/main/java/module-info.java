@@ -1,6 +1,8 @@
 module stundb.core {
     requires aopalliance;
     requires transitive stundb.api;
+    requires transitive com.google.guice;
+    requires annotations;
 
     exports com.stundb.core.cache;
     exports com.stundb.core.crdt;
