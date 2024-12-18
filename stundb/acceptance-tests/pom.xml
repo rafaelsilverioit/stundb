@@ -12,6 +12,16 @@
     <name>StunDB - Acceptance tests</name>
     <description>StunDB - Acceptance tests</description>
     <packaging>jar</packaging>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/license/mit</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <organization>
+        <name>Rafael Silvério Amaral</name>
+    </organization>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -37,7 +47,6 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-core</artifactId>

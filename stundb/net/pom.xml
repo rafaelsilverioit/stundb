@@ -12,6 +12,16 @@
     <name>StunDB - Net</name>
     <description>StunDB - Net</description>
     <packaging>pom</packaging>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/license/mit</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <organization>
+        <name>Rafael Silvério Amaral</name>
+    </organization>
     <modules>
         <module>core</module>
         <module>client</module>

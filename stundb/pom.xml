@@ -12,9 +12,19 @@
     <name>StunDB - Parent</name>
     <description>StunDB - Parent</description>
     <packaging>pom</packaging>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/license/mit</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <organization>
+        <name>Rafael Silvério Amaral</name>
+    </organization>
     <modules>
-	<module>acceptance-tests</module>
-	<module>api</module>
+        <module>acceptance-tests</module>
+        <module>api</module>
         <module>application</module>
         <module>core</module>
         <module>net</module>
