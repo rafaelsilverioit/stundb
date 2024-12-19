@@ -2,16 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.stundb</groupId>
+        <groupId>io.github.rafaelsilverioit</groupId>
         <artifactId>stundb-parent</artifactId>
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>stundb-acceptance-tests</artifactId>
     <version>1.0.0</version>
-    <name>StunDB - Acceptance tests</name>
+    <name>${project.groupId}:${project.artifactId}</name>
     <description>StunDB - Acceptance tests</description>
+    <url>https://github.com/rafaelsilverioit/stundb</url>
     <packaging>jar</packaging>
+
     <licenses>
         <license>
             <name>MIT License</name>
@@ -19,9 +21,22 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    <organization>
-        <name>Rafael Silvério Amaral</name>
-    </organization>
+
+    <developers>
+        <developer>
+            <name>Rafael Silvério Amaral</name>
+            <email>rafael.silverio11@gmail.com</email>
+            <organization>None</organization>
+            <organizationUrl>https://github.com/rafaelsilverioit</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/rafaelsilverioit/stundb.git</connection>
+        <developerConnection>scm:git:ssh://github.com:rafaelsilverioit/stundb.git</developerConnection>
+        <url>https://github.com/rafaelsilverioit/stundb/tree/master</url>
+    </scm>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -42,7 +57,7 @@
     </dependencyManagement>
     <dependencies>
         <dependency>
-            <groupId>com.stundb</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>stundb-application</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -137,131 +152,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.5.0</version>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/test/java</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>add-resource</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-test-resource</goal>
-                        </goals>
-                        <configuration>
-                            <resources>
-                                <resource>
-                                    <directory>src/test/resources</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-application-jar-and-libs</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/application</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/../application/target</directory>
-                                    <includes>
-                                        <include>**/lib</include>
-                                        <include>**/*.jar</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-application-properties-file</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/application</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/src/test/resources</directory>
-                                    <includes>
-                                        <include>*.yml</include>
-                                        <include>*.config</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>node-1</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>java</executable>
-                            <addResourcesToClasspath>true</addResourcesToClasspath>
-                            <arguments>
-                                <argument>-Dapplication.port=8000</argument>
-                                <!-- TODO: we need to run with modulepath instead of classpath,
-                                           so we can get rid of META-INF.services -->
-                                <argument>-jar</argument>
-                                <argument>stundb-application-${project.version}.jar</argument>
-                            </arguments>
-                            <workingDirectory>${basedir}/target/application</workingDirectory>
-                            <async>true</async>
-                            <asyncDestroyOnShutdown>true</asyncDestroyOnShutdown>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>node-2</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>java</executable>
-                            <addResourcesToClasspath>true</addResourcesToClasspath>
-                            <arguments>
-                                <argument>-Dapplication.port=8001</argument>
-                                <!-- TODO: we need to run with modulepath instead of classpath,
-                                           so we can get rid of META-INF.services -->
-                                <argument>-jar</argument>
-                                <argument>stundb-application-${project.version}.jar</argument>
-                            </arguments>
-                            <workingDirectory>${basedir}/target/application</workingDirectory>
-                            <async>true</async>
-                            <asyncDestroyOnShutdown>true</asyncDestroyOnShutdown>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
@@ -293,6 +183,133 @@
                         <configuration>
                             <skipTests>false</skipTests>
                         </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.5.0</version>
+                        <executions>
+                            <execution>
+                                <id>add-source</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>add-test-source</goal>
+                                </goals>
+                                <configuration>
+                                    <sources>
+                                        <source>src/test/java</source>
+                                    </sources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>add-resource</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>add-test-resource</goal>
+                                </goals>
+                                <configuration>
+                                    <resources>
+                                        <resource>
+                                            <directory>src/test/resources</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>${maven.resources.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>copy-application-jar-and-libs</id>
+                                <phase>process-test-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${basedir}/target/application</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/../application/target</directory>
+                                            <includes>
+                                                <include>**/lib</include>
+                                                <include>**/*.jar</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-application-properties-file</id>
+                                <phase>process-test-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${basedir}/target/application</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/src/test/resources</directory>
+                                            <includes>
+                                                <include>*.yml</include>
+                                                <include>*.config</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.5.0</version>
+                        <executions>
+                            <execution>
+                                <id>node-1</id>
+                                <phase>process-test-resources</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>java</executable>
+                                    <addResourcesToClasspath>true</addResourcesToClasspath>
+                                    <arguments>
+                                        <argument>-Dapplication.port=8000</argument>
+                                        <!-- TODO: we need to run with modulepath instead of classpath,
+                                                   so we can get rid of META-INF.services -->
+                                        <argument>-jar</argument>
+                                        <argument>stundb-application-${project.version}.jar</argument>
+                                    </arguments>
+                                    <workingDirectory>${basedir}/target/application</workingDirectory>
+                                    <async>true</async>
+                                    <asyncDestroyOnShutdown>true</asyncDestroyOnShutdown>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>node-2</id>
+                                <phase>process-test-resources</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>java</executable>
+                                    <addResourcesToClasspath>true</addResourcesToClasspath>
+                                    <arguments>
+                                        <argument>-Dapplication.port=8001</argument>
+                                        <!-- TODO: we need to run with modulepath instead of classpath,
+                                                   so we can get rid of META-INF.services -->
+                                        <argument>-jar</argument>
+                                        <argument>stundb-application-${project.version}.jar</argument>
+                                    </arguments>
+                                    <workingDirectory>${basedir}/target/application</workingDirectory>
+                                    <async>true</async>
+                                    <asyncDestroyOnShutdown>true</asyncDestroyOnShutdown>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>

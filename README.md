@@ -26,6 +26,14 @@ To run with Maven, you just need to run the following command:
   mvn exec:java -f stundb/application/pom.xml
 ```
 
+### Deploying to Maven Central
+
+Run tests and then deploy to Maven Central:
+```bash
+  mvn clean test -P runAcceptanceTests 
+  mvn clean deploy -P publishToCentral -pl \!io.github.rafaelsilverioit:stundb-acceptance-tests
+```
+
 ----------------------------
 
 ## Backlog

@@ -2,16 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.stundb</groupId>
+        <groupId>io.github.rafaelsilverioit</groupId>
         <artifactId>stundb-net</artifactId>
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>stundb-net-core</artifactId>
     <version>1.0.0</version>
-    <name>StunDB - Net - Core</name>
+    <name>${project.groupId}:${project.artifactId}</name>
     <description>StunDB - Net - Core</description>
+    <url>https://github.com/rafaelsilverioit/stundb</url>
     <packaging>jar</packaging>
+
     <licenses>
         <license>
             <name>MIT License</name>
@@ -19,17 +21,30 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    <organization>
-        <name>Rafael Silvério Amaral</name>
-    </organization>
+
+    <developers>
+        <developer>
+            <name>Rafael Silvério Amaral</name>
+            <email>rafael.silverio11@gmail.com</email>
+            <organization>None</organization>
+            <organizationUrl>https://github.com/rafaelsilverioit</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/rafaelsilverioit/stundb.git</connection>
+        <developerConnection>scm:git:ssh://github.com:rafaelsilverioit/stundb.git</developerConnection>
+        <url>https://github.com/rafaelsilverioit/stundb/tree/master</url>
+    </scm>
+
     <dependencies>
         <dependency>
-            <groupId>com.stundb</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>stundb-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.stundb</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>stundb-core</artifactId>
             <version>${project.version}</version>
         </dependency>
