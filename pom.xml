@@ -30,7 +30,7 @@
     <scm>
         <connection>scm:git:git://github.com/rafaelsilverioit/stundb.git</connection>
         <developerConnection>scm:git:ssh://github.com:rafaelsilverioit/stundb.git</developerConnection>
-        <url>https://github.com/rafaelsilverioit/stundb/tree/master</url>
+        <url>https://github.com/rafaelsilverioit/stundb/tree/main</url>
     </scm>
 
     <properties>
@@ -264,9 +264,6 @@
                             <publishingServerId>central</publishingServerId>
                             <ignorePublishedComponents>true</ignorePublishedComponents>
                             <excludeArtifacts>
-                                <excludeArtifact>stundb</excludeArtifact>
-                                <excludeArtifact>stundb-parent</excludeArtifact>
-                                <excludeArtifact>stundb-net</excludeArtifact>
                                 <excludeArtifact>stundb-net-server</excludeArtifact>
                                 <excludeArtifact>stundb-application</excludeArtifact>
                                 <excludeArtifact>stundb-acceptance-tests</excludeArtifact>

@@ -34,7 +34,7 @@
     <scm>
         <connection>scm:git:git://github.com/rafaelsilverioit/stundb.git</connection>
         <developerConnection>scm:git:ssh://github.com:rafaelsilverioit/stundb.git</developerConnection>
-        <url>https://github.com/rafaelsilverioit/stundb/tree/master</url>
+        <url>https://github.com/rafaelsilverioit/stundb/tree/main</url>
     </scm>
 
     <dependencies>
