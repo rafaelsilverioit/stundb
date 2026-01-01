@@ -2,6 +2,8 @@ package com.stundb.service.impl;
 
 import static com.stundb.net.core.models.NodeStatus.State.FAILING;
 import static com.stundb.net.core.models.NodeStatus.State.RUNNING;
+import static com.stundb.utils.ByteBufHelper.from;
+import static com.stundb.utils.ByteBufHelper.of;
 
 import com.stundb.api.crdt.Entry;
 import com.stundb.api.models.Tuple;
@@ -15,7 +17,10 @@ import com.stundb.net.core.models.Node;
 import com.stundb.net.core.models.requests.CRDTRequest;
 import com.stundb.net.core.models.requests.Request;
 import com.stundb.service.ReplicationService;
+import com.stundb.utils.ByteBufHelper;
 import com.stundb.utils.NodeUtils;
+
+import io.netty.buffer.ByteBuf;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -33,7 +38,7 @@ public class ReplicationServiceImpl implements ReplicationService {
 
     @Inject private CRDT state;
     @Inject private StunDBClient client;
-    @Inject private Cache<Object> cache;
+    @Inject private Cache<ByteBuf> cache;
     @Inject private Cache<Node> internalCache;
     @Inject private UniqueId uniqueId;
     @Inject private NodeUtils utils;
@@ -59,7 +64,7 @@ public class ReplicationServiceImpl implements ReplicationService {
     }
 
     @Override
-    public void add(String key, Object value) {
+    public void add(String key, ByteBuf value) {
         var entry = buildEntry(key, value);
         state.add(entry);
         replicate(entry.timestamp());
@@ -125,8 +130,8 @@ public class ReplicationServiceImpl implements ReplicationService {
                         });
     }
 
-    private Entry buildEntry(String key, Object value) {
-        return new Entry(Instant.now(), key, value);
+    private Entry buildEntry(String key, ByteBuf value) {
+        return new Entry(Instant.now(), key, from(value));
     }
 
     private Tuple<Collection<Entry>, Collection<Entry>> generateStateFrom(Instant from) {
@@ -144,21 +149,17 @@ public class ReplicationServiceImpl implements ReplicationService {
     }
 
     private void addToCache(Collection<Entry> synchronizedEntries, Set<Entry> stateEntries) {
-        // adds items to the cache if they weren't already added and then removed
-        updateCache(
-                synchronizedEntries,
-                stateEntries,
-                this::shouldEntryBeAdded,
-                e -> cache.upsert(e.key(), e.value()));
+        Consumer<Entry> consumer = (e) -> cache.upsert(e.key(), of(e.value()));
+
+        // adds items to the cache if not already added and then removed
+        updateCache(synchronizedEntries, stateEntries, this::shouldEntryBeAdded, consumer);
     }
 
     private void removeFromCache(Collection<Entry> synchronizedEntries, Set<Entry> stateEntries) {
-        // removes items from the cache if they weren't already removed and then added back again
-        updateCache(
-                synchronizedEntries,
-                stateEntries,
-                this::shouldEntryBeRemoved,
-                e -> cache.del(e.key()));
+        Consumer<Entry> consumer = (e) -> cache.del(e.key(), ByteBufHelper::release);
+
+        // removes items from the cache if not already removed and then added back again
+        updateCache(synchronizedEntries, stateEntries, this::shouldEntryBeRemoved, consumer);
     }
 
     private void updateCache(

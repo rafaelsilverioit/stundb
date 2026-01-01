@@ -3,6 +3,7 @@ package com.stundb.core.cache;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public interface Cache<T> {
     Boolean upsert(String key, T value);
@@ -16,6 +17,8 @@ public interface Cache<T> {
     Collection<String> retrieveKeysOfExpiredEntries();
 
     Map<String, T> dump();
+
+    Boolean del(String key, Consumer<T> cleanUp);
 
     Boolean del(String key);
 

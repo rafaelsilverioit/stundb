@@ -1,5 +1,8 @@
 package com.stundb.service.impl;
 
+import static com.stundb.utils.ByteBufHelper.from;
+import static com.stundb.utils.ByteBufHelper.of;
+
 import com.stundb.annotations.CacheEvictor;
 import com.stundb.core.cache.Cache;
 import com.stundb.core.logging.Loggable;
@@ -12,6 +15,9 @@ import com.stundb.net.core.models.responses.ExistsResponse;
 import com.stundb.net.core.models.responses.GetResponse;
 import com.stundb.net.core.models.responses.IsEmptyResponse;
 import com.stundb.service.StoreService;
+import com.stundb.utils.ByteBufHelper;
+
+import io.netty.buffer.ByteBuf;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -22,7 +28,7 @@ import java.util.TimerTask;
 @Singleton
 public class StoreServiceImpl implements StoreService {
 
-    @Inject private Cache<Object> cache;
+    @Inject private Cache<ByteBuf> cache;
     @Inject private ReplicationServiceImpl replicationService;
     @Inject private Timer timer;
 
@@ -36,21 +42,23 @@ public class StoreServiceImpl implements StoreService {
     @Loggable
     public void set(SetRequest request) {
         var encoded = request.value();
+        var buffer = of(encoded);
+
         cache.get(request.key()).ifPresent(__ -> replicationService.remove(request.key()));
-        cache.upsert(request.key(), encoded, request.ttl());
-        replicationService.add(request.key(), encoded);
+        cache.upsert(request.key(), buffer, request.ttl());
+        replicationService.add(request.key(), buffer);
     }
 
     @Loggable
     public void del(DelRequest request) {
-        cache.del(request.key());
+        cache.del(request.key(), ByteBufHelper::release);
         replicationService.remove(request.key());
     }
 
     @Loggable
     public GetResponse get(GetRequest request) {
         var data = cache.get(request.key()).orElse(null);
-        return new GetResponse(request.key(), data);
+        return new GetResponse(request.key(), from(data));
     }
 
     @Loggable

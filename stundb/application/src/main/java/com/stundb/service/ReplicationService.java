@@ -3,6 +3,8 @@ package com.stundb.service;
 import com.stundb.api.crdt.Entry;
 import com.stundb.api.models.Tuple;
 
+import io.netty.buffer.ByteBuf;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -12,7 +14,7 @@ public interface ReplicationService {
 
     Tuple<Collection<Entry>, Collection<Entry>> generateStateSnapshot();
 
-    void add(String key, Object value);
+    void add(String key, ByteBuf value);
 
     void remove(String key);
 

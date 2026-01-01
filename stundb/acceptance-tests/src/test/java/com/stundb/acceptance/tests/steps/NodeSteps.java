@@ -92,11 +92,9 @@ public class NodeSteps extends BaseSteps {
                                 new GetRequest(key),
                                 id,
                                 (((response, error) -> {
+                                    var payload = (GetResponse) response.payload();
                                     assertThat("Node: %d".formatted(id), error, nullValue());
-                                    assertThat(
-                                            "Node: %d".formatted(id),
-                                            ((GetResponse) response.payload()).value(),
-                                            nullValue());
+                                    assertThat("Node: %d".formatted(id), payload.value().length, is(0));
                                 }))));
     }
 
