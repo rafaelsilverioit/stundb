@@ -16,6 +16,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 @Getter
@@ -32,7 +33,8 @@ public class SetHandlerTest extends StoreHandlerTest<SetHandler> {
     @Override
     protected Stream<Arguments> test_execute() {
         return Stream.of(
-                Arguments.of(new SetRequest("key", "value", 0L)), Arguments.of((SetRequest) null));
+                Arguments.of(new SetRequest("key", "value".getBytes(StandardCharsets.UTF_8), 0L)),
+                Arguments.of((SetRequest) null));
     }
 
     @Override

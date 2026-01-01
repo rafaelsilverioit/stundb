@@ -4,6 +4,8 @@ import com.stundb.core.cache.Cache;
 import com.stundb.net.core.models.requests.DelRequest;
 import com.stundb.service.StoreService;
 
+import io.netty.buffer.ByteBuf;
+
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
@@ -15,7 +17,7 @@ import java.util.*;
 @Singleton
 public class CacheEvictorTimerTaskImpl extends TimerTask {
 
-    @Inject private Cache<Object> cache;
+    @Inject private Cache<ByteBuf> cache;
     @Inject private StoreService storeService;
 
     @Override

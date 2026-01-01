@@ -29,6 +29,8 @@ import com.stundb.timers.impl.BackoffTimerTaskImpl;
 import com.stundb.timers.impl.CacheEvictorTimerTaskImpl;
 import com.stundb.timers.impl.CoordinatorTimerTaskImpl;
 
+import io.netty.buffer.ByteBuf;
+
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.Timer;
@@ -68,16 +70,16 @@ public class Module extends AbstractModule {
         bind(new TypeLiteral<List<? extends CommandHandler>>() {})
                 .toProvider(CommandHandlerProvider.class);
 
-        bind(new TypeLiteral<BTree<String, Object>>() {})
-                .toProvider(new TypeLiteral<BTreeProvider<Object>>() {})
+        bind(new TypeLiteral<BTree<String, ByteBuf>>() {})
+                .toProvider(new TypeLiteral<BTreeProvider<ByteBuf>>() {})
                 .in(Singleton.class);
 
         bind(new TypeLiteral<BTree<String, Node>>() {})
                 .toProvider(new TypeLiteral<BTreeProvider<Node>>() {})
                 .in(Singleton.class);
 
-        bind(new TypeLiteral<Cache<Object>>() {})
-                .toProvider(new TypeLiteral<CacheProvider<Object>>() {})
+        bind(new TypeLiteral<Cache<ByteBuf>>() {})
+                .toProvider(new TypeLiteral<CacheProvider<ByteBuf>>() {})
                 .in(Singleton.class);
 
         bind(new TypeLiteral<Cache<Node>>() {})

@@ -9,6 +9,9 @@ import com.stundb.net.core.models.requests.ExistsRequest;
 import com.stundb.net.core.models.requests.GetRequest;
 import com.stundb.net.core.models.requests.SetRequest;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,9 +33,10 @@ import java.util.stream.Stream;
 class StoreServiceImplTest {
 
     private static final String KEY = "key";
-    private static final String VALUE = "value";
+    private static final ByteBuf VALUE = Unpooled.wrappedBuffer("value".getBytes(StandardCharsets.UTF_8));
+    private static final ByteBuf BIG_VALUE = Unpooled.buffer(128_000);
 
-    @Mock private Cache<Object> cache;
+    @Mock private Cache<ByteBuf> cache;
     @Mock private ReplicationServiceImpl replicationService;
     @Mock private TimerTask timerTask;
     @Mock private Timer timer;
@@ -53,7 +58,7 @@ class StoreServiceImplTest {
     void set_should_store_data_successfully() {
         when(cache.upsert(KEY, VALUE, -1L)).thenReturn(true);
 
-        testee.set(new SetRequest(KEY, VALUE, -1L));
+        testee.set(new SetRequest(KEY, VALUE.array(), -1L));
 
         verify(cache).upsert(KEY, VALUE, -1L);
         verify(replicationService, never()).remove(KEY);
@@ -62,26 +67,26 @@ class StoreServiceImplTest {
 
     @Test
     void set_should_store_data_successfully_and_handle_duplicates() {
-        SetRequest request = new SetRequest(KEY, VALUE, -1L);
+        SetRequest request = new SetRequest(KEY, BIG_VALUE.array(), -1L);
 
-        when(cache.upsert(KEY, VALUE, -1L)).thenReturn(true);
-        when(cache.get(KEY)).thenReturn(Optional.empty()).thenReturn(Optional.of(VALUE));
+        when(cache.upsert(eq(KEY), any(ByteBuf.class), eq(-1L))).thenReturn(true);
+        when(cache.get(KEY)).thenReturn(Optional.empty()).thenReturn(Optional.of(BIG_VALUE));
 
         testee.set(request);
         testee.set(request);
 
-        verify(cache, times(2)).upsert(KEY, VALUE, -1L);
+        verify(cache, times(2)).upsert(eq(KEY), any(ByteBuf.class), eq(-1L));
         verify(replicationService).remove(KEY);
-        verify(replicationService, times(2)).add(KEY, VALUE);
+        verify(replicationService, times(2)).add(eq(KEY), any(ByteBuf.class));
     }
 
     @Test
     void del_should_remove_data_successfully() {
-        when(cache.del(KEY)).thenReturn(true);
+        when(cache.del(eq(KEY), any())).thenReturn(true);
 
         testee.del(new DelRequest(KEY));
 
-        verify(cache).del(KEY);
+        verify(cache).del(eq(KEY), any());
         verify(replicationService).remove(KEY);
     }
 
@@ -94,7 +99,7 @@ class StoreServiceImplTest {
         verify(cache).get(KEY);
 
         assertEquals(KEY, response.key());
-        assertEquals(VALUE, response.value());
+        assertEquals(VALUE.array(), response.value());
     }
 
     @Test
@@ -112,7 +117,7 @@ class StoreServiceImplTest {
     @ParameterizedTest
     @MethodSource("existsArguments")
     void exists_should_tell_if_a_given_key_is_stored_in_the_cache(
-            @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Object> value,
+            @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<ByteBuf> value,
             boolean expected) {
         when(cache.get(KEY)).thenReturn(value);
 
