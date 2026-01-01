@@ -9,7 +9,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -25,10 +26,7 @@ public class BTreeCache<V> implements Cache<V> {
 
     @Override
     public Boolean upsert(String key, V value, Long ttl) {
-        writeLock(key, value, (k, v) -> {
-            tree.upsert(k, v, ttl);
-            return null;
-        });
+        writeLock(key, value, (k, v) -> tree.upsert(k, v, ttl));
         return true;
     }
 
@@ -56,11 +54,23 @@ public class BTreeCache<V> implements Cache<V> {
     }
 
     @Override
+    public Boolean del(String key, Consumer<V> cleanUp) {
+        BiConsumer<String, V> consumer =
+                (k, v) -> {
+                    tree.remove(k);
+                    Optional.ofNullable(v).ifPresent(cleanUp);
+                };
+
+        var value = tree.find(key)
+                .map(Node::getValue)
+                .orElse(null);
+        writeLock(key, value, consumer);
+        return true;
+    }
+
+    @Override
     public Boolean del(String key) {
-        writeLock(key, null, (k, __) -> {
-            tree.remove(k);
-            return null;
-        });
+        writeLock(key, null, (k, __) -> tree.remove(k));
         return true;
     }
 
@@ -82,10 +92,7 @@ public class BTreeCache<V> implements Cache<V> {
 
     @Override
     public void clear() {
-        writeLock(null, null, (k, __) -> {
-            tree.clear();
-            return null;
-        });
+        writeLock(null, null, (k, __) -> tree.clear());
     }
 
     private <T> T readLock(String key, Function<String, T> fn) {
@@ -97,10 +104,10 @@ public class BTreeCache<V> implements Cache<V> {
         }
     }
 
-    private void writeLock(String key, V value, BiFunction<String, V, Void> fn) {
+    private void writeLock(String key, V value, BiConsumer<String, V> fn) {
         this.lock.writeLock().lock();
         try {
-            fn.apply(key, value);
+            fn.accept(key, value);
         } finally {
             this.lock.writeLock().unlock();
         }

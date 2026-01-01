@@ -5,6 +5,8 @@ import static org.mockito.Mockito.*;
 import com.stundb.core.cache.Cache;
 import com.stundb.service.StoreService;
 
+import io.netty.buffer.ByteBuf;
+
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -20,7 +22,7 @@ import java.util.stream.Stream;
 @ExtendWith(MockitoExtension.class)
 class CacheEvictorTimerTaskImplTest {
 
-    @Mock private Cache<Object> cache;
+    @Mock private Cache<ByteBuf> cache;
     @Mock private StoreService storeService;
 
     @InjectMocks private CacheEvictorTimerTaskImpl testee;

@@ -2,6 +2,7 @@ module stundb.application {
     requires aopalliance;
     requires stundb.core;
     requires stundb.net.server;
+    requires io.netty.buffer;
 
     exports com.stundb;
 

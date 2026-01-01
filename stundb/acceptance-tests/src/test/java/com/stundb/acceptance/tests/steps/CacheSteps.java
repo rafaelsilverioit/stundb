@@ -13,6 +13,7 @@ import io.cucumber.java8.En;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.charset.StandardCharsets;
 import java.util.function.BiConsumer;
 
 @Slf4j
@@ -36,7 +37,7 @@ public class CacheSteps extends BaseSteps implements En {
         Given(
                 "An entry for key {string} and value {string} is recorded",
                 (String key, String value) ->
-                        request(SET, new SetRequest(key, value, null), defaultNodeId));
+                        request(SET, new SetRequest(key, value.getBytes(StandardCharsets.UTF_8), null), defaultNodeId));
 
         When("We clear the cache", () -> request(CLEAR, null, defaultNodeId));
 
@@ -78,7 +79,7 @@ public class CacheSteps extends BaseSteps implements En {
                     var payload = (GetResponse) response.payload();
                     log.info("key={}, value={}", payload.key(), payload.value());
                     assertThat(payload.value(), notNullValue());
-                    assertThat((String) payload.value(), equalTo(value));
+                    assertThat(new String(payload.value()), equalTo(value));
                 });
     }
 

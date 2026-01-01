@@ -19,6 +19,9 @@ import com.stundb.net.core.models.NodeStatus;
 import com.stundb.net.core.models.responses.Response;
 import com.stundb.utils.NodeUtils;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -40,13 +44,13 @@ class ReplicationServiceImplTest {
 
     private static final String KEY = "key";
     private static final String ANOTHER_KEY = "key2";
-    private static final String VALUE = "value";
+    private static final ByteBuf VALUE = Unpooled.wrappedBuffer("value".getBytes(StandardCharsets.UTF_8));
     private static final Node NODE =
             new Node("127.0.0.1", 9000, 1L, true, NodeStatus.create(RUNNING));
     private final TestLogger logger = TestLoggerFactory.getTestLogger(ReplicationServiceImpl.class);
     @Mock private CRDT state;
     @Mock private StunDBClient client;
-    @Mock private Cache<Object> cache;
+    @Mock private Cache<ByteBuf> cache;
     @Mock private Cache<Node> internalCache;
     @Mock private UniqueId uniqueId;
     @Mock private NodeUtils utils;
@@ -217,7 +221,7 @@ class ReplicationServiceImplTest {
         verify(state).getRemoved();
         verify(state).getAdded();
         verify(cache, times(expectedUpsertCalls)).upsert(anyString(), any());
-        verify(cache, times(expectedDelCalls)).del(anyString());
+        verify(cache, times(expectedDelCalls)).del(anyString(), any());
     }
 
     @ParameterizedTest
